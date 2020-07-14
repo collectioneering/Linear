@@ -4,7 +4,7 @@ fmt
 all: <def>...
 def: <name> { <line>... }
 
-absLiteral: !<localLiteral>
+//absLiteral: !<localLiteral>
 expr: <absLiteral>, <localLiteral>, <name>, <expr>[<index>], <expr>.<name>, [<codeInjection>]
 
 <<<real>>>
