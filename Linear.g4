@@ -1,7 +1,7 @@
 grammar Linear;
 
 compilation_unit: (WS? struct WS?)* EOF;
-struct: OPEN WS? (struct_statement WS?)* CLOSE;
+struct: IDENTIFIER WS? OPEN WS? (struct_statement WS?)* CLOSE;
 struct_statement:
 	struct_statement_define
 	| struct_statement_define_ranged
@@ -17,13 +17,18 @@ struct_statement_define_ranged:
 struct_statement_define_array:
 	IDENTIFIER OPENSQ WS? expr WS? CLOSESQ WS? IDENTIFIER WS? expr WS? ENDL;
 struct_statement_define_array_indirect:
-	IDENTIFIER OPENSQ WS? expr WS? CLOSESQ WS? '->' PLUS? OPENSQ CLOSESQ WS? IDENTIFIER WS? expr WS? ENDL;
+	IDENTIFIER OPENSQ WS? expr WS? CLOSESQ WS? 
+	'->' PLUS? WS? 
+	IDENTIFIER OPENSQ CLOSESQ WS? 
+	IDENTIFIER WS? expr WS? ENDL;
 struct_statement_output:
-	'output' WS? IDENTIFIER WS? expr WS? CLOSE;
+	'output' WS? IDENTIFIER WS? expr WS? ENDL;
 struct_statement_comment: '//' ~ENDL* ENDL;
 
-range_end: OPENSQ WS? expr WS? ',' WS? 'end:' WS? expr WS? CLOSESQ;
-range_length: OPENSQ WS? expr WS? ',' WS? 'length:' WS? expr WS? CLOSESQ;
+range_end:
+	OPENSQ WS? expr WS? ',' WS? 'end:' WS? expr WS? CLOSESQ;
+range_length:
+	OPENSQ WS? expr WS? ',' WS? 'length:' WS? expr WS? CLOSESQ;
 
 OPEN: '{';
 CLOSE: '}';
