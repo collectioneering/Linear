@@ -1,0 +1,62 @@
+<<<junk>>>
+
+fmt
+all: <def>...
+def: <name> { <line>... }
+
+absLiteral: !<localLiteral>
+expr: <absLiteral>, <localLiteral>, <name>, <expr>[<index>], <expr>.<name>, [<codeInjection>]
+
+<<<real>>>
+why? because fp was a mistake and even quickbms isn't necessary sometimes
+just define the layout for your file, and if it turns out you can't
+do what you want, you've already written a (hopefully) readable spec
+
+todo: antlr grammar (copy expressions/primitives etc from nya)
+
+replacements:
+$length
+Length of current struct
+Only available inside array or +-> pointer array
+$i
+Index in array
+Only available inside array or pointer array
+$u
+Unique number
+Increments per use
+$p
+Access parent variables
+Only available inside array or pointer array
+
+@<data variable name> <expr>
+Mark named export target
+
+-> means pointer table without marking length
+->+ means pointer table with marking length (implies needing n+1)
+prefix +<expr> means apply offset to pointer values
+
+num types:
+byte sbyte ushort short uint int ulong long half float double
+other types:
+string cstring data data.zip
+
+types with variable but necessary length can take two range types:
+[<offset>, end: <end>]
+[<offset>, length: <length>]
+//[<offset>,<end>] (same as [<offset>, <end> - <offset>})
+//{<offset>,<length>}
+
+// EX brew bar
+
+entry {
+short hLength 0x0
+string type [2, end: hLength]
+data.gzip file [hLength, end: $length]
+@file $i
+}
+
+main {
+int count 0x14
+//int[count] table 0x28
+int[count] ->+ entry[] table 0x28
+}
