@@ -46,6 +46,9 @@ types with variable but necessary length can take two range types:
 //[<offset>,<end>] (same as [<offset>, <end> - <offset>})
 //{<offset>,<length>}
 
+
+//int[count] table 0x28
+
 // EX brew bar
 
 entry {
@@ -57,6 +60,5 @@ data.gzip file [hLength, end: $length]
 
 main {
 int count 0x14
-//int[count] table 0x28
 int[count] ->+ entry[] table 0x28
 }
