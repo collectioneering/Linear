@@ -1,130 +1,52 @@
 grammar Linear;
 
-compilation_unit: (WS? top_level_statement WS?)* EOF;
+compilation_unit: (WS? struct WS?)* EOF;
+struct: OPEN WS? (struct_statement WS?)* CLOSE;
+struct_statement:
+	struct_statement_define
+	| struct_statement_define_ranged
+	| struct_statement_define_array
+	| struct_statement_define_array_indirect
+	| struct_statement_output
+	| struct_statement_comment;
 
-SUFFIX: [.!]+;
-SELF: 'watashi' | 'boku';
+struct_statement_define:
+	IDENTIFIER WS? IDENTIFIER WS? expr WS? ENDL;
+struct_statement_define_ranged:
+	IDENTIFIER WS? IDENTIFIER WS? (range_end | range_length) WS? ENDL;
+struct_statement_define_array:
+	IDENTIFIER OPENSQ WS? expr WS? CLOSESQ WS? IDENTIFIER WS? expr WS? ENDL;
+struct_statement_define_array_indirect:
+	IDENTIFIER OPENSQ WS? expr WS? CLOSESQ WS? '->' PLUS? OPENSQ CLOSESQ WS? IDENTIFIER WS? expr WS? ENDL;
+struct_statement_output:
+	'output' WS? IDENTIFIER WS? expr WS? CLOSE;
+struct_statement_comment: '//' ~ENDL* ENDL;
 
-dllimport:
-	REGULAR_STRING WS? SUFFIX WS? 'kyu' WS? 'kyu' WS 'nyo' WS? 'ritsu' WS 'ryo' WS? SUFFIX;
+range_end: OPENSQ WS? expr WS? ',' WS? 'end:' WS? expr WS? CLOSESQ;
+range_length: OPENSQ WS? expr WS? ',' WS? 'length:' WS? expr WS? CLOSESQ;
 
-EXTERN: 'gaibu' WS? 'no';
-STATIC: 'seiteki';
+OPEN: '{';
+CLOSE: '}';
+OPENSQ: '[';
+CLOSESQ: ']';
+ENDL: ';';
 
-top_level_statement:
-	def_using
-	| def_namespace WS? (namespace_level_statement WS?)* close;
-namespace_level_statement:
-	def_class WS? (def_base WS)? (class_level_statement WS?)* close;
-class_level_statement:
-	def_var
-	| def_class WS? (def_base WS?)? (class_level_statement WS?)* close
-	| def_func WS? (function_level_statement WS?)* close
-	| (dllimport WS?)? def_func_extern;
-function_level_statement:
-	def_var
-	| assign_expr_to_var
-	| assign_var_from_expr
-	| ex_call
-	| while_block
-	| if_sequence_block
-	| open WS? (function_level_statement WS?)* close
-	| tcf_try WS? (function_level_statement WS?)* tcf_catch WS? (
-		function_level_statement WS?
-	)* tcf_finally WS? (function_level_statement WS?)* close
-	| tcf_try WS? (function_level_statement WS?)* tcf_finally WS? (
-		function_level_statement WS?
-	)* close
-	| tcf_try WS? (function_level_statement WS?)* tcf_catch WS? (
-		function_level_statement WS?
-	)* close
-	| tcf_try WS? (function_level_statement WS?)* close
-	| tcf_throw
-	| fun_return;
-while_block:
-	cf_while WS? (function_level_statement WS?)* close
-	| cf_while WS? function_level_statement;
-if_block:
-	cf_if1 WS? (function_level_statement WS?)* close
-	| cf_if1 WS? function_level_statement
-	| cf_if2 WS? (function_level_statement WS?)* close
-	| cf_if2 WS? function_level_statement;
-else_block:
-	cf_else1 WS? (function_level_statement WS?)* close
-	| cf_else1 WS? function_level_statement
-	| cf_else1 WS? if_block
-	| cf_else2 WS? (function_level_statement WS?)* close
-	| cf_else2 WS? function_level_statement
-	| cf_else2 WS? if_block;
-if_sequence_block: if_block WS? (else_block WS?)*;
-
-fun_return: NYA WS? ',' WS? expr WS? 'desu' WS? SUFFIX;
-NYA: 'ny' 'a'+;
-def_using:
-	IDENTIFIER WS 'ga' WS ('hitsuyo' WS 'desu' | 'hitsuyodesu') WS? SUFFIX;
-def_namespace:
-	'namae' WS 'kukan' WS 'wa' WS IDENTIFIER WS? SUFFIX;
-def_class: ('watashi' WS 'wa' | 'watashiwa') WS (STATIC WS)? IDENTIFIER WS? SUFFIX;
-def_base: ('watashi' WS 'no' WS)? PARENT WS 'wa' WS IDENTIFIER WS? SUFFIX;
-PARENT:
-	'oya'
-	| 'haha'
-	| 'papa'
-	| 'otosan'
-	| 'okasan'
-	| 'oto' WS 'san'
-	| 'oka' WS 'san';
-def_func: (params WS 'no' WS)? STATIC? WS IDENTIFIER WS IDENTIFIER WS 'desu' WS? SUFFIX;
-def_func_extern:
-	(params WS 'no' WS)? EXTERN WS IDENTIFIER WS IDENTIFIER WS 'desu' WS? SUFFIX;
-params: (IDENTIFIER WS IDENTIFIER WS 'to' WS)* IDENTIFIER WS IDENTIFIER;
-vars: (IDENTIFIER WS 'to' WS)* IDENTIFIER;
-
-def_var: vars WS 'wa' WS IDENTIFIER WS 'desu' WS? SUFFIX;
-assign_expr_to_var:
-	expr WS? SUFFIX WS? IDENTIFIER WS 'wa' WS 'sore' WS? SUFFIX;
-assign_var_from_expr: IDENTIFIER WS 'wa' WS expr WS? SUFFIX;
-
-open: OPEN_GROUP SUFFIX;
-OPEN_GROUP: 'yaho' | 'na' | 'ne' | 'kora' | 'oi' | 'oioi';
-close: CLOSE_GROUP SUFFIX;
-CLOSE_GROUP: 'hai' | 'yoshi' | 'sayonara' | 'sarabada';
-
-cf_if1: OPEN_GROUP WS? ',' WS? expr WS? '?';
-cf_if2:
-	OPEN_GROUP WS? ',' WS? expr WS? 'no' WS 'baai' WS ('wa' WS?)? ',';
-cf_else1: 'so' WS 'de' WS 'nai' WS 'baai' WS ('wa' WS?)? ',';
-cf_else2: 'nande' WS? '?';
-cf_while: expr WS? 'de' WS 'aru' WS 'kagiri' WS? ',';
-
-ex_call:
-	OPEN_GROUP WS? ',' WS? expr WS? SUFFIX WS? (
-		ex_callarg WS 'no' WS
-	)? IDENTIFIER WS 'shiyou' WS? SUFFIX (
-		WS? IDENTIFIER WS 'wa' WS 'sore' WS? SUFFIX
-	)?;
-ex_callarg: (expr WS 'to' WS)* expr;
-
-literal_cs:
-	'c' 'shapu' SUFFIX
-	| 'c' 'sharp' SUFFIX
-	| 'c' '#' SUFFIX;
-
-tcf_try: TCF_TRY;
-TCF_TRY: 'ano' WS? SUFFIX;
-tcf_catch: TCF_CATCH;
-TCF_CATCH: 'eto' WS? SUFFIX;
-tcf_finally: TCF_FINALLY;
-TCF_FINALLY: '*gohon*' WS? SUFFIX | 'gohon' WS? SUFFIX;
-tcf_throw:
-	TCF_THROW_NANI WS? ((ex_callarg WS 'no' WS)? IDENTIFIER WS?)? SUFFIX;
-TCF_THROW_NANI: 'nani' WS? '?';
+term_replacement_length: '$length';
+term_replacement_i: '$i';
+term_replacement_p: '$p';
+term_replacement_u: '$u';
+expr_member: IDENTIFIER '.' IDENTIFIER;
+expr_array_access: IDENTIFIER '[' WS? expr WS? ']';
+expr_un_op: un_op WS? expr;
 expr:
 	term
+	| expr_member
+	| expr_array_access
 	| expr WS? op WS? expr
 	| expr WS? bool_op WS? expr
-	| un_op WS? expr
+	| expr_un_op
 	| '(' WS? expr WS? ')';
+
 op:
 	PLUS
 	| MINUS
@@ -145,7 +67,10 @@ bool_op:
 	| OP_LE
 	| OP_GE;
 term:
-	SELF
+	term_replacement_length
+	| term_replacement_i
+	| term_replacement_p
+	| term_replacement_u
 	| IDENTIFIER
 	| INTEGER_LITERAL
 	| HEX_INTEGER_LITERAL

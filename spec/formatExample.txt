@@ -52,13 +52,13 @@ types with variable but necessary length can take two range types:
 // EX brew bar
 
 entry {
-short hLength 0x0
-string type [2, end: hLength]
-data.gzip file [hLength, end: $length]
-@file $i
+short hLength 0x0;
+string type [2, end: hLength];
+data.gzip file [hLength, end: $length];
+output file $i;
 }
 
 main {
-int count 0x14
-int[count] ->+ entry[] table 0x28
+int count 0x14;
+int[count] ->+ entry[] table 0x28;
 }
