@@ -12,14 +12,14 @@ namespace Linear.Runtime
         /// <summary>
         /// Members not sorted for dependency
         /// </summary>
-        public List<MemberDefinition> Members { get; }
+        public List<Element> Members { get; }
 
         /// <summary>
         /// Create new instance of <see cref="StructureDefinition"/>
         /// </summary>
         public StructureDefinition()
         {
-            Members = new List<MemberDefinition>();
+            Members = new List<Element>();
         }
 
         /// <summary>
@@ -30,7 +30,7 @@ namespace Linear.Runtime
         {
             List<(string name, Func<StructureInstance, Stream, object> method)> members =
                 new List<(string name, Func<StructureInstance, Stream, object> method)>();
-            // TODO build members
+            // TODO build members after organizing by dependencies
             return new Structure(members);
         }
     }

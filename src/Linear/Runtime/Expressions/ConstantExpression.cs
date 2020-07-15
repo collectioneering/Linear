@@ -15,7 +15,7 @@ namespace Linear.Runtime.Expressions
         /// Create new instance of <see cref="ConstantExpression"/>
         /// </summary>
         /// <param name="value">Value</param>
-        public ConstantExpression(T value) : base(typeof(T))
+        public ConstantExpression(T value)
         {
             _value = value;
         }

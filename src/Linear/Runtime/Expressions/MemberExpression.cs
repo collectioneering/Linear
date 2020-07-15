@@ -7,7 +7,7 @@ namespace Linear.Runtime.Expressions
     /// <summary>
     /// Member expression
     /// </summary>
-    public class MemberExpression<T> : ExpressionDefinition
+    public class MemberExpression : ExpressionDefinition
     {
         private readonly string _name;
 
@@ -15,7 +15,7 @@ namespace Linear.Runtime.Expressions
         /// Create new instance of <see cref="MemberExpression"/>
         /// </summary>
         /// <param name="name">Member name</param>
-        public MemberExpression(string name) : base(typeof(object))
+        public MemberExpression(string name)
         {
             _name = name;
         }
@@ -25,6 +25,7 @@ namespace Linear.Runtime.Expressions
             new List<ExpressionDefinition>();
 
         /// <inheritdoc />
-        public override Func<StructureInstance, Stream, byte[], object> GetDelegate() => (instance, stream, tempBuffer) => instance[_name];
+        public override Func<StructureInstance, Stream, byte[], object> GetDelegate() =>
+            (instance, stream, tempBuffer) => instance[_name];
     }
 }

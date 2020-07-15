@@ -3,28 +3,36 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace Linear.Runtime.Expressions
+namespace Linear.Runtime.Elements
 {
     /// <summary>
     /// Expression from offset
     /// </summary>
-    public class OffsetDataExpression : ExpressionDefinition
+    public class DataElement : Element
     {
+        /// <summary>
+        /// Data type
+        /// </summary>
+        public Type Type { get; }
+
+        private readonly string _name;
         private readonly ExpressionDefinition _offsetDefinition;
         private readonly ExpressionDefinition _littleEndianDefinition;
-        private readonly CustomDeserializer? _deserializer;
+        private readonly Deserializer? _deserializer;
         private readonly Dictionary<string, ExpressionDefinition>? _deserializerParams;
 
         /// <summary>
-        /// Create new instance of <see cref="OffsetDataExpression"/>
+        /// Create new instance of <see cref="DataElement"/>
         /// </summary>
+        /// <param name="name">Name of element</param>
         /// <param name="type">Expression type</param>
         /// <param name="offsetDefinition">Offset value definition</param>
         /// <param name="littleEndianDefinition">Endianness value definition</param>
-        public OffsetDataExpression(Type type, ExpressionDefinition offsetDefinition,
+        public DataElement(string name, Type type, ExpressionDefinition offsetDefinition,
             ExpressionDefinition littleEndianDefinition)
-            : base(type)
         {
+            _name = name;
+            Type = type;
             _offsetDefinition = offsetDefinition;
             _littleEndianDefinition = littleEndianDefinition;
             _deserializer = null;
@@ -33,21 +41,24 @@ namespace Linear.Runtime.Expressions
         /// <summary>
         /// Create new instance of <see cref="OffsetDataExpression"/>
         /// </summary>
+        /// <param name="name">Name of element</param>
         /// <param name="type">Expression type</param>
         /// <param name="offsetDefinition">Offset value definition</param>
         /// <param name="littleEndianDefinition">Endianness value definition</param>
         /// <param name="deserializer">Custom deserializer</param>
         /// <param name="deserializerParams">Deserialier parameters</param>
-        public OffsetDataExpression(Type type, ExpressionDefinition offsetDefinition,
-            ExpressionDefinition littleEndianDefinition, CustomDeserializer deserializer,
+        public DataElement(string name, Type type, ExpressionDefinition offsetDefinition,
+            ExpressionDefinition littleEndianDefinition, Deserializer deserializer,
             Dictionary<string, ExpressionDefinition> deserializerParams)
-            : base(type)
         {
+            _name = name;
+            Type = type;
             _offsetDefinition = offsetDefinition;
             _littleEndianDefinition = littleEndianDefinition;
             _deserializer = deserializer;
             _deserializerParams = deserializerParams;
         }
+
 
         /// <inheritdoc />
         public override List<ExpressionDefinition> GetDependencies(StructureDefinition definition)
@@ -59,7 +70,7 @@ namespace Linear.Runtime.Expressions
         }
 
         /// <inheritdoc />
-        public override Func<StructureInstance, Stream, byte[], object> GetDelegate()
+        public override Action<StructureInstance, Stream, byte[]> GetDelegate()
         {
             Func<StructureInstance, Stream, byte[], object> srcDelegate = _offsetDefinition.GetDelegate();
             Func<StructureInstance, Stream, byte[], object>
@@ -84,8 +95,9 @@ namespace Linear.Runtime.Expressions
                         throw new InvalidCastException(
                             $"Could not cast expression of type {littleEndian.GetType().FullName} to type {nameof(Boolean)}");
                     offsetValue += instance.AbsoluteOffset;
-                    return _deserializer.Deserialize(instance, stream, offsetValue, littleEndianValue,
-                        deserializerParams);
+                    instance.SetMember(_name, _deserializer.Deserialize(instance, stream, offsetValue,
+                        littleEndianValue,
+                        deserializerParams));
                 };
             }
 
@@ -100,7 +112,7 @@ namespace Linear.Runtime.Expressions
                     throw new InvalidCastException(
                         $"Could not cast expression of type {littleEndian.GetType().FullName} to type {nameof(Boolean)}");
                 offsetValue += instance.AbsoluteOffset;
-                return Type.GetTypeCode(Type) switch
+                instance.SetMember(_name, Type.GetTypeCode(Type) switch
                 {
                     TypeCode.Boolean => LinearUtil.ReadBool(stream, offsetValue, tempBuffer),
                     TypeCode.Byte => LinearUtil.ReadS8(stream, offsetValue, tempBuffer),
@@ -121,7 +133,7 @@ namespace Linear.Runtime.Expressions
                     TypeCode.UInt32 => LinearUtil.ReadU32(stream, offsetValue, tempBuffer, littleEndianValue),
                     TypeCode.UInt64 => LinearUtil.ReadU64(stream, offsetValue, tempBuffer, littleEndianValue),
                     _ => throw new ArgumentOutOfRangeException()
-                };
+                });
             };
         }
     }

@@ -6,7 +6,7 @@ namespace Linear.Runtime
     /// <summary>
     /// Definition of custom deserializer
     /// </summary>
-    public abstract class CustomDeserializer
+    public abstract class Deserializer
     {
         /// <summary>
         /// Deserialize object
@@ -16,7 +16,9 @@ namespace Linear.Runtime
         /// <param name="offset">Offset in stream</param>
         /// <param name="littleEndian">Endianness</param>
         /// <param name="parameters">Deserializer parameters</param>
+        /// <param name="length">Length of structure</param>
         /// <returns>Deserialized object</returns>
-        public abstract object Deserialize(StructureInstance instance, Stream stream, long offset, bool littleEndian, Dictionary<string, object>? parameters);
+        public abstract object Deserialize(StructureInstance instance, Stream stream, long offset, bool littleEndian,
+            Dictionary<string, object>? parameters, int length = 0);
     }
 }

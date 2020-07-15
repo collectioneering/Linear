@@ -5,9 +5,9 @@ using System.IO;
 namespace Linear.Runtime
 {
     /// <summary>
-    /// Definition of expression
+    /// Represents element in body of structure
     /// </summary>
-    public abstract class ExpressionDefinition
+    public abstract class Element
     {
         /// <summary>
         /// Determine dependencies on other members in structure
@@ -18,9 +18,9 @@ namespace Linear.Runtime
         public abstract List<ExpressionDefinition> GetDependencies(StructureDefinition definition);
 
         /// <summary>
-        /// Get delegate to parse expression
+        /// Get delegate to initialize structure
         /// </summary>
         /// <returns>Delegate</returns>
-        public abstract Func<StructureInstance, Stream, byte[], object> GetDelegate();
+        public abstract Action<StructureInstance, Stream, byte[]> GetDelegate();
     }
 }

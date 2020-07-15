@@ -18,6 +18,11 @@ namespace Linear.Runtime
         public long AbsoluteOffset { get; }
 
         /// <summary>
+        /// Parent object
+        /// </summary>
+        public StructureInstance? Parent;
+
+        /// <summary>
         /// Length of structure
         /// </summary>
         /// <remarks>
@@ -32,11 +37,14 @@ namespace Linear.Runtime
         /// Create new instance of <see cref="StructureInstance"/>
         /// </summary>
         /// <param name="registry">Registry this instance belongs to</param>
+        /// <param name="parent">Parent object</param>
         /// <param name="absoluteOffset">Absolute offset of structure</param>
         /// <param name="length">Length of structure</param>
-        public StructureInstance(StructureRegistry registry, long absoluteOffset, int length = 0)
+        public StructureInstance(StructureRegistry registry, StructureInstance? parent, long absoluteOffset,
+            int length = 0)
         {
             Registry = registry;
+            Parent = parent;
             AbsoluteOffset = absoluteOffset;
             Length = length;
         }
