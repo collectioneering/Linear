@@ -67,16 +67,21 @@ namespace Linear.Runtime
         /// <returns>Outputs</returns>
         /// <param name="recurse">Recurse into children</param>
         public List<(StructureInstance instance, string name, string format, Dictionary<string, object>? parameters,
-            (long offset, long length) range)> GetOutputs(
-            bool recurse = true)
+            (long offset, long length) range)> GetOutputs(bool recurse = true)
         {
-            var outputs =
-                new List<(StructureInstance instance, string name, string format,
-                    Dictionary<string, object>? parameters, (long offset, long length) range)>(
-                    _outputs.Select(x => (this, x.name, x.format, x.parameters, x.range)));
+            return GetOutputsInternal(recurse).ToList();
+        }
+
+        private IEnumerable<(StructureInstance instance, string name, string format, Dictionary<string, object>?
+            parameters,
+            (long offset, long length) range)> GetOutputsInternal(bool recurse = true)
+        {
+            var outputs = _outputs.Select(x => (this, x.name, x.format, x.parameters, x.range));
             if (recurse)
             {
-                // TODO recurse into data elements
+                foreach (StructureInstance instance in _members.Values.Where(x => x is StructureInstance)
+                    .Cast<StructureInstance>())
+                    outputs = outputs.Concat(instance.GetOutputsInternal(recurse));
             }
 
             return outputs;

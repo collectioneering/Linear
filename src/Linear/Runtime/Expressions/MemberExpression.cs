@@ -22,13 +22,13 @@ namespace Linear.Runtime.Expressions
         }
 
         /// <inheritdoc />
-        public override List<Element> GetDependencies(StructureDefinition definition)
+        public override IEnumerable<Element> GetDependencies(StructureDefinition definition)
         {
-            return definition.Members.Where(x => x.Item1 == _name).Select(x => x.Item2).ToList();
+            return definition.Members.Where(x => x.Item1 == _name).Select(x => x.Item2);
         }
 
         /// <inheritdoc />
-        public override Func<StructureInstance, Stream, byte[], object> GetDelegate() =>
+        public override Func<StructureInstance, Stream, byte[], object?> GetDelegate() =>
             (instance, stream, tempBuffer) => instance[_name];
     }
 }

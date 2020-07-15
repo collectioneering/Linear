@@ -92,7 +92,7 @@ namespace Linear
             "float" => typeof(float),
             "double" => typeof(double),
             "range" => typeof(ValueTuple<long, long>),
-            _ => typeof(StructureInstance)
+            _ => null
         };
 
         private IDeserializer StringToDeserializer(string identifier) =>

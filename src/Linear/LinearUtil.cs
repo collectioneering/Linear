@@ -26,8 +26,8 @@ namespace Linear
         /// Generate processor
         /// </summary>
         /// <param name="input">Lyn format stream</param>
-        public static StructureRegistry GenerateRegistry(Stream input,
-            Dictionary<string, IDeserializer>? deserializers = null)
+        /// <param name="deserializers">Custom deserializers to use</param>
+        public static StructureRegistry GenerateRegistry(Stream input, IReadOnlyCollection<IDeserializer>? deserializers = null)
         {
             var inputStream = new AntlrInputStream(input);
             var lexer = new LinearLexer(inputStream);
@@ -40,8 +40,8 @@ namespace Linear
             Dictionary<string, IDeserializer> r_deserializers = CreateDefaultDeserializerRegistry();
             if (deserializers != null)
             {
-                foreach (var kvp in deserializers)
-                    r_deserializers[kvp.Key] = kvp.Value;
+                foreach (var deserializer in deserializers)
+                    r_deserializers[deserializer.GetTargetTypeName()] = deserializer;
             }
 
             foreach (string name in listenerPre.GetStructureNames())
@@ -85,7 +85,7 @@ namespace Linear
             return new Dictionary<string, IDeserializer>(_defaultDeserializers);
         }
 
-        internal static bool TryCast<T>(object o, out T result)
+        internal static bool TryCast<T>(object? o, out T result)
         {
             if (o is T t)
             {

@@ -29,48 +29,46 @@ namespace Linear.Runtime.Expressions
         }
 
         /// <inheritdoc />
-        public override List<Element> GetDependencies(StructureDefinition definition)
+        public override IEnumerable<Element> GetDependencies(StructureDefinition definition)
         {
             IEnumerable<Element> deps = _startExpression.GetDependencies(definition);
             if (_endExpression != null) deps = deps.Union(_endExpression.GetDependencies(definition));
             if (_lengthExpression != null) deps = deps.Union(_lengthExpression.GetDependencies(definition));
-            return deps.ToList();
+            return deps;
         }
 
         /// <inheritdoc />
-        public override Func<StructureInstance, Stream, byte[], object> GetDelegate()
+        public override Func<StructureInstance, Stream, byte[], object?> GetDelegate()
         {
-            Func<StructureInstance, Stream, byte[], object> startDelegate = _startExpression.GetDelegate();
+            Func<StructureInstance, Stream, byte[], object?> startDelegate = _startExpression.GetDelegate();
             if (_endExpression != null)
             {
-                Func<StructureInstance, Stream, byte[], object>
-                    endDelegate = _endExpression.GetDelegate();
+                Func<StructureInstance, Stream, byte[], object?> endDelegate = _endExpression.GetDelegate();
                 return (instance, stream, tempBuffer) =>
                 {
-                    object start = startDelegate(instance, stream, tempBuffer);
-                    object end = endDelegate(instance, stream, tempBuffer);
+                    object? start = startDelegate(instance, stream, tempBuffer);
+                    object? end = endDelegate(instance, stream, tempBuffer);
                     if (!LinearUtil.TryCast(start, out long startValue))
                         throw new InvalidCastException(
-                            $"Could not cast expression of type {start.GetType().FullName} to type {nameof(Int64)}");
+                            $"Could not cast expression of type {start?.GetType().FullName} to type {nameof(Int64)}");
                     if (!LinearUtil.TryCast(end, out long endValue))
                         throw new InvalidCastException(
-                            $"Could not cast expression of type {end.GetType().FullName} to type {nameof(Int64)}");
+                            $"Could not cast expression of type {end?.GetType().FullName} to type {nameof(Int64)}");
                     return (startValue, endValue - startValue);
                 };
             }
 
-            Func<StructureInstance, Stream, byte[], object>
-                lengthDelegate = _lengthExpression!.GetDelegate();
+            Func<StructureInstance, Stream, byte[], object?> lengthDelegate = _lengthExpression!.GetDelegate();
             return (instance, stream, tempBuffer) =>
             {
-                object start = startDelegate(instance, stream, tempBuffer);
-                object length = lengthDelegate(instance, stream, tempBuffer);
+                object? start = startDelegate(instance, stream, tempBuffer);
+                object? length = lengthDelegate(instance, stream, tempBuffer);
                 if (!LinearUtil.TryCast(start, out long startValue))
                     throw new InvalidCastException(
-                        $"Could not cast expression of type {start.GetType().FullName} to type {nameof(Int64)}");
+                        $"Could not cast expression of type {start?.GetType().FullName} to type {nameof(Int64)}");
                 if (!LinearUtil.TryCast(length, out long lengthValue))
                     throw new InvalidCastException(
-                        $"Could not cast expression of type {length.GetType().FullName} to type {nameof(Int64)}");
+                        $"Could not cast expression of type {length?.GetType().FullName} to type {nameof(Int64)}");
                 return (startValue, lengthValue);
             };
         }

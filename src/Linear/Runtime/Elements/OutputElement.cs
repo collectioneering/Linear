@@ -32,22 +32,22 @@ namespace Linear.Runtime.Elements
         }
 
         /// <inheritdoc />
-        public override List<Element> GetDependencies(StructureDefinition definition)
+        public override IEnumerable<Element> GetDependencies(StructureDefinition definition)
         {
             return _rangeDefinition.GetDependencies(definition)
-                .Union(_nameDefinition.GetDependencies(definition)).ToList();
+                .Union(_nameDefinition.GetDependencies(definition));
         }
 
         /// <inheritdoc />
         public override Action<StructureInstance, Stream, byte[]> GetDelegate()
         {
-            Func<StructureInstance, Stream, byte[], object> formatDelegate = _formatDefinition.GetDelegate();
-            Func<StructureInstance, Stream, byte[], object> rangeDelegate = _rangeDefinition.GetDelegate();
-            Func<StructureInstance, Stream, byte[], object> nameDelegate = _nameDefinition.GetDelegate();
-            Dictionary<string, Func<StructureInstance, Stream, byte[], object>>? exporterParamsCompact =
+            Func<StructureInstance, Stream, byte[], object?> formatDelegate = _formatDefinition.GetDelegate();
+            Func<StructureInstance, Stream, byte[], object?> rangeDelegate = _rangeDefinition.GetDelegate();
+            Func<StructureInstance, Stream, byte[], object?> nameDelegate = _nameDefinition.GetDelegate();
+            Dictionary<string, Func<StructureInstance, Stream, byte[], object?>>? exporterParamsCompact =
                 _exporterParams == null
                     ? null
-                    : new Dictionary<string, Func<StructureInstance, Stream, byte[], object>>();
+                    : new Dictionary<string, Func<StructureInstance, Stream, byte[], object?>>();
             if (_exporterParams != null)
             {
                 foreach (var kvp in _exporterParams)
@@ -56,23 +56,24 @@ namespace Linear.Runtime.Elements
 
             return (instance, stream, tempBuffer) =>
             {
-                object format = formatDelegate(instance, stream, tempBuffer);
-                object range = rangeDelegate(instance, stream, tempBuffer);
-                object name = nameDelegate(instance, stream, tempBuffer);
+                object? format = formatDelegate(instance, stream, tempBuffer);
+                object? range = rangeDelegate(instance, stream, tempBuffer);
+                object? name = nameDelegate(instance, stream, tempBuffer);
                 Dictionary<string, object>? exporterParams =
                     exporterParamsCompact == null ? null : new Dictionary<string, object>();
                 if (exporterParamsCompact != null)
                     foreach (var kvp in exporterParamsCompact)
-                        exporterParams![kvp.Key] = kvp.Value(instance, stream, tempBuffer);
+                        exporterParams![kvp.Key] =
+                            kvp.Value(instance, stream, tempBuffer) ?? throw new NullReferenceException();
                 if (!LinearUtil.TryCast(format, out string formatValue))
                     throw new InvalidCastException(
-                        $"Could not cast expression of type {format.GetType().FullName} to type {nameof(String)}");
+                        $"Could not cast expression of type {format?.GetType().FullName} to type {nameof(String)}");
                 if (!LinearUtil.TryCast(range, out (long, long) rangeValue))
                     throw new InvalidCastException(
-                        $"Could not cast expression of type {range.GetType().FullName} to type {nameof(ValueTuple<long, long>)}");
+                        $"Could not cast expression of type {range?.GetType().FullName} to type {nameof(ValueTuple<long, long>)}");
                 if (!LinearUtil.TryCast(name, out string nameValue))
                     throw new InvalidCastException(
-                        $"Could not cast expression of type {name.GetType().FullName} to type {nameof(String)}");
+                        $"Could not cast expression of type {name?.GetType().FullName} to type {nameof(String)}");
                 instance.AddOutput((nameValue, formatValue, exporterParams, rangeValue));
             };
         }

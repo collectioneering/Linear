@@ -15,7 +15,7 @@ namespace Linear.Runtime
         /// <param name="definition">Structure to use</param>
         /// <returns>Dependencies</returns>
         /// <remarks>Does not resolve references to parent</remarks>
-        public abstract List<Element> GetDependencies(StructureDefinition definition);
+        public abstract IEnumerable<Element> GetDependencies(StructureDefinition definition);
 
         /// <summary>
         /// Get delegate to initialize structure

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace Linear.Runtime.Expressions
 {
@@ -21,10 +22,10 @@ namespace Linear.Runtime.Expressions
         }
 
         /// <inheritdoc />
-        public override List<Element> GetDependencies(StructureDefinition definition) =>
-            new List<Element>();
+        public override IEnumerable<Element> GetDependencies(StructureDefinition definition) =>
+            Enumerable.Empty<Element>();
 
         /// <inheritdoc />
-        public override Func<StructureInstance, Stream, byte[], object> GetDelegate() => (a, b, c) => _value!;
+        public override Func<StructureInstance, Stream, byte[], object?> GetDelegate() => (a, b, c) => _value!;
     }
 }
