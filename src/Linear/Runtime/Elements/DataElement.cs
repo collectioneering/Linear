@@ -39,7 +39,7 @@ namespace Linear.Runtime.Elements
         }
 
         /// <summary>
-        /// Create new instance of <see cref="OffsetDataExpression"/>
+        /// Create new instance of <see cref="DataElement"/>
         /// </summary>
         /// <param name="name">Name of element</param>
         /// <param name="type">Expression type</param>
@@ -61,11 +61,12 @@ namespace Linear.Runtime.Elements
 
 
         /// <inheritdoc />
-        public override List<ExpressionDefinition> GetDependencies(StructureDefinition definition)
+        public override List<Element> GetDependencies(StructureDefinition definition)
         {
-            IEnumerable<ExpressionDefinition> deps = _offsetDefinition.GetDependencies(definition)
+            IEnumerable<Element> deps = _offsetDefinition.GetDependencies(definition)
                 .Union(_littleEndianDefinition.GetDependencies(definition));
-            if (_deserializerParams != null) deps = deps.Union(_deserializerParams.Select(kvp => kvp.Value));
+            if (_deserializerParams != null)
+                deps = deps.Union(_deserializerParams.SelectMany(kvp => kvp.Value.GetDependencies(definition)));
             return deps.ToList();
         }
 

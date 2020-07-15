@@ -28,10 +28,12 @@ namespace Linear.Runtime
         /// <remarks>
         /// Only available in trailing-length pointer array
         /// </remarks>
-        public int Length { get; }
+        public long Length { get; }
 
         private readonly Dictionary<string, object> _members = new Dictionary<string, object>();
 
+        private readonly List<(string name, string format, (long offset, long length))> _outputs =
+            new List<(string name, string format, (long offset, long length))>();
 
         /// <summary>
         /// Create new instance of <see cref="StructureInstance"/>
@@ -41,7 +43,7 @@ namespace Linear.Runtime
         /// <param name="absoluteOffset">Absolute offset of structure</param>
         /// <param name="length">Length of structure</param>
         public StructureInstance(StructureRegistry registry, StructureInstance? parent, long absoluteOffset,
-            int length = 0)
+            long length = 0)
         {
             Registry = registry;
             Parent = parent;
@@ -50,6 +52,14 @@ namespace Linear.Runtime
         }
 
         internal void SetMember(string name, object value) => _members[name] = value;
+        internal void AddOutput((string name, string format, (long offset, long length)) value) => _outputs.Add(value);
+
+        /// <summary>
+        /// Get outputs
+        /// </summary>
+        /// <returns>Outputs</returns>
+        public List<(string name, string format, (long offset, long length))> GetOutputs() =>
+            new List<(string name, string format, (long offset, long length))>(_outputs);
 
         /// <summary>
         /// Get named member

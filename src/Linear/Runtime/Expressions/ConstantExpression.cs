@@ -12,7 +12,7 @@ namespace Linear.Runtime.Expressions
         private readonly T _value;
 
         /// <summary>
-        /// Create new instance of <see cref="ConstantExpression"/>
+        /// Create new instance of <see cref="ConstantExpression{T}"/>
         /// </summary>
         /// <param name="value">Value</param>
         public ConstantExpression(T value)
@@ -21,8 +21,8 @@ namespace Linear.Runtime.Expressions
         }
 
         /// <inheritdoc />
-        public override List<ExpressionDefinition> GetDependencies(StructureDefinition definition) =>
-            new List<ExpressionDefinition>();
+        public override List<Element> GetDependencies(StructureDefinition definition) =>
+            new List<Element>();
 
         /// <inheritdoc />
         public override Func<StructureInstance, Stream, byte[], object> GetDelegate() => (a, b, c) => _value!;

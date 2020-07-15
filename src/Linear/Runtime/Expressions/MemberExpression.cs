@@ -21,8 +21,10 @@ namespace Linear.Runtime.Expressions
         }
 
         /// <inheritdoc />
-        public override List<ExpressionDefinition> GetDependencies(StructureDefinition definition) =>
-            new List<ExpressionDefinition>();
+        public override List<Element> GetDependencies(StructureDefinition definition)
+        {
+            return new List<Element> {definition.Members[_name]};
+        }
 
         /// <inheritdoc />
         public override Func<StructureInstance, Stream, byte[], object> GetDelegate() =>

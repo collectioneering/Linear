@@ -1,9 +1,11 @@
 using System;
 using System.Buffers.Binary;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
+using Linear.Runtime;
 using static System.Buffers.ArrayPool<byte>;
 
 namespace Linear
@@ -14,10 +16,15 @@ namespace Linear
     public static class LinearUtil
     {
         /// <summary>
+        /// Preferred name for primary structure
+        /// </summary>
+        public const string MainLayout = "main";
+
+        /// <summary>
         /// Generate processor
         /// </summary>
         /// <param name="input">Lyn format stream</param>
-        public static void Generate(Stream input)
+        public static StructureRegistry GenerateRegistry(Stream input)
         {
             var inputStream = new AntlrInputStream(input);
             var lexer = new LinearLexer(inputStream);
@@ -26,7 +33,14 @@ namespace Linear
             var listener = new LinearListener();
             parser.ErrorHandler = new BailErrorStrategy();
             ParseTreeWalker.Default.Walk(listener, parser.compilation_unit());
-            // TODO generate / return output object
+            List<StructureDefinition> structures = listener.GetStructures();
+            StructureRegistry registry = new StructureRegistry();
+            foreach (StructureDefinition structure in structures)
+            {
+                registry.Add(structure.Build());
+            }
+
+            return registry;
         }
 
         internal static bool TryCast<T>(object o, out T result)
@@ -70,7 +84,9 @@ namespace Linear
             stream.Seek(offset, SeekOrigin.Begin);
             Span<byte> span = stackalloc byte[2];
             ReadBaseSpan(stream, span, tempBuffer);
-            return littleEndian ? BinaryPrimitives.ReadUInt16LittleEndian(span) : BinaryPrimitives.ReadUInt16BigEndian(span);
+            return littleEndian
+                ? BinaryPrimitives.ReadUInt16LittleEndian(span)
+                : BinaryPrimitives.ReadUInt16BigEndian(span);
         }
 
         internal static short ReadS16(Stream stream, long offset, byte[]? tempBuffer, bool littleEndian)
@@ -78,7 +94,9 @@ namespace Linear
             stream.Seek(offset, SeekOrigin.Begin);
             Span<byte> span = stackalloc byte[2];
             ReadBaseSpan(stream, span, tempBuffer);
-            return littleEndian ? BinaryPrimitives.ReadInt16LittleEndian(span) : BinaryPrimitives.ReadInt16BigEndian(span);
+            return littleEndian
+                ? BinaryPrimitives.ReadInt16LittleEndian(span)
+                : BinaryPrimitives.ReadInt16BigEndian(span);
         }
 
         internal static uint ReadU32(Stream stream, long offset, byte[]? tempBuffer, bool littleEndian)
@@ -86,7 +104,9 @@ namespace Linear
             stream.Seek(offset, SeekOrigin.Begin);
             Span<byte> span = stackalloc byte[4];
             ReadBaseSpan(stream, span, tempBuffer);
-            return littleEndian ? BinaryPrimitives.ReadUInt32LittleEndian(span) : BinaryPrimitives.ReadUInt32BigEndian(span);
+            return littleEndian
+                ? BinaryPrimitives.ReadUInt32LittleEndian(span)
+                : BinaryPrimitives.ReadUInt32BigEndian(span);
         }
 
         internal static int ReadS32(Stream stream, long offset, byte[]? tempBuffer, bool littleEndian)
@@ -94,7 +114,9 @@ namespace Linear
             stream.Seek(offset, SeekOrigin.Begin);
             Span<byte> span = stackalloc byte[4];
             ReadBaseSpan(stream, span, tempBuffer);
-            return littleEndian ? BinaryPrimitives.ReadInt32LittleEndian(span) : BinaryPrimitives.ReadInt32BigEndian(span);
+            return littleEndian
+                ? BinaryPrimitives.ReadInt32LittleEndian(span)
+                : BinaryPrimitives.ReadInt32BigEndian(span);
         }
 
         internal static ulong ReadU64(Stream stream, long offset, byte[]? tempBuffer, bool littleEndian)
@@ -102,7 +124,9 @@ namespace Linear
             stream.Seek(offset, SeekOrigin.Begin);
             Span<byte> span = stackalloc byte[8];
             ReadBaseSpan(stream, span, tempBuffer);
-            return littleEndian ? BinaryPrimitives.ReadUInt64LittleEndian(span) : BinaryPrimitives.ReadUInt64BigEndian(span);
+            return littleEndian
+                ? BinaryPrimitives.ReadUInt64LittleEndian(span)
+                : BinaryPrimitives.ReadUInt64BigEndian(span);
         }
 
         internal static long ReadS64(Stream stream, long offset, byte[]? tempBuffer, bool littleEndian)
@@ -110,7 +134,9 @@ namespace Linear
             stream.Seek(offset, SeekOrigin.Begin);
             Span<byte> span = stackalloc byte[8];
             ReadBaseSpan(stream, span, tempBuffer);
-            return littleEndian ? BinaryPrimitives.ReadInt64LittleEndian(span) : BinaryPrimitives.ReadInt64BigEndian(span);
+            return littleEndian
+                ? BinaryPrimitives.ReadInt64LittleEndian(span)
+                : BinaryPrimitives.ReadInt64BigEndian(span);
         }
 
         internal static float ReadSingle(Stream stream, long offset, byte[]? tempBuffer)
