@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Linear.Runtime.Exporters;
 
 namespace Linear.Runtime
 {
@@ -9,12 +10,31 @@ namespace Linear.Runtime
     {
         private readonly Dictionary<string, IExporter> _exporters;
 
+        private static readonly Dictionary<string, IExporter> _defaultExporters = new Dictionary<string, IExporter>
+        {
+            {DataExporter.DataExporterName, new DataExporter()}
+        };
+
+        /// <summary>
+        /// Create default registry with standard exporters
+        /// </summary>
+        /// <returns>Default registry</returns>
+        public static ExporterRegistry CreateDefaultRegistry()
+        {
+            return new ExporterRegistry(_defaultExporters);
+        }
+
         /// <summary>
         /// Create new instance of <see cref="ExporterRegistry"/>
         /// </summary>
         public ExporterRegistry()
+            : this(new Dictionary<string, IExporter>())
         {
-            _exporters = new Dictionary<string, IExporter>();
+        }
+
+        private ExporterRegistry(Dictionary<string, IExporter> exporters)
+        {
+            _exporters = exporters;
         }
 
         /// <summary>

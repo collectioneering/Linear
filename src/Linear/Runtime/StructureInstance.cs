@@ -34,9 +34,9 @@ namespace Linear.Runtime
         private readonly Dictionary<string, object> _members = new Dictionary<string, object>();
 
         private readonly List<(string name, string format, Dictionary<string, object>? parameters,
-            (long offset, long length))> _outputs =
+            (long offset, long length) range)> _outputs =
             new List<(string name, string format, Dictionary<string, object>? parameters,
-                (long offset, long length))>();
+                (long offset, long length) range)>();
 
         /// <summary>
         /// Create new instance of <see cref="StructureInstance"/>
@@ -57,7 +57,8 @@ namespace Linear.Runtime
         internal void SetMember(string name, object value) => _members[name] = value;
 
         internal void AddOutput(
-            (string name, string format, Dictionary<string, object>? parameters, (long offset, long length)) value) =>
+            (string name, string format, Dictionary<string, object>? parameters, (long offset, long length) range)
+                value) =>
             _outputs.Add(value);
 
         /// <summary>
@@ -65,14 +66,14 @@ namespace Linear.Runtime
         /// </summary>
         /// <returns>Outputs</returns>
         /// <param name="recurse">Recurse into children</param>
-        public List<(StructureInstance instance, string name, string format, Dictionary<string, object>? parameters, (
-            long offset, long length))> GetOutputs(
+        public List<(StructureInstance instance, string name, string format, Dictionary<string, object>? parameters,
+            (long offset, long length) range)> GetOutputs(
             bool recurse = true)
         {
             var outputs =
                 new List<(StructureInstance instance, string name, string format,
-                    Dictionary<string, object>? parameters, (long offset, long length))>(
-                    _outputs.Select(x => (this, x.name, x.format, x.parameters, x.Item4)));
+                    Dictionary<string, object>? parameters, (long offset, long length) range)>(
+                    _outputs.Select(x => (this, x.name, x.format, x.parameters, x.range)));
             if (recurse)
             {
                 // TODO recurse into data elements
