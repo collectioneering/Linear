@@ -14,14 +14,14 @@ namespace Linear.Runtime
         /// </summary>
         public string Name { get; }
 
-        private readonly List<(string name, Func<StructureInstance, Stream, object> method)> _members;
+        private readonly List<(string? name, Action<StructureInstance, Stream, byte[]> method)> _members;
 
         /// <summary>
         /// Create new instance of <see cref="Structure"/>
         /// </summary>
         /// <param name="name">Name of structure</param>
         /// <param name="members"></param>
-        public Structure(string name, List<(string name, Func<StructureInstance, Stream, object> method)> members)
+        public Structure(string name, List<(string? name, Action<StructureInstance, Stream, byte[]> method)> members)
         {
             Name = name;
             _members = members;
@@ -39,9 +39,13 @@ namespace Linear.Runtime
         public StructureInstance Parse(StructureRegistry registry, Stream stream, long offset, long length,
             StructureInstance? parent)
         {
+            byte[] tempBuf = new byte[sizeof(ulong)];
             StructureInstance instance = new StructureInstance(registry, parent, offset, length);
-            foreach ((string name, Func<StructureInstance, Stream, object> method) in _members)
-                instance.SetMember(name, method(instance, stream));
+            foreach ((string? _, Action<StructureInstance, Stream, byte[]> method) in _members)
+            {
+                method(instance, stream, tempBuf);
+            }
+
             return instance;
         }
     }

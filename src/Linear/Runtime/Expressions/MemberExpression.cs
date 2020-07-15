@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace Linear.Runtime.Expressions
 {
@@ -23,7 +24,7 @@ namespace Linear.Runtime.Expressions
         /// <inheritdoc />
         public override List<Element> GetDependencies(StructureDefinition definition)
         {
-            return new List<Element> {definition.Members[_name]};
+            return definition.Members.Where(x => x.Item1 == _name).Select(x => x.Item2).ToList();
         }
 
         /// <inheritdoc />

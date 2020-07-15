@@ -6,8 +6,14 @@ namespace Linear.Runtime
     /// <summary>
     /// Definition of custom deserializer
     /// </summary>
-    public abstract class Deserializer
+    public interface IDeserializer
     {
+        /// <summary>
+        /// Get target type name of deserializer
+        /// </summary>
+        /// <returns>Exporter name</returns>
+        string GetTargetTypeName();
+
         /// <summary>
         /// Deserialize object
         /// </summary>

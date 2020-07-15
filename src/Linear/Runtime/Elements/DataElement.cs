@@ -10,15 +10,11 @@ namespace Linear.Runtime.Elements
     /// </summary>
     public class DataElement : Element
     {
-        /// <summary>
-        /// Data type
-        /// </summary>
-        public Type Type { get; }
-
         private readonly string _name;
         private readonly ExpressionDefinition _offsetDefinition;
         private readonly ExpressionDefinition _littleEndianDefinition;
-        private readonly Deserializer? _deserializer;
+        private readonly Type? _type;
+        private readonly IDeserializer? _deserializer;
         private readonly Dictionary<string, ExpressionDefinition>? _deserializerParams;
 
         /// <summary>
@@ -32,7 +28,7 @@ namespace Linear.Runtime.Elements
             ExpressionDefinition littleEndianDefinition)
         {
             _name = name;
-            Type = type;
+            _type = type;
             _offsetDefinition = offsetDefinition;
             _littleEndianDefinition = littleEndianDefinition;
             _deserializer = null;
@@ -42,17 +38,16 @@ namespace Linear.Runtime.Elements
         /// Create new instance of <see cref="DataElement"/>
         /// </summary>
         /// <param name="name">Name of element</param>
-        /// <param name="type">Expression type</param>
         /// <param name="offsetDefinition">Offset value definition</param>
         /// <param name="littleEndianDefinition">Endianness value definition</param>
         /// <param name="deserializer">Custom deserializer</param>
         /// <param name="deserializerParams">Deserializer parameters</param>
-        public DataElement(string name, Type type, ExpressionDefinition offsetDefinition,
-            ExpressionDefinition littleEndianDefinition, Deserializer deserializer,
+        public DataElement(string name, ExpressionDefinition offsetDefinition,
+            ExpressionDefinition littleEndianDefinition, IDeserializer deserializer,
             Dictionary<string, ExpressionDefinition> deserializerParams)
         {
             _name = name;
-            Type = type;
+            _type = null;
             _offsetDefinition = offsetDefinition;
             _littleEndianDefinition = littleEndianDefinition;
             _deserializer = deserializer;
@@ -113,7 +108,7 @@ namespace Linear.Runtime.Elements
                     throw new InvalidCastException(
                         $"Could not cast expression of type {littleEndian.GetType().FullName} to type {nameof(Boolean)}");
                 offsetValue += instance.AbsoluteOffset;
-                instance.SetMember(_name, Type.GetTypeCode(Type) switch
+                instance.SetMember(_name, Type.GetTypeCode(_type) switch
                 {
                     TypeCode.Boolean => LinearUtil.ReadBool(stream, offsetValue, tempBuffer),
                     TypeCode.Byte => LinearUtil.ReadS8(stream, offsetValue, tempBuffer),

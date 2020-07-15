@@ -17,7 +17,7 @@ namespace Linear.Runtime
         /// <summary>
         /// Members not sorted for dependency
         /// </summary>
-        public Dictionary<string, Element> Members { get; }
+        public List<(string?, Element)> Members { get; }
 
         /// <summary>
         /// Create new instance of <see cref="StructureDefinition"/>
@@ -26,7 +26,7 @@ namespace Linear.Runtime
         public StructureDefinition(string name)
         {
             Name = name;
-            Members = new Dictionary<string, Element>();
+            Members = new List<(string?, Element)>();
         }
 
         /// <summary>
@@ -35,8 +35,8 @@ namespace Linear.Runtime
         /// <returns>Structure</returns>
         public Structure Build()
         {
-            List<(string name, Func<StructureInstance, Stream, object> method)> members =
-                new List<(string name, Func<StructureInstance, Stream, object> method)>();
+            List<(string? name, Action<StructureInstance, Stream, byte[]> method)> members =
+                new List<(string? name, Action<StructureInstance, Stream, byte[]> method)>();
             // TODO build members after organizing by dependencies
             return new Structure(Name, members);
         }

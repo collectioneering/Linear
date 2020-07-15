@@ -54,8 +54,10 @@ types with variable but necessary length can take two range types:
 entry {
 short hLength 0x0;
 string type [2, end: hLength];
-data.gzip file [hLength, end: $length];
-output file $i;
+range data [hLength, end: $length];
+output compressed data $i {
+    format="gzip";
+};
 }
 
 main {

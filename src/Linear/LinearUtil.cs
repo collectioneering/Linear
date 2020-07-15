@@ -6,6 +6,8 @@ using System.Runtime.InteropServices;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 using Linear.Runtime;
+using Linear.Runtime.Deserializers;
+using Linear.Runtime.Exporters;
 using static System.Buffers.ArrayPool<byte>;
 
 namespace Linear
@@ -24,14 +26,28 @@ namespace Linear
         /// Generate processor
         /// </summary>
         /// <param name="input">Lyn format stream</param>
-        public static StructureRegistry GenerateRegistry(Stream input)
+        public static StructureRegistry GenerateRegistry(Stream input,
+            Dictionary<string, IDeserializer>? deserializers = null)
         {
             var inputStream = new AntlrInputStream(input);
             var lexer = new LinearLexer(inputStream);
             var tokens = new CommonTokenStream(lexer);
             var parser = new LinearParser(tokens);
-            var listener = new LinearListener();
+
+            var listenerPre = new LinearPreListener();
             parser.ErrorHandler = new BailErrorStrategy();
+            ParseTreeWalker.Default.Walk(listenerPre, parser.compilation_unit());
+            Dictionary<string, IDeserializer> r_deserializers = CreateDefaultDeserializerRegistry();
+            if (deserializers != null)
+            {
+                foreach (var kvp in deserializers)
+                    r_deserializers[kvp.Key] = kvp.Value;
+            }
+
+            foreach (string name in listenerPre.GetStructureNames())
+                r_deserializers[name] = new StructureDeserializer(name);
+            var listener = new LinearListener(r_deserializers);
+            parser.Reset();
             ParseTreeWalker.Default.Walk(listener, parser.compilation_unit());
             List<StructureDefinition> structures = listener.GetStructures();
             StructureRegistry registry = new StructureRegistry();
@@ -41,6 +57,32 @@ namespace Linear
             }
 
             return registry;
+        }
+
+        private static readonly Dictionary<string, IExporter> _defaultExporters = new Dictionary<string, IExporter>
+        {
+            {DataExporter.DataExporterName, new DataExporter()}
+        };
+
+        /// <summary>
+        /// Create default exporter registry with standard exporters
+        /// </summary>
+        /// <returns>Default registry</returns>
+        public static Dictionary<string, IExporter> CreateDefaultExporterRegistry()
+        {
+            return new Dictionary<string, IExporter>(_defaultExporters);
+        }
+
+        private static readonly Dictionary<string, IDeserializer> _defaultDeserializers =
+            new Dictionary<string, IDeserializer> { };
+
+        /// <summary>
+        /// Create default deserializer registry with standard exporters
+        /// </summary>
+        /// <returns>Default registry</returns>
+        public static Dictionary<string, IDeserializer> CreateDefaultDeserializerRegistry()
+        {
+            return new Dictionary<string, IDeserializer>(_defaultDeserializers);
         }
 
         internal static bool TryCast<T>(object o, out T result)

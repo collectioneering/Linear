@@ -22,7 +22,7 @@ struct_statement_define_array_indirect:
 	IDENTIFIER OPENSQ CLOSESQ WS? 
 	IDENTIFIER WS expr WS? property_group? ENDL;
 struct_statement_output:
-	'output' WS REGULAR_STRING WS IDENTIFIER WS expr WS? property_group? ENDL;
+	'output' WS IDENTIFIER WS IDENTIFIER WS expr WS? property_group? ENDL;
 struct_statement_comment: '//' ~ENDL* ENDL;
 
 range_end:

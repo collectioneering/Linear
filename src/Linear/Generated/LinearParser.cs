@@ -809,8 +809,10 @@ public partial class LinearParser : Parser {
 		public ITerminalNode WS(int i) {
 			return GetToken(LinearParser.WS, i);
 		}
-		public ITerminalNode REGULAR_STRING() { return GetToken(LinearParser.REGULAR_STRING, 0); }
-		public ITerminalNode IDENTIFIER() { return GetToken(LinearParser.IDENTIFIER, 0); }
+		public ITerminalNode[] IDENTIFIER() { return GetTokens(LinearParser.IDENTIFIER); }
+		public ITerminalNode IDENTIFIER(int i) {
+			return GetToken(LinearParser.IDENTIFIER, i);
+		}
 		public ExprContext expr() {
 			return GetRuleContext<ExprContext>(0);
 		}
@@ -843,7 +845,7 @@ public partial class LinearParser : Parser {
 			{
 			State = 182; Match(T__1);
 			State = 183; Match(WS);
-			State = 184; Match(REGULAR_STRING);
+			State = 184; Match(IDENTIFIER);
 			State = 185; Match(WS);
 			State = 186; Match(IDENTIFIER);
 			State = 187; Match(WS);
@@ -2337,7 +2339,7 @@ public partial class LinearParser : Parser {
 		'\xB5', '\x3', '\x2', '\x2', '\x2', '\xB5', '\xB6', '\x3', '\x2', '\x2', 
 		'\x2', '\xB6', '\xB7', '\a', '\x16', '\x2', '\x2', '\xB7', '\xF', '\x3', 
 		'\x2', '\x2', '\x2', '\xB8', '\xB9', '\a', '\x4', '\x2', '\x2', '\xB9', 
-		'\xBA', '\a', '\x18', '\x2', '\x2', '\xBA', '\xBB', '\a', '\x31', '\x2', 
+		'\xBA', '\a', '\x18', '\x2', '\x2', '\xBA', '\xBB', '\a', '\x17', '\x2', 
 		'\x2', '\xBB', '\xBC', '\a', '\x18', '\x2', '\x2', '\xBC', '\xBD', '\a', 
 		'\x17', '\x2', '\x2', '\xBD', '\xBE', '\a', '\x18', '\x2', '\x2', '\xBE', 
 		'\xC0', '\x5', '*', '\x16', '\x2', '\xBF', '\xC1', '\a', '\x18', '\x2', 

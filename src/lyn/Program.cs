@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using CommandLine;
@@ -28,7 +29,7 @@ namespace lyn
             using Stream baseStream = File.OpenRead(conf.InputFile);
             using MultiBufferStream mbs = new MultiBufferStream(baseStream);
             StructureInstance si = structure.Parse(registry, mbs, 0, baseStream.Length, null);
-            ExporterRegistry exporterRegistry = ExporterRegistry.CreateDefaultRegistry();
+            Dictionary<string, IExporter> exporterRegistry = LinearUtil.CreateDefaultExporterRegistry();
             foreach (var res in si.GetOutputs())
             {
                 if (!exporterRegistry.TryGetValue(res.format, out IExporter exporter))

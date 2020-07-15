@@ -6,7 +6,7 @@ namespace Linear.Runtime.Deserializers
     /// <summary>
     /// Deserializes structure
     /// </summary>
-    public class StructureDeserializer : Deserializer
+    public class StructureDeserializer : IDeserializer
     {
         private readonly string _name;
 
@@ -20,7 +20,10 @@ namespace Linear.Runtime.Deserializers
         }
 
         /// <inheritdoc />
-        public override object Deserialize(StructureInstance instance, Stream stream, long offset, bool littleEndian,
+        public string GetTargetTypeName() => _name;
+
+        /// <inheritdoc />
+        public object Deserialize(StructureInstance instance, Stream stream, long offset, bool littleEndian,
             Dictionary<string, object>? parameters, int length = 0)
         {
             return instance.Registry[_name].Parse(instance.Registry, stream, offset, length, instance);
