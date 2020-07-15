@@ -1,8 +1,10 @@
 entry {
 short hLength 0x0;
 string type [2, end: hLength];
-data_gzip file [hLength, end: $length];
-output file $i;
+range filedata [hLength, end: $length];
+output "compressed" filedata $i {
+    format="gzip";
+};
 }
 
 main {

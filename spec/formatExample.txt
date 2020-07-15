@@ -17,7 +17,7 @@ todo: antlr grammar (copy expressions/primitives etc from nya)
 replacements:
 $length
 Length of current struct
-Only available inside array or +-> pointer array
+Only available inside array or ->+ pointer array
 $i
 Index in array
 Only available inside array or pointer array

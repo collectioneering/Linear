@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generated from /Users/jake/Projects/GitHub/Linear/scripts/../Linear.g4 by ANTLR 4.8
+// Generated from C:\Users\black\Documents\GitHub\Linear\scripts\\..\Linear.g4 by ANTLR 4.8
 
 // Unreachable code detected
 #pragma warning disable 0162
@@ -140,6 +140,26 @@ public interface ILinearListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitRange_length([NotNull] LinearParser.Range_lengthContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="LinearParser.property_group"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterProperty_group([NotNull] LinearParser.Property_groupContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="LinearParser.property_group"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitProperty_group([NotNull] LinearParser.Property_groupContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="LinearParser.property_statement"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterProperty_statement([NotNull] LinearParser.Property_statementContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="LinearParser.property_statement"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitProperty_statement([NotNull] LinearParser.Property_statementContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="LinearParser.term_replacement_length"/>.
 	/// </summary>

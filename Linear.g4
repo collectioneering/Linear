@@ -11,18 +11,18 @@ struct_statement:
 	| struct_statement_comment;
 
 struct_statement_define:
-	IDENTIFIER WS? IDENTIFIER WS? expr WS? ENDL;
+	IDENTIFIER WS IDENTIFIER WS expr WS? property_group? ENDL;
 struct_statement_define_ranged:
-	IDENTIFIER WS? IDENTIFIER WS? (range_end | range_length) WS? ENDL;
+	IDENTIFIER WS IDENTIFIER WS? (range_end | range_length) WS? ENDL;
 struct_statement_define_array:
-	IDENTIFIER OPENSQ WS? expr WS? CLOSESQ WS? IDENTIFIER WS? expr WS? ENDL;
+	IDENTIFIER OPENSQ WS? expr WS? CLOSESQ WS? IDENTIFIER WS? expr WS? property_group? ENDL;
 struct_statement_define_array_indirect:
 	IDENTIFIER OPENSQ WS? expr WS? CLOSESQ WS? 
 	'->' PLUS? WS? 
 	IDENTIFIER OPENSQ CLOSESQ WS? 
-	IDENTIFIER WS? expr WS? ENDL;
+	IDENTIFIER WS expr WS? property_group? ENDL;
 struct_statement_output:
-	'output' WS? IDENTIFIER WS? expr WS? ENDL;
+	'output' WS REGULAR_STRING WS IDENTIFIER WS expr WS? property_group? ENDL;
 struct_statement_comment: '//' ~ENDL* ENDL;
 
 range_end:
@@ -36,10 +36,14 @@ OPENSQ: '[';
 CLOSESQ: ']';
 ENDL: ';';
 
+property_group: OPEN (WS? property_statement)* WS? CLOSE WS?;
+
+property_statement: IDENTIFIER WS? '=' WS? expr WS? ';';
+
 term_replacement_length: '$length';
 term_replacement_i: '$i';
-term_replacement_p: '$p';
-term_replacement_u: '$u';
+term_replacement_p: '$p' | '$parent';
+term_replacement_u: '$u' | '$unique';
 expr_member: IDENTIFIER '.' IDENTIFIER;
 expr_array_access: IDENTIFIER '[' WS? expr WS? ']';
 expr_un_op: un_op WS? expr;
