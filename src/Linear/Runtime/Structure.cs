@@ -23,12 +23,16 @@ namespace Linear.Runtime
         /// <summary>
         /// Parse structure from stream
         /// </summary>
+        /// <param name="registry">Structure registry</param>
         /// <param name="stream">Stream to read from</param>
+        /// <param name="offset">Offset in stream</param>
         /// <returns>Parsed structure</returns>
-        public StructureInstance Parse(Stream stream)
+        public StructureInstance Parse(StructureRegistry registry, Stream stream, long offset)
         {
-            // TODO evaluate all
-            return new StructureInstance(0);
+            StructureInstance instance = new StructureInstance(registry, offset);
+            foreach ((string name, Func<StructureInstance, Stream, object> method) in _members)
+                instance.SetMember(name, method(instance, stream));
+            return instance;
         }
     }
 }

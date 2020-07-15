@@ -79,10 +79,10 @@ namespace Linear.Runtime.Expressions
                     object littleEndian = littleEndianDelegate(instance, stream, tempBuffer);
                     if (!LinearUtil.TryCast(offset, out long offsetValue))
                         throw new InvalidCastException(
-                            $"Could not cast expression of type {_offsetDefinition.Type.FullName} to type {nameof(Int64)}");
+                            $"Could not cast expression of type {offset.GetType().FullName} to type {nameof(Int64)}");
                     if (!LinearUtil.TryCast(littleEndian, out bool littleEndianValue))
                         throw new InvalidCastException(
-                            $"Could not cast expression of type {_littleEndianDefinition.Type.FullName} to type {nameof(Boolean)}");
+                            $"Could not cast expression of type {littleEndian.GetType().FullName} to type {nameof(Boolean)}");
                     offsetValue += instance.AbsoluteOffset;
                     return _deserializer.Deserialize(instance, stream, offsetValue, littleEndianValue,
                         deserializerParams);
@@ -95,10 +95,10 @@ namespace Linear.Runtime.Expressions
                 object littleEndian = littleEndianDelegate(instance, stream, tempBuffer);
                 if (!LinearUtil.TryCast(offset, out long offsetValue))
                     throw new InvalidCastException(
-                        $"Could not cast expression of type {_offsetDefinition.Type.FullName} to type {nameof(Int64)}");
+                        $"Could not cast expression of type {offset.GetType().FullName} to type {nameof(Int64)}");
                 if (!LinearUtil.TryCast(littleEndian, out bool littleEndianValue))
                     throw new InvalidCastException(
-                        $"Could not cast expression of type {_littleEndianDefinition.Type.FullName} to type {nameof(Boolean)}");
+                        $"Could not cast expression of type {littleEndian.GetType().FullName} to type {nameof(Boolean)}");
                 offsetValue += instance.AbsoluteOffset;
                 return Type.GetTypeCode(Type) switch
                 {

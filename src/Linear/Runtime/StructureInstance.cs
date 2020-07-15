@@ -7,24 +7,41 @@ namespace Linear.Runtime
     /// </summary>
     public class StructureInstance
     {
+        /// <summary>
+        /// Registry this structure belongs to
+        /// </summary>
+        public StructureRegistry Registry;
 
         /// <summary>
         /// Absolute offset of structure
         /// </summary>
-        public int AbsoluteOffset { get; }
+        public long AbsoluteOffset { get; }
 
-        internal readonly Dictionary<string, object> _members = new Dictionary<string, object>();
+        /// <summary>
+        /// Length of structure
+        /// </summary>
+        /// <remarks>
+        /// Only available in trailing-length pointer array
+        /// </remarks>
+        public int Length { get; }
+
+        private readonly Dictionary<string, object> _members = new Dictionary<string, object>();
 
 
-            /// <summary>
-            /// Create new instance of <see cref="StructureInstance"/>
-            /// </summary>
-            /// <param name="absoluteOffset"></param>
-            public StructureInstance(int absoluteOffset)
+        /// <summary>
+        /// Create new instance of <see cref="StructureInstance"/>
+        /// </summary>
+        /// <param name="registry">Registry this instance belongs to</param>
+        /// <param name="absoluteOffset">Absolute offset of structure</param>
+        /// <param name="length">Length of structure</param>
+        public StructureInstance(StructureRegistry registry, long absoluteOffset, int length = 0)
         {
+            Registry = registry;
             AbsoluteOffset = absoluteOffset;
+            Length = length;
         }
 
+        internal void SetMember(string name, object value) => _members[name] = value;
 
         /// <summary>
         /// Get named member
