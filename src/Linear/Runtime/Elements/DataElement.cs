@@ -46,7 +46,7 @@ namespace Linear.Runtime.Elements
         /// <param name="offsetDefinition">Offset value definition</param>
         /// <param name="littleEndianDefinition">Endianness value definition</param>
         /// <param name="deserializer">Custom deserializer</param>
-        /// <param name="deserializerParams">Deserialier parameters</param>
+        /// <param name="deserializerParams">Deserializer parameters</param>
         public DataElement(string name, Type type, ExpressionDefinition offsetDefinition,
             ExpressionDefinition littleEndianDefinition, Deserializer deserializer,
             Dictionary<string, ExpressionDefinition> deserializerParams)

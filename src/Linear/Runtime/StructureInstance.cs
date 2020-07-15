@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace Linear.Runtime
 {
@@ -32,8 +33,10 @@ namespace Linear.Runtime
 
         private readonly Dictionary<string, object> _members = new Dictionary<string, object>();
 
-        private readonly List<(string name, string format, (long offset, long length))> _outputs =
-            new List<(string name, string format, (long offset, long length))>();
+        private readonly List<(string name, string format, Dictionary<string, object>? parameters,
+            (long offset, long length))> _outputs =
+            new List<(string name, string format, Dictionary<string, object>? parameters,
+                (long offset, long length))>();
 
         /// <summary>
         /// Create new instance of <see cref="StructureInstance"/>
@@ -52,14 +55,31 @@ namespace Linear.Runtime
         }
 
         internal void SetMember(string name, object value) => _members[name] = value;
-        internal void AddOutput((string name, string format, (long offset, long length)) value) => _outputs.Add(value);
+
+        internal void AddOutput(
+            (string name, string format, Dictionary<string, object>? parameters, (long offset, long length)) value) =>
+            _outputs.Add(value);
 
         /// <summary>
         /// Get outputs
         /// </summary>
         /// <returns>Outputs</returns>
-        public List<(string name, string format, (long offset, long length))> GetOutputs() =>
-            new List<(string name, string format, (long offset, long length))>(_outputs);
+        /// <param name="recurse">Recurse into children</param>
+        public List<(StructureInstance instance, string name, string format, Dictionary<string, object>? parameters, (
+            long offset, long length))> GetOutputs(
+            bool recurse = true)
+        {
+            var outputs =
+                new List<(StructureInstance instance, string name, string format,
+                    Dictionary<string, object>? parameters, (long offset, long length))>(
+                    _outputs.Select(x => (this, x.name, x.format, x.parameters, x.Item4)));
+            if (recurse)
+            {
+                // TODO recurse into data elements
+            }
+
+            return outputs;
+        }
 
         /// <summary>
         /// Get named member

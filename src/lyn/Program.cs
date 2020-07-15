@@ -29,6 +29,10 @@ namespace lyn
             using Stream baseStream = File.OpenRead(conf.InputFile);
             using MultiBufferStream mbs = new MultiBufferStream(baseStream);
             StructureInstance si = structure.Parse(registry, mbs, 0, baseStream.Length, null);
+            foreach (var res in si.GetOutputs())
+            {
+
+            }
             return 0;
         }
 
