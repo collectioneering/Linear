@@ -1,9 +1,14 @@
 grammar Linear;
 
-compilation_unit: (WS? struct WS?)* EOF;
+compilation_unit: WS? (body_element WS?)* EOF;
+
+body_element: struct | COMMENT | COMENT_BLOCK;
 
 // structureName optionalDefaultLength {}
-struct: IDENTIFIER WS? struct_size? WS? OPEN WS? (struct_statement WS?)* CLOSE;
+struct:
+	IDENTIFIER WS? struct_size? WS? OPEN WS? (
+		struct_statement WS?
+	)* CLOSE;
 
 struct_statement:
 	struct_statement_define
@@ -11,7 +16,8 @@ struct_statement:
 	| struct_statement_define_array
 	| struct_statement_define_array_indirect
 	| struct_statement_output
-	| struct_statement_comment;
+	| COMMENT
+	| COMENT_BLOCK;
 
 // varType memberName locationExpr {};
 struct_statement_define:
@@ -37,7 +43,8 @@ struct_statement_output:
 // maybe "outputvar" for expression-based format selection?
 
 // // Comments
-struct_statement_comment: '//' ~ENDL* ENDL;
+COMMENT: '//' ~( '\r' | '\n')*;
+COMENT_BLOCK: '/*' .*? '*/';
 
 // { name=valueExpr; name2=valueExpr2; }
 property_group: OPEN (WS? property_statement)* WS? CLOSE WS?;

@@ -43,6 +43,7 @@ namespace lyn
                 string dir = Path.GetDirectoryName(file) ??
                              throw new ApplicationException("Invalid output file, cannot be root");
                 if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+                Console.WriteLine(file);
                 using FileStream ofs = File.Create(file);
                 exporter.Export(baseStream, instance, range, parameters, ofs);
             }

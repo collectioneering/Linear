@@ -12,10 +12,10 @@ namespace Linear.Runtime.Exporters
         /// <summary>
         /// Name of data exporter
         /// </summary>
-        public const string DataExporterName = "data";
+        public const string ExporterName = "data";
 
         /// <inheritdoc />
-        public string GetName() => DataExporterName;
+        public string GetName() => ExporterName;
 
         /// <inheritdoc />
         public void Export(Stream stream, StructureInstance instance, (long offset, long length) range,

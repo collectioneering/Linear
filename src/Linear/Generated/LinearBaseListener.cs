@@ -47,6 +47,18 @@ public partial class LinearBaseListener : ILinearListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitCompilation_unit([NotNull] LinearParser.Compilation_unitContext context) { }
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="LinearParser.body_element"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterBody_element([NotNull] LinearParser.Body_elementContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="LinearParser.body_element"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitBody_element([NotNull] LinearParser.Body_elementContext context) { }
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="LinearParser.struct"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
@@ -130,18 +142,6 @@ public partial class LinearBaseListener : ILinearListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitStruct_statement_output([NotNull] LinearParser.Struct_statement_outputContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="LinearParser.struct_statement_comment"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterStruct_statement_comment([NotNull] LinearParser.Struct_statement_commentContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="LinearParser.struct_statement_comment"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitStruct_statement_comment([NotNull] LinearParser.Struct_statement_commentContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="LinearParser.property_group"/>.
 	/// <para>The default implementation does nothing.</para>

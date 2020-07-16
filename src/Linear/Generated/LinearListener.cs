@@ -41,6 +41,16 @@ public interface ILinearListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitCompilation_unit([NotNull] LinearParser.Compilation_unitContext context);
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="LinearParser.body_element"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterBody_element([NotNull] LinearParser.Body_elementContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="LinearParser.body_element"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitBody_element([NotNull] LinearParser.Body_elementContext context);
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="LinearParser.struct"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -110,16 +120,6 @@ public interface ILinearListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitStruct_statement_output([NotNull] LinearParser.Struct_statement_outputContext context);
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="LinearParser.struct_statement_comment"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterStruct_statement_comment([NotNull] LinearParser.Struct_statement_commentContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="LinearParser.struct_statement_comment"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitStruct_statement_comment([NotNull] LinearParser.Struct_statement_commentContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="LinearParser.property_group"/>.
 	/// </summary>

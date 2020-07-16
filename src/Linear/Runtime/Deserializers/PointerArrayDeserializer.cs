@@ -59,8 +59,7 @@ namespace Linear.Runtime.Deserializers
                     : 0;
                 (object value, long elemLength) = _elementDeserializer.Deserialize(instance, stream, tempBuffer,
                     pointerOffset + LinearUtil.CastLong(baseArray.GetValue(i)), littleEndian,
-                    standardProperties, parameters,
-                    preElemLength, i);
+                    standardProperties, parameters, preElemLength, i);
                 tarArray.SetValue(value, i);
                 curOffset += elemLength;
             }

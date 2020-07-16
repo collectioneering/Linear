@@ -97,6 +97,9 @@ namespace Linear.Runtime
                 foreach (StructureInstance instance in _members.Values.Where(x => x is StructureInstance)
                     .Cast<StructureInstance>())
                     outputs = outputs.Concat(instance.GetOutputsInternal(recurse));
+                foreach (StructureInstance instance in _members.Values.Where(x => x is IEnumerable<StructureInstance>)
+                    .Cast<IEnumerable<StructureInstance>>().SelectMany(x => x))
+                    outputs = outputs.Concat(instance.GetOutputsInternal(recurse));
             }
 
             return outputs;

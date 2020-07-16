@@ -30,7 +30,7 @@ namespace Linear.Runtime.Deserializers
         public (object value, long length) Deserialize(StructureInstance instance, Stream stream, byte[] tempBuffer, long offset,
             bool littleEndian, Dictionary<LinearUtil.StandardProperty, object>? standardProperties,Dictionary<string, object>? parameters, long length = 0, int index = 0)
         {
-            StructureInstance i = instance.Registry[_name].Parse(instance.Registry, stream, offset, instance, length);
+            StructureInstance i = instance.Registry[_name].Parse(instance.Registry, stream, offset, instance, length, index);
             return (i, i.Length);
         }
     }

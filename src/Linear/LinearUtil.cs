@@ -90,7 +90,8 @@ namespace Linear
 
         private static readonly Dictionary<string, IExporter> _defaultExporters = new Dictionary<string, IExporter>
         {
-            {DataExporter.DataExporterName, new DataExporter()}
+            {DataExporter.ExporterName, new DataExporter()},
+            {DecompressExporter.ExporterName, new DecompressExporter()}
         };
 
         /// <summary>
