@@ -71,15 +71,25 @@ public interface ILinearListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitStruct_statement_define([NotNull] LinearParser.Struct_statement_defineContext context);
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="LinearParser.struct_statement_define_ranged"/>.
+	/// Enter a parse tree produced by <see cref="LinearParser.struct_statement_define_value"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterStruct_statement_define_ranged([NotNull] LinearParser.Struct_statement_define_rangedContext context);
+	void EnterStruct_statement_define_value([NotNull] LinearParser.Struct_statement_define_valueContext context);
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="LinearParser.struct_statement_define_ranged"/>.
+	/// Exit a parse tree produced by <see cref="LinearParser.struct_statement_define_value"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitStruct_statement_define_ranged([NotNull] LinearParser.Struct_statement_define_rangedContext context);
+	void ExitStruct_statement_define_value([NotNull] LinearParser.Struct_statement_define_valueContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="LinearParser.struct_statement_define_range"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterStruct_statement_define_range([NotNull] LinearParser.Struct_statement_define_rangeContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="LinearParser.struct_statement_define_range"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitStruct_statement_define_range([NotNull] LinearParser.Struct_statement_define_rangeContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="LinearParser.struct_statement_define_array"/>.
 	/// </summary>

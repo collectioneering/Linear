@@ -46,30 +46,18 @@ namespace Linear.Runtime.Expressions
                 Func<StructureInstance, Stream, byte[], object?> endDelegate = _endExpression.GetDelegate();
                 return (instance, stream, tempBuffer) =>
                 {
-                    object? start = startDelegate(instance, stream, tempBuffer);
-                    object? end = endDelegate(instance, stream, tempBuffer);
-                    if (!LinearUtil.TryCast(start, out long startValue))
-                        throw new InvalidCastException(
-                            $"Could not cast expression of type {start?.GetType().FullName} to type {nameof(Int64)}");
-                    if (!LinearUtil.TryCast(end, out long endValue))
-                        throw new InvalidCastException(
-                            $"Could not cast expression of type {end?.GetType().FullName} to type {nameof(Int64)}");
-                    return (startValue, endValue - startValue);
+                    long start = LinearUtil.CastLong(startDelegate(instance, stream, tempBuffer));
+                    long end = LinearUtil.CastLong(endDelegate(instance, stream, tempBuffer));
+                    return (start, end - start);
                 };
             }
 
             Func<StructureInstance, Stream, byte[], object?> lengthDelegate = _lengthExpression!.GetDelegate();
             return (instance, stream, tempBuffer) =>
             {
-                object? start = startDelegate(instance, stream, tempBuffer);
-                object? length = lengthDelegate(instance, stream, tempBuffer);
-                if (!LinearUtil.TryCast(start, out long startValue))
-                    throw new InvalidCastException(
-                        $"Could not cast expression of type {start?.GetType().FullName} to type {nameof(Int64)}");
-                if (!LinearUtil.TryCast(length, out long lengthValue))
-                    throw new InvalidCastException(
-                        $"Could not cast expression of type {length?.GetType().FullName} to type {nameof(Int64)}");
-                return (startValue, lengthValue);
+                long start = LinearUtil.CastLong(startDelegate(instance, stream, tempBuffer));
+                long length = LinearUtil.CastLong(lengthDelegate(instance, stream, tempBuffer));
+                return (start, length);
             };
         }
     }

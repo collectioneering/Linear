@@ -75,7 +75,27 @@ namespace Linear
         }
 
         private static readonly Dictionary<string, IDeserializer> _defaultDeserializers =
-            new Dictionary<string, IDeserializer> { };
+            new Dictionary<string, IDeserializer>
+            {
+                {"byte", new PrimitiveDeserializer(typeof(byte))},
+                {"sbyte", new PrimitiveDeserializer(typeof(sbyte))},
+                {"ushort", new PrimitiveDeserializer(typeof(ushort))},
+                {"short", new PrimitiveDeserializer(typeof(short))},
+                {"uint", new PrimitiveDeserializer(typeof(uint))},
+                {"int", new PrimitiveDeserializer(typeof(int))},
+                {"ulong", new PrimitiveDeserializer(typeof(ulong))},
+                {"long", new PrimitiveDeserializer(typeof(long))},
+                {"byteb", new PrimitiveDeserializer(typeof(byte))},
+                {"sbyteb", new PrimitiveDeserializer(typeof(sbyte))},
+                {"ushortb", new PrimitiveDeserializer(typeof(ushort))},
+                {"shortb", new PrimitiveDeserializer(typeof(short))},
+                {"uintb", new PrimitiveDeserializer(typeof(uint))},
+                {"intb", new PrimitiveDeserializer(typeof(int))},
+                {"ulongb", new PrimitiveDeserializer(typeof(ulong))},
+                {"longb", new PrimitiveDeserializer(typeof(long))},
+                {"float", new PrimitiveDeserializer(typeof(float))},
+                {"double", new PrimitiveDeserializer(typeof(double))}
+            };
 
         /// <summary>
         /// Create default deserializer registry with standard exporters
@@ -98,7 +118,7 @@ namespace Linear
             return false;
         }
 
-        internal static byte CastByte(object number)
+        internal static byte CastByte(object? number)
         {
             return number switch
             {
@@ -117,7 +137,7 @@ namespace Linear
             };
         }
 
-        internal static sbyte CastSByte(object number)
+        internal static sbyte CastSByte(object? number)
         {
             return number switch
             {
@@ -136,7 +156,7 @@ namespace Linear
             };
         }
 
-        internal static ushort CastUShort(object number)
+        internal static ushort CastUShort(object? number)
         {
             return number switch
             {
@@ -155,7 +175,7 @@ namespace Linear
             };
         }
 
-        internal static short CastShort(object number)
+        internal static short CastShort(object? number)
         {
             return number switch
             {
@@ -174,7 +194,7 @@ namespace Linear
             };
         }
 
-        internal static uint CastUInt(object number)
+        internal static uint CastUInt(object? number)
         {
             return number switch
             {
@@ -193,7 +213,7 @@ namespace Linear
             };
         }
 
-        internal static int CastInt(object number)
+        internal static int CastInt(object? number)
         {
             return number switch
             {
@@ -212,7 +232,7 @@ namespace Linear
             };
         }
 
-        internal static ulong CastULong(object number)
+        internal static ulong CastULong(object? number)
         {
             return number switch
             {
@@ -231,7 +251,7 @@ namespace Linear
             };
         }
 
-        internal static long CastLong(object number)
+        internal static long CastLong(object? number)
         {
             return number switch
             {
@@ -250,7 +270,7 @@ namespace Linear
             };
         }
 
-        internal static float CastFloat(object number)
+        internal static float CastFloat(object? number)
         {
             return number switch
             {
@@ -269,7 +289,7 @@ namespace Linear
             };
         }
 
-        internal static double CastDouble(object number)
+        internal static double CastDouble(object? number)
         {
             return number switch
             {

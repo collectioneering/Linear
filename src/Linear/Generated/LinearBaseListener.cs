@@ -83,17 +83,29 @@ public partial class LinearBaseListener : ILinearListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitStruct_statement_define([NotNull] LinearParser.Struct_statement_defineContext context) { }
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="LinearParser.struct_statement_define_ranged"/>.
+	/// Enter a parse tree produced by <see cref="LinearParser.struct_statement_define_value"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterStruct_statement_define_ranged([NotNull] LinearParser.Struct_statement_define_rangedContext context) { }
+	public virtual void EnterStruct_statement_define_value([NotNull] LinearParser.Struct_statement_define_valueContext context) { }
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="LinearParser.struct_statement_define_ranged"/>.
+	/// Exit a parse tree produced by <see cref="LinearParser.struct_statement_define_value"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitStruct_statement_define_ranged([NotNull] LinearParser.Struct_statement_define_rangedContext context) { }
+	public virtual void ExitStruct_statement_define_value([NotNull] LinearParser.Struct_statement_define_valueContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="LinearParser.struct_statement_define_range"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterStruct_statement_define_range([NotNull] LinearParser.Struct_statement_define_rangeContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="LinearParser.struct_statement_define_range"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitStruct_statement_define_range([NotNull] LinearParser.Struct_statement_define_rangeContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="LinearParser.struct_statement_define_array"/>.
 	/// <para>The default implementation does nothing.</para>

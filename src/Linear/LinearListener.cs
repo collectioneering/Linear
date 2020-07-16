@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Antlr4.Runtime.Tree;
 using Linear.Runtime;
 using Linear.Runtime.Elements;
 using Linear.Runtime.Expressions;
@@ -33,8 +34,6 @@ namespace Linear
         /// <returns>Structures</returns>
         public List<StructureDefinition> GetStructures() => new List<StructureDefinition>(_structures);
 
-        // TODO complete listener
-
         private StructureDefinition? _currentDefinition;
 
         public override void EnterStruct(LinearParser.StructContext context)
@@ -49,30 +48,78 @@ namespace Linear
             _currentDefinition = null;
         }
 
-        public override void EnterStruct_statement(LinearParser.Struct_statementContext context)
+        /*public override void EnterStruct_statement(LinearParser.Struct_statementContext context)
         {
             Console.WriteLine(context.GetText());
-            // TODO
-        }
+        }*/
 
         public override void EnterStruct_statement_define(LinearParser.Struct_statement_defineContext context)
         {
-            //Console.WriteLine(context.GetText());
             ExpressionDefinition offsetExpression = GetExpression(context.expr());
-            string typeName = context.IDENTIFIER()[0].GetText();
-            string dataName = context.IDENTIFIER()[1].GetText();
-            Element dataElement;
-            (Type? targetType, bool littleEndian) = StringToType(typeName);
+            ITerminalNode[] ids = context.IDENTIFIER();
+            string typeName = ids[0].GetText();
+            string dataName = ids[1].GetText();
+            (int _, bool littleEndian) = StringToPrimitiveInfo(typeName);
             ExpressionDefinition littleEndianExpression = new ConstantExpression<bool>(littleEndian);
-            if (targetType != null)
-                dataElement = new DataElement(dataName, targetType, offsetExpression, littleEndianExpression);
-            else
-            {
-                dataElement = new DataElement(dataName, offsetExpression, littleEndianExpression,
-                    StringToDeserializer(typeName), GetPropertyGroup(context.property_group()));
-            }
+            Element dataElement = new DataElement(dataName, offsetExpression, littleEndianExpression,
+                StringToDeserializer(typeName), GetPropertyGroup(context.property_group()));
 
             _currentDefinition!.Members.Add((dataName, dataElement));
+        }
+
+        public override void EnterStruct_statement_define_array(
+            LinearParser.Struct_statement_define_arrayContext context)
+        {
+            // TODO implement statement generator
+        }
+
+        public override void EnterStruct_statement_define_array_indirect(
+            LinearParser.Struct_statement_define_array_indirectContext context)
+        {
+            // TODO implement statement generator
+        }
+
+        public override void EnterStruct_statement_define_value(LinearParser.Struct_statement_define_valueContext context)
+        {
+            /*ITerminalNode[] ids = context.IDENTIFIER();
+            string typeName = ids[0].GetText();
+            string dataName = ids[1].GetText();*/
+            string dataName = context.IDENTIFIER().GetText();
+            ExpressionDefinition expr = GetExpression(context.expr());
+            Element dataElement = new ValueElement(dataName, expr);
+            _currentDefinition!.Members.Add((dataName, dataElement));
+        }
+
+        public override void EnterStruct_statement_define_range(
+            LinearParser.Struct_statement_define_rangeContext context)
+        {
+            string dataName = context.IDENTIFIER().GetText();
+            ExpressionDefinition expr;
+            if (context.range_end() is {} range_end)
+            {
+                LinearParser.ExprContext[] exprs = range_end.expr();
+                expr = new RangeExpression(GetExpression(exprs[0]), GetExpression(exprs[1]), null);
+            }
+            else
+            {
+                LinearParser.ExprContext[] exprs = context.range_length().expr();
+                expr = new RangeExpression(GetExpression(exprs[0]), null, GetExpression(exprs[1]));
+            }
+
+            Element dataElement = new ValueElement(dataName, expr);
+
+            _currentDefinition!.Members.Add((dataName, dataElement));
+        }
+
+        public override void EnterStruct_statement_output(LinearParser.Struct_statement_outputContext context)
+        {
+            ExpressionDefinition formatExpression = new ConstantExpression<string>(context.IDENTIFIER().GetText());
+            ExpressionDefinition nameExpression = GetExpression(context.expr(0));
+            ExpressionDefinition rangeExpression = GetExpression(context.expr(1));
+            Element outputElement = new OutputElement(formatExpression, rangeExpression, nameExpression,
+                GetPropertyGroup(context.property_group()));
+
+            _currentDefinition!.Members.Add((null, outputElement));
         }
 
         private static Dictionary<string, ExpressionDefinition> GetPropertyGroup(
@@ -85,28 +132,27 @@ namespace Linear
             return res;
         }
 
-        private static (Type? type, bool littleEndian) StringToType(string identifier) => identifier switch
+        private static (int size, bool littleEndian) StringToPrimitiveInfo(string identifier) => identifier switch
         {
-            "byte" => (typeof(byte), true),
-            "sbyte" => (typeof(sbyte), true),
-            "ushort" => (typeof(ushort), true),
-            "short" => (typeof(short), true),
-            "uint" => (typeof(uint), true),
-            "int" => (typeof(int), true),
-            "ulong" => (typeof(ulong), true),
-            "long" => (typeof(long), true),
-            "byteb" => (typeof(byte), false),
-            "sbyteb" => (typeof(sbyte), false),
-            "ushortb" => (typeof(ushort), false),
-            "shortb" => (typeof(short), false),
-            "uintb" => (typeof(uint), false),
-            "intb" => (typeof(int), false),
-            "ulongb" => (typeof(ulong), false),
-            "longb" => (typeof(long), false),
-            "float" => (typeof(float), false),
-            "double" => (typeof(double), false),
-            "range" => (typeof(ValueTuple<long, long>), false),
-            _ => (null, false)
+            "byte" => (1, true),
+            "sbyte" => (1, true),
+            "ushort" => (2, true),
+            "short" => (2, true),
+            "uint" => (4, true),
+            "int" => (4, true),
+            "ulong" => (8, true),
+            "long" => (8, true),
+            "byteb" => (1, false),
+            "sbyteb" => (1, false),
+            "ushortb" => (2, false),
+            "shortb" => (2, false),
+            "uintb" => (4, false),
+            "intb" => (4, false),
+            "ulongb" => (8, false),
+            "longb" => (8, false),
+            "float" => (4, false),
+            "double" => (8, false),
+            _ => (0, false)
         };
 
         private IDeserializer StringToDeserializer(string identifier) =>

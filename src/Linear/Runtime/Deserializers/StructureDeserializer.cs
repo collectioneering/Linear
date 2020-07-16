@@ -23,8 +23,8 @@ namespace Linear.Runtime.Deserializers
         public string GetTargetTypeName() => _name;
 
         /// <inheritdoc />
-        public object Deserialize(StructureInstance instance, Stream stream, long offset, bool littleEndian,
-            Dictionary<string, object>? parameters, int length = 0)
+        public object Deserialize(StructureInstance instance, Stream stream, byte[] tempBuffer, long offset,
+            bool littleEndian, Dictionary<string, object>? parameters, int length = 0)
         {
             return instance.Registry[_name].Parse(instance.Registry, stream, offset, length, instance);
         }

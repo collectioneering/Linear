@@ -1,9 +1,9 @@
 ﻿namespace Linear.Runtime.Deserializers
 {
     /// <summary>
-    /// Deserializes raw array
+    /// Deserializes raw primitive array
     /// </summary>
-    public class ArrayDeserializer
+    public class PrimitiveArrayDeserializer
     {
         // TODO implement deserializer
     }

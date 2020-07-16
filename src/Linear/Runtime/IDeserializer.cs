@@ -19,12 +19,13 @@ namespace Linear.Runtime
         /// </summary>
         /// <param name="instance">Structure instance</param>
         /// <param name="stream">Stream to read from</param>
+        /// <param name="tempBuffer">Temporary buffer</param>
         /// <param name="offset">Offset in stream</param>
         /// <param name="littleEndian">Endianness</param>
         /// <param name="parameters">Deserializer parameters</param>
         /// <param name="length">Length of structure</param>
         /// <returns>Deserialized object</returns>
-        public abstract object Deserialize(StructureInstance instance, Stream stream, long offset, bool littleEndian,
+        public abstract object Deserialize(StructureInstance instance, Stream stream, byte[] tempBuffer, long offset, bool littleEndian,
             Dictionary<string, object>? parameters, int length = 0);
     }
 }

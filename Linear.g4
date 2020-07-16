@@ -4,7 +4,8 @@ compilation_unit: (WS? struct WS?)* EOF;
 struct: IDENTIFIER WS? OPEN WS? (struct_statement WS?)* CLOSE;
 struct_statement:
 	struct_statement_define
-	| struct_statement_define_ranged
+	| struct_statement_define_value
+	| struct_statement_define_range
 	| struct_statement_define_array
 	| struct_statement_define_array_indirect
 	| struct_statement_output
@@ -12,8 +13,11 @@ struct_statement:
 
 struct_statement_define:
 	IDENTIFIER WS IDENTIFIER WS expr WS? property_group? ENDL;
-struct_statement_define_ranged:
-	IDENTIFIER WS IDENTIFIER WS? (range_end | range_length) WS? ENDL;
+struct_statement_define_value:
+//	'value' WS IDENTIFIER WS IDENTIFIER WS expr WS? ENDL;
+	'value' WS IDENTIFIER WS expr WS? ENDL;
+struct_statement_define_range:
+	'range' WS IDENTIFIER WS? (range_end | range_length) WS? ENDL;
 struct_statement_define_array:
 	IDENTIFIER OPENSQ WS? expr WS? CLOSESQ WS? IDENTIFIER WS? expr WS? property_group? ENDL;
 struct_statement_define_array_indirect:
@@ -22,7 +26,8 @@ struct_statement_define_array_indirect:
 	IDENTIFIER OPENSQ CLOSESQ WS? 
 	IDENTIFIER WS expr WS? property_group? ENDL;
 struct_statement_output:
-	'output' WS IDENTIFIER WS IDENTIFIER WS expr WS? property_group? ENDL;
+	'output' WS IDENTIFIER WS expr WS expr WS? property_group? ENDL;
+// maybe "outputvar" for expression-based format selection?
 struct_statement_comment: '//' ~ENDL* ENDL;
 
 range_end:
