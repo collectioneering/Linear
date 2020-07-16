@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Antlr4.Runtime.Tree;
 using Linear.Runtime;
+using Linear.Runtime.Deserializers;
 using Linear.Runtime.Elements;
 using Linear.Runtime.Expressions;
 
@@ -38,8 +39,14 @@ namespace Linear
 
         public override void EnterStruct(LinearParser.StructContext context)
         {
-            _currentDefinition = new StructureDefinition(context.IDENTIFIER().GetText());
-            //Console.WriteLine(context.IDENTIFIER().GetText());
+            int defaultLength = context.struct_size() switch
+            {
+                LinearParser.StrictSizeHexContext strictSizeHexContext => Convert.ToInt32(
+                    strictSizeHexContext.GetText(), 16),
+                LinearParser.StructSizeIntContext structSizeIntContext => int.Parse(structSizeIntContext.GetText()),
+                _ => 0
+            };
+            _currentDefinition = new StructureDefinition(context.IDENTIFIER().GetText(), defaultLength);
         }
 
         public override void ExitStruct(LinearParser.StructContext context)
@@ -70,16 +77,56 @@ namespace Linear
         public override void EnterStruct_statement_define_array(
             LinearParser.Struct_statement_define_arrayContext context)
         {
-            // TODO implement statement generator
+            LinearParser.ExprContext[] exprs = context.expr();
+            ExpressionDefinition countExpression = GetExpression(exprs[0]);
+            ExpressionDefinition offsetExpression = GetExpression(exprs[1]);
+            ITerminalNode[] ids = context.IDENTIFIER();
+            string typeName = ids[0].GetText();
+            string dataName = ids[1].GetText();
+            (int _, bool littleEndian) = StringToPrimitiveInfo(typeName);
+            ExpressionDefinition littleEndianExpression = new ConstantExpression<bool>(littleEndian);
+            var propertyGroup = GetPropertyGroup(context.property_group());
+            propertyGroup.Add(LinearUtil.ArrayLengthProperty, countExpression);
+            // "Should" add some other way for length instead of routing through a dictionary...
+            // "Should" add efficient primitive array deserialization...
+            Element dataElement = new DataElement(dataName, offsetExpression, littleEndianExpression,
+                new ArrayDeserializer(StringToDeserializer(typeName)), propertyGroup);
+
+            _currentDefinition!.Members.Add((dataName, dataElement));
         }
 
         public override void EnterStruct_statement_define_array_indirect(
             LinearParser.Struct_statement_define_array_indirectContext context)
         {
-            // TODO implement statement generator
+            LinearParser.ExprContext[] exprs = context.expr();
+            ExpressionDefinition countExpression = GetExpression(exprs[0]);
+            ExpressionDefinition offsetExpression = GetExpression(exprs[1]);
+            ExpressionDefinition pointerOffsetExpression = GetExpression(exprs[2]);
+            ITerminalNode[] ids = context.IDENTIFIER();
+            string typeName = ids[0].GetText();
+            string targetTypeName = ids[1].GetText();
+            string dataName = ids[2].GetText();
+            (int _, bool littleEndian) = StringToPrimitiveInfo(typeName);
+            ExpressionDefinition littleEndianExpression = new ConstantExpression<bool>(littleEndian);
+            var propertyGroup = GetPropertyGroup(context.property_group());
+            bool lenFinder = context.PLUS() != null;
+            propertyGroup.Add(LinearUtil.PointerArrayLengthProperty,
+                lenFinder
+                    ? new OperatorDualExpression(countExpression, new ConstantExpression<int>(1),
+                        OperatorDualExpression.Operator.Add)
+                    : countExpression);
+            propertyGroup.Add(LinearUtil.PointerOffsetProperty, pointerOffsetExpression);
+            propertyGroup.Add(LinearUtil.ArrayLengthProperty, countExpression);
+            ArrayDeserializer arrayDeserializer = new ArrayDeserializer(StringToDeserializer(typeName));
+            Element dataElement = new DataElement(dataName, offsetExpression, littleEndianExpression,
+                new PointerArrayDeserializer(arrayDeserializer, StringToDeserializer(targetTypeName), lenFinder),
+                propertyGroup);
+
+            _currentDefinition!.Members.Add((dataName, dataElement));
         }
 
-        public override void EnterStruct_statement_define_value(LinearParser.Struct_statement_define_valueContext context)
+        public override void EnterStruct_statement_define_value(
+            LinearParser.Struct_statement_define_valueContext context)
         {
             /*ITerminalNode[] ids = context.IDENTIFIER();
             string typeName = ids[0].GetText();
@@ -151,8 +198,10 @@ namespace Linear
                 LinearParser.ExprOpContext exprOpContext => new OperatorDualExpression(
                     GetExpression(exprOpContext.expr(0)), GetExpression(exprOpContext.expr(1)),
                     OperatorDualExpression.GetOperator(exprOpContext.op().GetText())),
-                LinearParser.ExprRangeEndContext exprRangeEndContext => new RangeExpression(GetExpression(exprRangeEndContext.expr(0)), GetExpression(exprRangeEndContext.expr(1)), null),
-                LinearParser.ExprRangeLengthContext exprRangeLengthContext => new RangeExpression(GetExpression(exprRangeLengthContext.expr(0)), null, GetExpression(exprRangeLengthContext.expr(1))),
+                LinearParser.ExprRangeEndContext exprRangeEndContext => new RangeExpression(
+                    GetExpression(exprRangeEndContext.expr(0)), GetExpression(exprRangeEndContext.expr(1)), null),
+                LinearParser.ExprRangeLengthContext exprRangeLengthContext => new RangeExpression(
+                    GetExpression(exprRangeLengthContext.expr(0)), null, GetExpression(exprRangeLengthContext.expr(1))),
                 LinearParser.ExprTermContext exprTermContext => GetTerm(exprTermContext.term()),
                 LinearParser.ExprUnOpContext exprUnOpContext => new OperatorUnaryExpression(
                     GetExpression(exprUnOpContext.expr()),

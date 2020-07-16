@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generated from /Users/jake/Projects/GitHub/Linear/scripts/../Linear.g4 by ANTLR 4.8
+// Generated from C:\Users\black\Documents\GitHub\Linear\scripts\\..\Linear.g4 by ANTLR 4.8
 
 // Unreachable code detected
 #pragma warning disable 0162
@@ -306,6 +306,30 @@ public interface ILinearListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitBool_op([NotNull] LinearParser.Bool_opContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>StructSizeInt</c>
+	/// labeled alternative in <see cref="LinearParser.struct_size"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterStructSizeInt([NotNull] LinearParser.StructSizeIntContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>StructSizeInt</c>
+	/// labeled alternative in <see cref="LinearParser.struct_size"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitStructSizeInt([NotNull] LinearParser.StructSizeIntContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>StrictSizeHex</c>
+	/// labeled alternative in <see cref="LinearParser.struct_size"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterStrictSizeHex([NotNull] LinearParser.StrictSizeHexContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>StrictSizeHex</c>
+	/// labeled alternative in <see cref="LinearParser.struct_size"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitStrictSizeHex([NotNull] LinearParser.StrictSizeHexContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>TermRepLength</c>
 	/// labeled alternative in <see cref="LinearParser.term"/>.

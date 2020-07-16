@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Linear.Runtime.Deserializers
@@ -20,13 +21,17 @@ namespace Linear.Runtime.Deserializers
         }
 
         /// <inheritdoc />
-        public string GetTargetTypeName() => _name;
+        public string? GetTargetTypeName() => _name;
 
         /// <inheritdoc />
-        public object Deserialize(StructureInstance instance, Stream stream, byte[] tempBuffer, long offset,
-            bool littleEndian, Dictionary<string, object>? parameters, long length = 0)
+        public Type GetTargetType() => typeof(StructureInstance);
+
+        /// <inheritdoc />
+        public (object value, long length) Deserialize(StructureInstance instance, Stream stream, byte[] tempBuffer, long offset,
+            bool littleEndian, Dictionary<string, object>? parameters, long length = 0, int index = 0)
         {
-            return instance.Registry[_name].Parse(instance.Registry, stream, offset, length, instance);
+            StructureInstance i = instance.Registry[_name].Parse(instance.Registry, stream, offset, instance, length);
+            return (i, i.Length);
         }
     }
 }

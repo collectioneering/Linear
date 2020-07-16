@@ -21,32 +21,36 @@ namespace Linear.Runtime.Deserializers
         }
 
         /// <inheritdoc />
-        public string GetTargetTypeName() => throw new NotSupportedException();
+        public string? GetTargetTypeName() => null;
 
         /// <inheritdoc />
-        public object Deserialize(StructureInstance instance, Stream stream, byte[] tempBuffer, long offset, bool littleEndian,
-            Dictionary<string, object>? parameters, long length = 0)
+        public Type GetTargetType() => _type;
+
+        /// <inheritdoc />
+        public (object value, long length) Deserialize(StructureInstance instance, Stream stream, byte[] tempBuffer,
+            long offset, bool littleEndian, Dictionary<string, object>? parameters, long length = 0, int index = 0)
         {
+            // Possible addition: property group support little endian (requires boolean expressions)
             return Type.GetTypeCode(_type) switch
             {
-                TypeCode.Boolean => LinearUtil.ReadBool(stream, offset, tempBuffer),
-                TypeCode.Byte => LinearUtil.ReadS8(stream, offset, tempBuffer),
-                TypeCode.Char => LinearUtil.ReadU16(stream, offset, tempBuffer, littleEndian),
+                TypeCode.Boolean => (LinearUtil.ReadBool(stream, offset, tempBuffer), 1),
+                TypeCode.Byte => (LinearUtil.ReadS8(stream, offset, tempBuffer), 1),
+                TypeCode.Char => (LinearUtil.ReadU16(stream, offset, tempBuffer, littleEndian), 2),
                 TypeCode.DateTime => throw new NotSupportedException(),
                 TypeCode.DBNull => throw new NotSupportedException(),
                 TypeCode.Decimal => throw new NotSupportedException(),
-                TypeCode.Double => LinearUtil.ReadDouble(stream, offset, tempBuffer),
+                TypeCode.Double => (LinearUtil.ReadDouble(stream, offset, tempBuffer), 8),
                 TypeCode.Empty => throw new NullReferenceException(),
-                TypeCode.Int16 => LinearUtil.ReadS16(stream, offset, tempBuffer, littleEndian),
-                TypeCode.Int32 => LinearUtil.ReadS32(stream, offset, tempBuffer, littleEndian),
-                TypeCode.Int64 => LinearUtil.ReadS64(stream, offset, tempBuffer, littleEndian),
+                TypeCode.Int16 => (LinearUtil.ReadS16(stream, offset, tempBuffer, littleEndian), 2),
+                TypeCode.Int32 => (LinearUtil.ReadS32(stream, offset, tempBuffer, littleEndian), 4),
+                TypeCode.Int64 => (LinearUtil.ReadS64(stream, offset, tempBuffer, littleEndian), 8),
                 TypeCode.Object => throw new NotSupportedException(), // Not supporting direct
-                TypeCode.SByte => LinearUtil.ReadS8(stream, offset, tempBuffer),
-                TypeCode.Single => LinearUtil.ReadSingle(stream, offset, tempBuffer),
+                TypeCode.SByte => (LinearUtil.ReadS8(stream, offset, tempBuffer), 1),
+                TypeCode.Single => (LinearUtil.ReadSingle(stream, offset, tempBuffer), 4),
                 TypeCode.String => throw new NotSupportedException(), // Not supporting direct
-                TypeCode.UInt16 => LinearUtil.ReadU16(stream, offset, tempBuffer, littleEndian),
-                TypeCode.UInt32 => LinearUtil.ReadU32(stream, offset, tempBuffer, littleEndian),
-                TypeCode.UInt64 => LinearUtil.ReadU64(stream, offset, tempBuffer, littleEndian),
+                TypeCode.UInt16 => (LinearUtil.ReadU16(stream, offset, tempBuffer, littleEndian), 2),
+                TypeCode.UInt32 => (LinearUtil.ReadU32(stream, offset, tempBuffer, littleEndian), 4),
+                TypeCode.UInt64 => (LinearUtil.ReadU64(stream, offset, tempBuffer, littleEndian), 8),
                 _ => throw new ArgumentOutOfRangeException()
             };
         }

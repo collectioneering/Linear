@@ -4,6 +4,7 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <Copyright>Copyright ©2020 Lucina</Copyright>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>

@@ -47,14 +47,17 @@ namespace Linear.Runtime.Deserializers
         }
 
         /// <inheritdoc />
-        public string GetTargetTypeName() => throw new NotSupportedException();
+        public string? GetTargetTypeName() => null;
 
         /// <inheritdoc />
-        public object Deserialize(StructureInstance instance, Stream stream, byte[] tempBuffer, long offset,
-            bool littleEndian, Dictionary<string, object>? parameters, long length = 0)
+        public Type GetTargetType() => typeof(string);
+
+        /// <inheritdoc />
+        public (object value, long length) Deserialize(StructureInstance instance, Stream stream, byte[] tempBuffer, long offset,
+            bool littleEndian, Dictionary<string, object>? parameters, long length = 0, int index = 0)
         {
             // TODO implement string deserializer
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
     }
 }

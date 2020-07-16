@@ -28,21 +28,23 @@ namespace lyn
 
             using Stream baseStream = File.OpenRead(conf.InputFile);
             using MultiBufferStream mbs = new MultiBufferStream(baseStream);
-            StructureInstance si = structure.Parse(registry, mbs, 0, baseStream.Length, null);
+            StructureInstance si = structure.Parse(registry, mbs, 0, null, baseStream.Length);
             Dictionary<string, IExporter> exporterRegistry = LinearUtil.CreateDefaultExporterRegistry();
-            foreach (var res in si.GetOutputs())
+            foreach ((StructureInstance instance, string name, string format, Dictionary<string, object>? parameters,
+                (long offset, long length) range) in si.GetOutputs())
             {
-                if (!exporterRegistry.TryGetValue(res.format, out IExporter exporter))
+                if (!exporterRegistry.TryGetValue(format, out IExporter? exporter))
                 {
-                    Console.WriteLine($"Failed to find exporter named {res.format}");
+                    Console.WriteLine($"Failed to find exporter named {format}");
                     return 3;
                 }
 
-                string file = Path.Combine(conf.OutputDir, res.name);
-                string dir = Path.GetDirectoryName(file);
+                string file = Path.Combine(conf.OutputDir!, name);
+                string dir = Path.GetDirectoryName(file) ??
+                             throw new ApplicationException("Invalid output file, cannot be root");
                 if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
                 using FileStream ofs = File.Create(file);
-                exporter.Export(baseStream, res.instance, res.range, res.parameters, ofs);
+                exporter.Export(baseStream, instance, range, parameters, ofs);
             }
 
             return 0;
@@ -51,13 +53,13 @@ namespace lyn
         private class Configuration
         {
             [Value(0, Required = true, MetaName = nameof(LayoutFile))]
-            public string LayoutFile { get; set; }
+            public string? LayoutFile { get; set; }
 
             [Value(1, Required = true, MetaName = nameof(InputFile))]
-            public string InputFile { get; set; }
+            public string? InputFile { get; set; }
 
             [Value(2, Required = true, MetaName = nameof(OutputDir))]
-            public string OutputDir { get; set; }
+            public string? OutputDir { get; set; }
         }
     }
 }

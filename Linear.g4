@@ -1,7 +1,10 @@
 grammar Linear;
 
 compilation_unit: (WS? struct WS?)* EOF;
-struct: IDENTIFIER WS? OPEN WS? (struct_statement WS?)* CLOSE;
+
+// structureName optionalDefaultLength {}
+struct: IDENTIFIER WS? struct_size? WS? OPEN WS? (struct_statement WS?)* CLOSE;
+
 struct_statement:
 	struct_statement_define
 	| struct_statement_define_value
@@ -10,31 +13,34 @@ struct_statement:
 	| struct_statement_output
 	| struct_statement_comment;
 
+// varType memberName locationExpr {};
 struct_statement_define:
 	IDENTIFIER WS IDENTIFIER WS expr WS? property_group? ENDL;
+
+// value memberName valueExpr;
 struct_statement_define_value:
-//	'value' WS IDENTIFIER WS IDENTIFIER WS expr WS? ENDL;
+	//	'value' WS IDENTIFIER WS IDENTIFIER WS expr WS? ENDL;
 	'value' WS IDENTIFIER WS expr WS? ENDL;
+
+// elementType[lengthExpr] memberName locationExpr {};
 struct_statement_define_array:
 	IDENTIFIER OPENSQ WS? expr WS? CLOSESQ WS? IDENTIFIER WS? expr WS? property_group? ENDL;
+
+// elementType[lengthExpr] -> targetType[] memberName pointerArrayLocationExpr, relativeOffsetExpr {};
 struct_statement_define_array_indirect:
-	IDENTIFIER OPENSQ WS? expr WS? CLOSESQ WS? 
-	'->' PLUS? WS? 
-	IDENTIFIER OPENSQ CLOSESQ WS? 
-	IDENTIFIER WS expr WS? property_group? ENDL;
+	IDENTIFIER OPENSQ WS? expr WS? CLOSESQ WS? '->' PLUS? WS? IDENTIFIER OPENSQ CLOSESQ WS?
+		IDENTIFIER WS expr WS? ',' WS? expr WS? property_group? ENDL;
+
+// output formatName rangeExpr nameExpr {};
 struct_statement_output:
 	'output' WS IDENTIFIER WS expr WS expr WS? property_group? ENDL;
 // maybe "outputvar" for expression-based format selection?
+
+// // Comments
 struct_statement_comment: '//' ~ENDL* ENDL;
 
-OPEN: '{';
-CLOSE: '}';
-OPENSQ: '[';
-CLOSESQ: ']';
-ENDL: ';';
-
+// { name=valueExpr; name2=valueExpr2; }
 property_group: OPEN (WS? property_statement)* WS? CLOSE WS?;
-
 property_statement: IDENTIFIER WS? '=' WS? expr WS? ';';
 
 term_replacement_length: '$length';
@@ -42,15 +48,21 @@ term_replacement_i: '$i';
 term_replacement_p: '$p' | '$parent';
 term_replacement_u: '$u' | '$unique';
 expr:
-	term # ExprTerm
-	| OPENSQ WS? expr WS? ',' WS? 'end:' WS? expr WS? CLOSESQ # ExprRangeEnd
-	| OPENSQ WS? expr WS? ',' WS? 'length:' WS? expr WS? CLOSESQ # ExprRangeLength
-	| expr '.' IDENTIFIER # ExprMember
-	| expr '[' WS? expr WS? ']' # ExprArrayAccess
-	| expr WS? op WS? expr # ExprOp
-//	| expr WS? bool_op WS? expr # ExprBoolOp
-	| un_op WS? expr # ExprUnOp
-	| '(' WS? expr WS? ')' # ExprWrapped;
+	term															# ExprTerm
+	| OPENSQ WS? expr WS? ',' WS? 'end:' WS? expr WS? CLOSESQ		# ExprRangeEnd
+	| OPENSQ WS? expr WS? ',' WS? 'length:' WS? expr WS? CLOSESQ	# ExprRangeLength
+	| expr '.' IDENTIFIER											# ExprMember
+	| expr '[' WS? expr WS? ']'										# ExprArrayAccess
+	| expr WS? op WS? expr											# ExprOp
+	//	| expr WS? bool_op WS? expr # ExprBoolOp
+	| un_op WS? expr		# ExprUnOp
+	| '(' WS? expr WS? ')'	# ExprWrapped;
+
+OPEN: '{';
+CLOSE: '}';
+OPENSQ: '[';
+CLOSESQ: ']';
+ENDL: ';';
 
 op:
 	PLUS
@@ -71,18 +83,21 @@ bool_op:
 	| OP_NE
 	| OP_LE
 	| OP_GE;
+struct_size:
+	INTEGER_LITERAL			# StructSizeInt
+	| HEX_INTEGER_LITERAL	# StrictSizeHex;
 term:
-	term_replacement_length # TermRepLength
-	| term_replacement_i # TermRepI
-	| term_replacement_p # TermRepP
-	| term_replacement_u # TermRepU
-	| IDENTIFIER # TermIdentifier
-	| INTEGER_LITERAL # TermInt
-	| HEX_INTEGER_LITERAL # TermHex
-	| REAL_LITERAL # TermReal
-	| CHARACTER_LITERAL # TermChar
-	| REGULAR_STRING # TermString
-	| VERBATIM_STRING # TermStringVerb;
+	term_replacement_length	# TermRepLength
+	| term_replacement_i	# TermRepI
+	| term_replacement_p	# TermRepP
+	| term_replacement_u	# TermRepU
+	| IDENTIFIER			# TermIdentifier
+	| INTEGER_LITERAL		# TermInt
+	| HEX_INTEGER_LITERAL	# TermHex
+	| REAL_LITERAL			# TermReal
+	| CHARACTER_LITERAL		# TermChar
+	| REGULAR_STRING		# TermString
+	| VERBATIM_STRING		# TermStringVerb;
 
 IDENTIFIER: '@'? IdentifierOrKeyword;
 WS: (Whitespace | NewLine)+;

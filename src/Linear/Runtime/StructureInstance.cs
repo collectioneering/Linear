@@ -8,7 +8,7 @@ namespace Linear.Runtime
     /// </summary>
     public class StructureInstance
     {
-        private int _u = 0;
+        private int _u;
 
         /// <summary>
         /// Index of structure in array

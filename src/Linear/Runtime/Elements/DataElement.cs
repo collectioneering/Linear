@@ -58,10 +58,12 @@ namespace Linear.Runtime.Elements
                 deserializerParamsCompact[kvp.Key] = kvp.Value.GetDelegate();
             return (instance, stream, tempBuffer) =>
             {
-                Dictionary<string, object> deserializerParams = new Dictionary<string, object>();
-                foreach (var kvp in deserializerParamsCompact)
-                    deserializerParams[kvp.Key] =
-                        kvp.Value(instance, stream, tempBuffer) ?? throw new NullReferenceException();
+                Dictionary<string, object>? deserializerParams =
+                    deserializerParamsCompact.Count != 0 ? new Dictionary<string, object>() : null;
+                if (deserializerParams != null)
+                    foreach (var kvp in deserializerParamsCompact)
+                        deserializerParams[kvp.Key] =
+                            kvp.Value(instance, stream, tempBuffer) ?? throw new NullReferenceException();
                 object? offset = srcDelegate(instance, stream, tempBuffer);
                 object? littleEndian = littleEndianDelegate(instance, stream, tempBuffer);
                 (long offset, long length) range = default;

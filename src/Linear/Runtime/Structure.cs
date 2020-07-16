@@ -14,17 +14,25 @@ namespace Linear.Runtime
         /// </summary>
         public string Name { get; }
 
+        /// <summary>
+        /// Default length of structure
+        /// </summary>
+        public int DefaultLength { get; }
+
         private readonly List<(string? name, Action<StructureInstance, Stream, byte[]> method)> _members;
 
         /// <summary>
         /// Create new instance of <see cref="Structure"/>
         /// </summary>
         /// <param name="name">Name of structure</param>
+        /// <param name="defaultLength">Default length of structure</param>
         /// <param name="members"></param>
-        public Structure(string name, List<(string? name, Action<StructureInstance, Stream, byte[]> method)> members)
+        public Structure(string name, int defaultLength,
+            List<(string? name, Action<StructureInstance, Stream, byte[]> method)> members)
         {
             Name = name;
             _members = members;
+            DefaultLength = defaultLength;
         }
 
         /// <summary>
@@ -33,14 +41,14 @@ namespace Linear.Runtime
         /// <param name="registry">Structure registry</param>
         /// <param name="stream">Stream to read from</param>
         /// <param name="offset">Offset in stream</param>
-        /// <param name="length">Length of structure</param>
         /// <param name="parent">Parent object</param>
+        /// <param name="length">Length of structure</param>
         /// <returns>Parsed structure</returns>
-        public StructureInstance Parse(StructureRegistry registry, Stream stream, long offset, long length,
-            StructureInstance? parent)
+        public StructureInstance Parse(StructureRegistry registry, Stream stream, long offset,
+            StructureInstance? parent, long length = 0)
         {
             byte[] tempBuf = new byte[sizeof(ulong)];
-            StructureInstance instance = new StructureInstance(registry, parent, offset, length);
+            StructureInstance instance = new StructureInstance(registry, parent, offset, length == 0 ? DefaultLength : length);
             foreach ((string? _, Action<StructureInstance, Stream, byte[]> method) in _members)
             {
                 method(instance, stream, tempBuf);

@@ -22,6 +22,10 @@ namespace Linear
         /// </summary>
         public const string MainLayout = "main";
 
+        internal const string ArrayLengthProperty = "array_length";
+        internal const string PointerArrayLengthProperty = "pointer_array_length";
+        internal const string PointerOffsetProperty = "pointer_offset";
+
         /// <summary>
         /// Generate processor
         /// </summary>
@@ -42,7 +46,12 @@ namespace Linear
             if (deserializers != null)
             {
                 foreach (var deserializer in deserializers)
-                    r_deserializers[deserializer.GetTargetTypeName()] = deserializer;
+                {
+                    string dname =
+                        deserializer.GetTargetTypeName() ??
+                        throw new NullReferenceException("Target name is required for user-defined deserializers");
+                    r_deserializers[dname] = deserializer;
+                }
             }
 
             foreach (string name in listenerPre.GetStructureNames())

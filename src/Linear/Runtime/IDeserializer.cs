@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Linear.Runtime
@@ -11,8 +12,17 @@ namespace Linear.Runtime
         /// <summary>
         /// Get target type name of deserializer
         /// </summary>
-        /// <returns>Exporter name</returns>
-        string GetTargetTypeName();
+        /// <returns>Target type name</returns>
+        /// <remarks>
+        /// Mandatory for user-defined deserializers
+        /// </remarks>
+        string? GetTargetTypeName();
+
+        /// <summary>
+        /// Get target type of deserializer
+        /// </summary>
+        /// <returns>Target type</returns>
+        Type GetTargetType();
 
         /// <summary>
         /// Deserialize object
@@ -24,8 +34,9 @@ namespace Linear.Runtime
         /// <param name="littleEndian">Endianness</param>
         /// <param name="parameters">Deserializer parameters</param>
         /// <param name="length">Length of structure</param>
+        /// <param name="index">Array index</param>
         /// <returns>Deserialized object</returns>
-        public abstract object Deserialize(StructureInstance instance, Stream stream, byte[] tempBuffer, long offset, bool littleEndian,
-            Dictionary<string, object>? parameters, long length = 0);
+        public abstract (object value, long length) Deserialize(StructureInstance instance, Stream stream, byte[] tempBuffer, long offset, bool littleEndian,
+            Dictionary<string, object>? parameters, long length = 0, int index = 0);
     }
 }
