@@ -117,29 +117,22 @@ namespace Linear
         private static ExpressionDefinition GetExpression(LinearParser.ExprContext context)
         {
             //Console.WriteLine($"Rule ihndex {context.RuleIndex}");
-            // TODO implement cases
-            switch (context)
+            return context switch
             {
-                case LinearParser.ExprArrayAccessContext exprArrayAccessContext:
-                    break;
-                case LinearParser.ExprBoolOpContext exprBoolOpContext:
-                    break;
-                case LinearParser.ExprMemberContext exprMemberContext:
-                    return new ProxyMemberExpression(exprMemberContext.IDENTIFIER().GetText(),
-                        GetExpression(exprMemberContext.expr()));
-                case LinearParser.ExprOpContext exprOpContext:
-                    break;
-                case LinearParser.ExprTermContext exprTermContext:
-                    return GetTerm(exprTermContext.term());
-                case LinearParser.ExprUnOpContext exprUnOpContext:
-                    break;
-                case LinearParser.ExprWrappedContext exprWrappedContext:
-                    return GetExpression(exprWrappedContext.expr());
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(context));
-            }
-
-            return new ConstantExpression<int>(0);
+                LinearParser.ExprArrayAccessContext exprArrayAccessContext => new ArrayAccessExpression(
+                    GetExpression(exprArrayAccessContext.expr(0)), GetExpression(exprArrayAccessContext.expr(1))),
+                LinearParser.ExprMemberContext exprMemberContext => new ProxyMemberExpression(
+                    exprMemberContext.IDENTIFIER().GetText(), GetExpression(exprMemberContext.expr())),
+                LinearParser.ExprOpContext exprOpContext => new OperatorDualExpression(
+                    GetExpression(exprOpContext.expr(0)), GetExpression(exprOpContext.expr(1)),
+                    OperatorDualExpression.GetOperator(exprOpContext.op().GetText())),
+                LinearParser.ExprTermContext exprTermContext => GetTerm(exprTermContext.term()),
+                LinearParser.ExprUnOpContext exprUnOpContext => new OperatorUnaryExpression(
+                    GetExpression(exprUnOpContext.expr()),
+                    OperatorUnaryExpression.GetOperator(exprUnOpContext.un_op().GetText())),
+                LinearParser.ExprWrappedContext exprWrappedContext => GetExpression(exprWrappedContext.expr()),
+                _ => throw new ArgumentOutOfRangeException(nameof(context))
+            };
         }
 
         private static ExpressionDefinition GetTerm(LinearParser.TermContext context)
@@ -150,8 +143,8 @@ namespace Linear
                     .Trim(' ', '\'')[0]),
                 LinearParser.TermHexContext termHexContext => new ConstantExpression<long>(
                     Convert.ToInt32(termHexContext.GetText(), 16)),
-                LinearParser.TermIdentifierContext termIdentifierContext => new StructureEvaluateExpression<object>(i =>
-                    i[termIdentifierContext.GetText()]),
+                LinearParser.TermIdentifierContext termIdentifierContext => new MemberExpression(termIdentifierContext
+                    .GetText()),
                 LinearParser.TermIntContext termIntContext => new ConstantExpression<long>(
                     long.Parse(termIntContext.GetText())),
                 LinearParser.TermRealContext termRealContext => new ConstantExpression<double>(

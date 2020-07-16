@@ -261,18 +261,6 @@ public interface ILinearListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitExprWrapped([NotNull] LinearParser.ExprWrappedContext context);
 	/// <summary>
-	/// Enter a parse tree produced by the <c>ExprBoolOp</c>
-	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterExprBoolOp([NotNull] LinearParser.ExprBoolOpContext context);
-	/// <summary>
-	/// Exit a parse tree produced by the <c>ExprBoolOp</c>
-	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitExprBoolOp([NotNull] LinearParser.ExprBoolOpContext context);
-	/// <summary>
 	/// Enter a parse tree produced by the <c>ExprMember</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
 	/// </summary>

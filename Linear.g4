@@ -47,9 +47,9 @@ term_replacement_u: '$u' | '$unique';
 expr:
 	term # ExprTerm
 	| expr '.' IDENTIFIER # ExprMember
-	| IDENTIFIER '[' WS? expr WS? ']' # ExprArrayAccess
+	| expr '[' WS? expr WS? ']' # ExprArrayAccess
 	| expr WS? op WS? expr # ExprOp
-	| expr WS? bool_op WS? expr # ExprBoolOp
+//	| expr WS? bool_op WS? expr # ExprBoolOp
 	| un_op WS? expr # ExprUnOp
 	| '(' WS? expr WS? ')' # ExprWrapped;
 

@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 namespace Linear.Runtime.Expressions
 {
     /// <summary>
-    /// Member expression
+    /// Proxy member expression
     /// </summary>
     public class ProxyMemberExpression : ExpressionDefinition
     {
@@ -27,8 +26,7 @@ namespace Linear.Runtime.Expressions
         /// <inheritdoc />
         public override IEnumerable<Element> GetDependencies(StructureDefinition definition)
         {
-            return definition.Members.Where(x => x.Item1 == _name).Select(x => x.Item2)
-                .Union(_source.GetDependencies(definition));
+            return _source.GetDependencies(definition);
         }
 
         /// <inheritdoc />
