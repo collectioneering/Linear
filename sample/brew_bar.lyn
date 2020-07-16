@@ -1,7 +1,7 @@
 entry {
 short hLength 0x0;
-string type [2, end: hLength];
-output compressed [hLength, end: $length] $i {
+cstring type [2, end: hLength];
+output compressed [hLength, end: $length] $i+".dat" {
     format="gzip";
 };
 }

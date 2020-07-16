@@ -11,6 +11,7 @@ namespace Linear.Runtime.Deserializers
     {
         private readonly IDeserializer _mainDeserializer;
         private readonly IDeserializer _elementDeserializer;
+        private readonly Type _elementType;
         private readonly Type _type;
         private readonly bool _lenFinder;
 
@@ -25,7 +26,8 @@ namespace Linear.Runtime.Deserializers
         {
             _mainDeserializer = mainDeserializer;
             _elementDeserializer = elementDeserializer;
-            _type = _elementDeserializer.GetTargetType().MakeArrayType();
+            _elementType = _elementDeserializer.GetTargetType();
+            _type = _elementType.MakeArrayType();
             _lenFinder = lenFinder;
         }
 
@@ -37,27 +39,27 @@ namespace Linear.Runtime.Deserializers
 
         /// <inheritdoc />
         public (object value, long length) Deserialize(StructureInstance instance, Stream stream, byte[] tempBuffer,
-            long offset, bool littleEndian, Dictionary<string, object>? parameters, long length = 0, int index = 0)
+            long offset, bool littleEndian, Dictionary<LinearUtil.StandardProperty, object>? standardProperties,
+            Dictionary<string, object>? parameters, long length = 0, int index = 0)
         {
-            object? pointerOffset = null;
-            if (!parameters?.TryGetValue(LinearUtil.PointerOffsetProperty, out pointerOffset) ?? true)
-                throw new Exception($"{LinearUtil.PointerOffsetProperty} not specified for array deserializer");
-            long rPointerOffset = LinearUtil.CastLong(pointerOffset);
-            object? count = null;
-            if (!parameters?.TryGetValue(LinearUtil.PointerArrayLengthProperty, out count) ?? true)
-                throw new Exception($"{LinearUtil.PointerArrayLengthProperty} not specified for array deserializer");
-            long rCount = LinearUtil.CastLong(count);
-            (object src, _) = _mainDeserializer.Deserialize(instance, stream, tempBuffer, offset, littleEndian, parameters);
+            if(standardProperties == null) throw new NullReferenceException();
+            (object src, _) = _mainDeserializer.Deserialize(instance, stream, tempBuffer, offset, littleEndian,
+                standardProperties, parameters);
             Array baseArray = (Array)src;
-            Array tarArray = Array.CreateInstance(_type, rCount);
+            int pointerArrayLength =
+                LinearUtil.CastInt(standardProperties[LinearUtil.StandardProperty.PointerArrayLengthProperty]);
+            long pointerOffset =
+                LinearUtil.CastLong(standardProperties[LinearUtil.StandardProperty.PointerOffsetProperty]);
+            Array tarArray = Array.CreateInstance(_elementType, pointerArrayLength);
             long curOffset = offset;
-            for (int i = 0; i < rCount; i++)
+            for (int i = 0; i < pointerArrayLength; i++)
             {
                 long preElemLength = _lenFinder
                     ? LinearUtil.CastLong(baseArray.GetValue(i + 1)) - LinearUtil.CastLong(baseArray.GetValue(i))
                     : 0;
                 (object value, long elemLength) = _elementDeserializer.Deserialize(instance, stream, tempBuffer,
-                    rPointerOffset + LinearUtil.CastLong(baseArray.GetValue(i)), littleEndian, parameters,
+                    pointerOffset + LinearUtil.CastLong(baseArray.GetValue(i)), littleEndian,
+                    standardProperties, parameters,
                     preElemLength, i);
                 tarArray.SetValue(value, i);
                 curOffset += elemLength;

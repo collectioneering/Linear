@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace Linear.Runtime
 {
@@ -44,7 +45,19 @@ namespace Linear.Runtime
         {
             List<(string? name, Action<StructureInstance, Stream, byte[]> method)> members =
                 new List<(string? name, Action<StructureInstance, Stream, byte[]> method)>();
-            // TODO build members after organizing by dependencies
+            var sub = new List<(string?, Element)>(Members);
+            // Build members after organizing by dependencies
+            while (sub.Count > 0)
+            {
+                int removed = sub.RemoveAll(e =>
+                {
+                    bool noDeps = !e.Item2.GetDependencies(this).Intersect(sub.Select(x => x.Item2)).Any();
+                    if (noDeps) members.Add((e.Item1, e.Item2.GetDelegate()));
+                    return noDeps;
+                });
+                if (removed == 0) throw new Exception("Failed to reduce dependencies");
+            }
+
             return new Structure(Name, DefaultLength, members);
         }
     }

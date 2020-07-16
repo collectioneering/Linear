@@ -19,6 +19,7 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>3021;1584;1658</NoWarn>
     <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>

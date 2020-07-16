@@ -69,7 +69,8 @@ namespace Linear
             (int _, bool littleEndian) = StringToPrimitiveInfo(typeName);
             ExpressionDefinition littleEndianExpression = new ConstantExpression<bool>(littleEndian);
             Element dataElement = new DataElement(dataName, offsetExpression, littleEndianExpression,
-                StringToDeserializer(typeName), GetPropertyGroup(context.property_group()));
+                StringToDeserializer(typeName), GetPropertyGroup(context.property_group()),
+                new Dictionary<LinearUtil.StandardProperty, ExpressionDefinition>());
 
             _currentDefinition!.Members.Add((dataName, dataElement));
         }
@@ -85,12 +86,14 @@ namespace Linear
             string dataName = ids[1].GetText();
             (int _, bool littleEndian) = StringToPrimitiveInfo(typeName);
             ExpressionDefinition littleEndianExpression = new ConstantExpression<bool>(littleEndian);
-            var propertyGroup = GetPropertyGroup(context.property_group());
-            propertyGroup.Add(LinearUtil.ArrayLengthProperty, countExpression);
+            Dictionary<LinearUtil.StandardProperty, ExpressionDefinition> standardProperties =
+                new Dictionary<LinearUtil.StandardProperty, ExpressionDefinition>();
+            standardProperties.Add(LinearUtil.StandardProperty.ArrayLengthProperty, countExpression);
             // "Should" add some other way for length instead of routing through a dictionary...
             // "Should" add efficient primitive array deserialization...
             Element dataElement = new DataElement(dataName, offsetExpression, littleEndianExpression,
-                new ArrayDeserializer(StringToDeserializer(typeName)), propertyGroup);
+                new ArrayDeserializer(StringToDeserializer(typeName)), GetPropertyGroup(context.property_group()),
+                standardProperties);
 
             _currentDefinition!.Members.Add((dataName, dataElement));
         }
@@ -108,19 +111,20 @@ namespace Linear
             string dataName = ids[2].GetText();
             (int _, bool littleEndian) = StringToPrimitiveInfo(typeName);
             ExpressionDefinition littleEndianExpression = new ConstantExpression<bool>(littleEndian);
-            var propertyGroup = GetPropertyGroup(context.property_group());
+            Dictionary<LinearUtil.StandardProperty, ExpressionDefinition> standardProperties =
+                new Dictionary<LinearUtil.StandardProperty, ExpressionDefinition>();
             bool lenFinder = context.PLUS() != null;
-            propertyGroup.Add(LinearUtil.PointerArrayLengthProperty,
+            standardProperties.Add(LinearUtil.StandardProperty.ArrayLengthProperty,
                 lenFinder
                     ? new OperatorDualExpression(countExpression, new ConstantExpression<int>(1),
                         OperatorDualExpression.Operator.Add)
                     : countExpression);
-            propertyGroup.Add(LinearUtil.PointerOffsetProperty, pointerOffsetExpression);
-            propertyGroup.Add(LinearUtil.ArrayLengthProperty, countExpression);
+            standardProperties.Add(LinearUtil.StandardProperty.PointerOffsetProperty, pointerOffsetExpression);
+            standardProperties.Add(LinearUtil.StandardProperty.PointerArrayLengthProperty, countExpression);
             ArrayDeserializer arrayDeserializer = new ArrayDeserializer(StringToDeserializer(typeName));
             Element dataElement = new DataElement(dataName, offsetExpression, littleEndianExpression,
                 new PointerArrayDeserializer(arrayDeserializer, StringToDeserializer(targetTypeName), lenFinder),
-                propertyGroup);
+                GetPropertyGroup(context.property_group()), standardProperties);
 
             _currentDefinition!.Members.Add((dataName, dataElement));
         }
@@ -140,8 +144,8 @@ namespace Linear
         public override void EnterStruct_statement_output(LinearParser.Struct_statement_outputContext context)
         {
             ExpressionDefinition formatExpression = new ConstantExpression<string>(context.IDENTIFIER().GetText());
-            ExpressionDefinition nameExpression = GetExpression(context.expr(0));
-            ExpressionDefinition rangeExpression = GetExpression(context.expr(1));
+            ExpressionDefinition rangeExpression = GetExpression(context.expr(0));
+            ExpressionDefinition nameExpression = GetExpression(context.expr(1));
             Element outputElement = new OutputElement(formatExpression, rangeExpression, nameExpression,
                 GetPropertyGroup(context.property_group()));
 

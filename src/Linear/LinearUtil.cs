@@ -22,9 +22,28 @@ namespace Linear
         /// </summary>
         public const string MainLayout = "main";
 
-        internal const string ArrayLengthProperty = "array_length";
+        /*internal const string ArrayLengthProperty = "array_length";
         internal const string PointerArrayLengthProperty = "pointer_array_length";
-        internal const string PointerOffsetProperty = "pointer_offset";
+        internal const string PointerOffsetProperty = "pointer_offset";*/
+
+        /// <summary>
+        /// Standard properties
+        /// </summary>
+        public enum StandardProperty
+        {
+            /// <summary>
+            /// Array length
+            /// </summary>
+            ArrayLengthProperty,
+            /// <summary>
+            /// Pointer length
+            /// </summary>
+            PointerArrayLengthProperty,
+            /// <summary>
+            /// Pointer offset
+            /// </summary>
+            PointerOffsetProperty
+        }
 
         /// <summary>
         /// Generate processor
