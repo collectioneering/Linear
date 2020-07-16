@@ -1,0 +1,14 @@
+// Unencrypted NDS rom image
+
+main {
+    fnt_entry[] fnt 0x40;
+    fat_entry[] fat 0x48;
+}
+
+fnt_entry {
+
+}
+
+fat_entry {
+
+}
