@@ -44,17 +44,14 @@ term_replacement_length: '$length';
 term_replacement_i: '$i';
 term_replacement_p: '$p' | '$parent';
 term_replacement_u: '$u' | '$unique';
-expr_member: IDENTIFIER '.' IDENTIFIER;
-expr_array_access: IDENTIFIER '[' WS? expr WS? ']';
-expr_un_op: un_op WS? expr;
 expr:
-	term
-	| expr_member
-	| expr_array_access
-	| expr WS? op WS? expr
-	| expr WS? bool_op WS? expr
-	| expr_un_op
-	| '(' WS? expr WS? ')';
+	term # ExprTerm
+	| IDENTIFIER '.' IDENTIFIER # ExprMember
+	| IDENTIFIER '[' WS? expr WS? ']' # ExprArrayAccess
+	| expr WS? op WS? expr # ExprOp
+	| expr WS? bool_op WS? expr # ExprBoolOp
+	| un_op WS? expr # ExprUnOp
+	| '(' WS? expr WS? ')' # ExprWrapped;
 
 op:
 	PLUS
@@ -76,17 +73,17 @@ bool_op:
 	| OP_LE
 	| OP_GE;
 term:
-	term_replacement_length
-	| term_replacement_i
-	| term_replacement_p
-	| term_replacement_u
-	| IDENTIFIER
-	| INTEGER_LITERAL
-	| HEX_INTEGER_LITERAL
-	| REAL_LITERAL
-	| CHARACTER_LITERAL
-	| REGULAR_STRING
-	| VERBATIM_STRING;
+	term_replacement_length # TermRepLength
+	| term_replacement_i # TermRepI
+	| term_replacement_p # TermRepP
+	| term_replacement_u # TermRepU
+	| IDENTIFIER # TermIdentifier
+	| INTEGER_LITERAL # TermInt
+	| HEX_INTEGER_LITERAL # TermHex
+	| REAL_LITERAL # TermReal
+	| CHARACTER_LITERAL # TermChar
+	| REGULAR_STRING # TermString
+	| VERBATIM_STRING # TermStringVerb;
 
 IDENTIFIER: '@'? IdentifierOrKeyword;
 WS: (Whitespace | NewLine)+;

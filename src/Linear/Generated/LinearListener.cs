@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generated from C:\Users\black\Documents\GitHub\Linear\scripts\\..\Linear.g4 by ANTLR 4.8
+// Generated from /Users/jake/Projects/GitHub/Linear/scripts/../Linear.g4 by ANTLR 4.8
 
 // Unreachable code detected
 #pragma warning disable 0162
@@ -201,45 +201,89 @@ public interface ILinearListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitTerm_replacement_u([NotNull] LinearParser.Term_replacement_uContext context);
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="LinearParser.expr_member"/>.
+	/// Enter a parse tree produced by the <c>ExprArrayAccess</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterExpr_member([NotNull] LinearParser.Expr_memberContext context);
+	void EnterExprArrayAccess([NotNull] LinearParser.ExprArrayAccessContext context);
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="LinearParser.expr_member"/>.
+	/// Exit a parse tree produced by the <c>ExprArrayAccess</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitExpr_member([NotNull] LinearParser.Expr_memberContext context);
+	void ExitExprArrayAccess([NotNull] LinearParser.ExprArrayAccessContext context);
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="LinearParser.expr_array_access"/>.
+	/// Enter a parse tree produced by the <c>ExprUnOp</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterExpr_array_access([NotNull] LinearParser.Expr_array_accessContext context);
+	void EnterExprUnOp([NotNull] LinearParser.ExprUnOpContext context);
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="LinearParser.expr_array_access"/>.
+	/// Exit a parse tree produced by the <c>ExprUnOp</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitExpr_array_access([NotNull] LinearParser.Expr_array_accessContext context);
+	void ExitExprUnOp([NotNull] LinearParser.ExprUnOpContext context);
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="LinearParser.expr_un_op"/>.
+	/// Enter a parse tree produced by the <c>ExprTerm</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterExpr_un_op([NotNull] LinearParser.Expr_un_opContext context);
+	void EnterExprTerm([NotNull] LinearParser.ExprTermContext context);
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="LinearParser.expr_un_op"/>.
+	/// Exit a parse tree produced by the <c>ExprTerm</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitExpr_un_op([NotNull] LinearParser.Expr_un_opContext context);
+	void ExitExprTerm([NotNull] LinearParser.ExprTermContext context);
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="LinearParser.expr"/>.
+	/// Enter a parse tree produced by the <c>ExprOp</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterExpr([NotNull] LinearParser.ExprContext context);
+	void EnterExprOp([NotNull] LinearParser.ExprOpContext context);
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="LinearParser.expr"/>.
+	/// Exit a parse tree produced by the <c>ExprOp</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitExpr([NotNull] LinearParser.ExprContext context);
+	void ExitExprOp([NotNull] LinearParser.ExprOpContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>ExprWrapped</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterExprWrapped([NotNull] LinearParser.ExprWrappedContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>ExprWrapped</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitExprWrapped([NotNull] LinearParser.ExprWrappedContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>ExprBoolOp</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterExprBoolOp([NotNull] LinearParser.ExprBoolOpContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>ExprBoolOp</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitExprBoolOp([NotNull] LinearParser.ExprBoolOpContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>ExprMember</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterExprMember([NotNull] LinearParser.ExprMemberContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>ExprMember</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitExprMember([NotNull] LinearParser.ExprMemberContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="LinearParser.op"/>.
 	/// </summary>
@@ -271,13 +315,135 @@ public interface ILinearListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitBool_op([NotNull] LinearParser.Bool_opContext context);
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="LinearParser.term"/>.
+	/// Enter a parse tree produced by the <c>TermRepLength</c>
+	/// labeled alternative in <see cref="LinearParser.term"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterTerm([NotNull] LinearParser.TermContext context);
+	void EnterTermRepLength([NotNull] LinearParser.TermRepLengthContext context);
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="LinearParser.term"/>.
+	/// Exit a parse tree produced by the <c>TermRepLength</c>
+	/// labeled alternative in <see cref="LinearParser.term"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitTerm([NotNull] LinearParser.TermContext context);
+	void ExitTermRepLength([NotNull] LinearParser.TermRepLengthContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>TermRepI</c>
+	/// labeled alternative in <see cref="LinearParser.term"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterTermRepI([NotNull] LinearParser.TermRepIContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>TermRepI</c>
+	/// labeled alternative in <see cref="LinearParser.term"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitTermRepI([NotNull] LinearParser.TermRepIContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>TermRepP</c>
+	/// labeled alternative in <see cref="LinearParser.term"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterTermRepP([NotNull] LinearParser.TermRepPContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>TermRepP</c>
+	/// labeled alternative in <see cref="LinearParser.term"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitTermRepP([NotNull] LinearParser.TermRepPContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>TermRepU</c>
+	/// labeled alternative in <see cref="LinearParser.term"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterTermRepU([NotNull] LinearParser.TermRepUContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>TermRepU</c>
+	/// labeled alternative in <see cref="LinearParser.term"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitTermRepU([NotNull] LinearParser.TermRepUContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>TermIdentifier</c>
+	/// labeled alternative in <see cref="LinearParser.term"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterTermIdentifier([NotNull] LinearParser.TermIdentifierContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>TermIdentifier</c>
+	/// labeled alternative in <see cref="LinearParser.term"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitTermIdentifier([NotNull] LinearParser.TermIdentifierContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>TermInt</c>
+	/// labeled alternative in <see cref="LinearParser.term"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterTermInt([NotNull] LinearParser.TermIntContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>TermInt</c>
+	/// labeled alternative in <see cref="LinearParser.term"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitTermInt([NotNull] LinearParser.TermIntContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>TermHex</c>
+	/// labeled alternative in <see cref="LinearParser.term"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterTermHex([NotNull] LinearParser.TermHexContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>TermHex</c>
+	/// labeled alternative in <see cref="LinearParser.term"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitTermHex([NotNull] LinearParser.TermHexContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>TermReal</c>
+	/// labeled alternative in <see cref="LinearParser.term"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterTermReal([NotNull] LinearParser.TermRealContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>TermReal</c>
+	/// labeled alternative in <see cref="LinearParser.term"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitTermReal([NotNull] LinearParser.TermRealContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>TermChar</c>
+	/// labeled alternative in <see cref="LinearParser.term"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterTermChar([NotNull] LinearParser.TermCharContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>TermChar</c>
+	/// labeled alternative in <see cref="LinearParser.term"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitTermChar([NotNull] LinearParser.TermCharContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>TermString</c>
+	/// labeled alternative in <see cref="LinearParser.term"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterTermString([NotNull] LinearParser.TermStringContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>TermString</c>
+	/// labeled alternative in <see cref="LinearParser.term"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitTermString([NotNull] LinearParser.TermStringContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>TermStringVerb</c>
+	/// labeled alternative in <see cref="LinearParser.term"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterTermStringVerb([NotNull] LinearParser.TermStringVerbContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>TermStringVerb</c>
+	/// labeled alternative in <see cref="LinearParser.term"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitTermStringVerb([NotNull] LinearParser.TermStringVerbContext context);
 }

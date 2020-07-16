@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generated from C:\Users\black\Documents\GitHub\Linear\scripts\\..\Linear.g4 by ANTLR 4.8
+// Generated from /Users/jake/Projects/GitHub/Linear/scripts/../Linear.g4 by ANTLR 4.8
 
 // Unreachable code detected
 #pragma warning disable 0162

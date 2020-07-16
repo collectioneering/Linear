@@ -8,10 +8,17 @@ namespace Linear.Runtime
     /// </summary>
     public class StructureInstance
     {
+        private int _u = 0;
+
+        /// <summary>
+        /// Index of structure in array
+        /// </summary>
+        public int Index { get; }
+
         /// <summary>
         /// Registry this structure belongs to
         /// </summary>
-        public StructureRegistry Registry;
+        public StructureRegistry Registry { get; }
 
         /// <summary>
         /// Absolute offset of structure
@@ -21,7 +28,7 @@ namespace Linear.Runtime
         /// <summary>
         /// Parent object
         /// </summary>
-        public StructureInstance? Parent;
+        public StructureInstance? Parent { get; }
 
         /// <summary>
         /// Length of structure
@@ -30,6 +37,12 @@ namespace Linear.Runtime
         /// Only available in trailing-length pointer array
         /// </remarks>
         public long Length { get; }
+
+        /// <summary>
+        /// Get unique sequential identifier
+        /// </summary>
+        /// <returns>Unique identifier</returns>
+        public int GetUniqueId() => Parent?.GetUniqueId() ?? _u++;
 
         private readonly Dictionary<string, object> _members = new Dictionary<string, object>();
 
@@ -45,13 +58,15 @@ namespace Linear.Runtime
         /// <param name="parent">Parent object</param>
         /// <param name="absoluteOffset">Absolute offset of structure</param>
         /// <param name="length">Length of structure</param>
+        /// <param name="i">Structure index</param>
         public StructureInstance(StructureRegistry registry, StructureInstance? parent, long absoluteOffset,
-            long length = 0)
+            long length = 0, int i = 0)
         {
             Registry = registry;
             Parent = parent;
             AbsoluteOffset = absoluteOffset;
             Length = length;
+            Index = i;
         }
 
         internal void SetMember(string name, object value) => _members[name] = value;
