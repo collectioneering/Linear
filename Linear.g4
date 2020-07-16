@@ -46,7 +46,7 @@ term_replacement_p: '$p' | '$parent';
 term_replacement_u: '$u' | '$unique';
 expr:
 	term # ExprTerm
-	| IDENTIFIER '.' IDENTIFIER # ExprMember
+	| expr '.' IDENTIFIER # ExprMember
 	| IDENTIFIER '[' WS? expr WS? ']' # ExprArrayAccess
 	| expr WS? op WS? expr # ExprOp
 	| expr WS? bool_op WS? expr # ExprBoolOp

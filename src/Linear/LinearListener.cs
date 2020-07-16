@@ -125,7 +125,8 @@ namespace Linear
                 case LinearParser.ExprBoolOpContext exprBoolOpContext:
                     break;
                 case LinearParser.ExprMemberContext exprMemberContext:
-                    break;
+                    return new ProxyMemberExpression(exprMemberContext.IDENTIFIER().GetText(),
+                        GetExpression(exprMemberContext.expr()));
                 case LinearParser.ExprOpContext exprOpContext:
                     break;
                 case LinearParser.ExprTermContext exprTermContext:
