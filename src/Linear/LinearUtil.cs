@@ -94,7 +94,11 @@ namespace Linear
                 {"ulongb", new PrimitiveDeserializer(typeof(ulong))},
                 {"longb", new PrimitiveDeserializer(typeof(long))},
                 {"float", new PrimitiveDeserializer(typeof(float))},
-                {"double", new PrimitiveDeserializer(typeof(double))}
+                {"double", new PrimitiveDeserializer(typeof(double))},
+                {"string", new StringDeserializer(StringDeserializer.Mode.Utf8Fixed)},
+                {"cstring", new StringDeserializer(StringDeserializer.Mode.Utf8Null)},
+                {"string16", new StringDeserializer(StringDeserializer.Mode.Utf16Fixed)},
+                {"cstring16", new StringDeserializer(StringDeserializer.Mode.Utf16Null)},
             };
 
         /// <summary>
@@ -306,6 +310,26 @@ namespace Linear
                 _ => throw new InvalidCastException(
                     $"Could not cast from type {number?.GetType().FullName} to {typeof(long)}")
             };
+        }
+
+        internal static bool TryCastLong(object? number, out long value)
+        {
+            (long item1, bool item2) = number switch
+            {
+                byte b => (b, true),
+                sbyte b => (b, true),
+                ushort b => (b, true),
+                short b => (b, true),
+                uint b => (b, true),
+                int b => (b, true),
+                ulong b => ((long)b, true),
+                long b => (b, true),
+                float b => ((long)b, true),
+                double b => ((long)b, true),
+                _ => (0, false)
+            };
+            value = item1;
+            return item2;
         }
 
         internal static bool ReadBool(Stream stream, long offset, byte[]? tempBuffer)

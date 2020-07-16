@@ -5,7 +5,6 @@ struct: IDENTIFIER WS? OPEN WS? (struct_statement WS?)* CLOSE;
 struct_statement:
 	struct_statement_define
 	| struct_statement_define_value
-	| struct_statement_define_range
 	| struct_statement_define_array
 	| struct_statement_define_array_indirect
 	| struct_statement_output
@@ -16,8 +15,6 @@ struct_statement_define:
 struct_statement_define_value:
 //	'value' WS IDENTIFIER WS IDENTIFIER WS expr WS? ENDL;
 	'value' WS IDENTIFIER WS expr WS? ENDL;
-struct_statement_define_range:
-	'range' WS IDENTIFIER WS? (range_end | range_length) WS? ENDL;
 struct_statement_define_array:
 	IDENTIFIER OPENSQ WS? expr WS? CLOSESQ WS? IDENTIFIER WS? expr WS? property_group? ENDL;
 struct_statement_define_array_indirect:
@@ -29,11 +26,6 @@ struct_statement_output:
 	'output' WS IDENTIFIER WS expr WS expr WS? property_group? ENDL;
 // maybe "outputvar" for expression-based format selection?
 struct_statement_comment: '//' ~ENDL* ENDL;
-
-range_end:
-	OPENSQ WS? expr WS? ',' WS? 'end:' WS? expr WS? CLOSESQ;
-range_length:
-	OPENSQ WS? expr WS? ',' WS? 'length:' WS? expr WS? CLOSESQ;
 
 OPEN: '{';
 CLOSE: '}';
@@ -51,6 +43,8 @@ term_replacement_p: '$p' | '$parent';
 term_replacement_u: '$u' | '$unique';
 expr:
 	term # ExprTerm
+	| OPENSQ WS? expr WS? ',' WS? 'end:' WS? expr WS? CLOSESQ # ExprRangeEnd
+	| OPENSQ WS? expr WS? ',' WS? 'length:' WS? expr WS? CLOSESQ # ExprRangeLength
 	| expr '.' IDENTIFIER # ExprMember
 	| expr '[' WS? expr WS? ']' # ExprArrayAccess
 	| expr WS? op WS? expr # ExprOp

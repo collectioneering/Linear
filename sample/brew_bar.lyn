@@ -1,8 +1,7 @@
 entry {
 short hLength 0x0;
 string type [2, end: hLength];
-range data [hLength, end: $length];
-output compressed data $i {
+output compressed [hLength, end: $length] $i {
     format="gzip";
 };
 }

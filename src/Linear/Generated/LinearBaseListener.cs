@@ -95,18 +95,6 @@ public partial class LinearBaseListener : ILinearListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitStruct_statement_define_value([NotNull] LinearParser.Struct_statement_define_valueContext context) { }
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="LinearParser.struct_statement_define_range"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterStruct_statement_define_range([NotNull] LinearParser.Struct_statement_define_rangeContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="LinearParser.struct_statement_define_range"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitStruct_statement_define_range([NotNull] LinearParser.Struct_statement_define_rangeContext context) { }
-	/// <summary>
 	/// Enter a parse tree produced by <see cref="LinearParser.struct_statement_define_array"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
@@ -154,30 +142,6 @@ public partial class LinearBaseListener : ILinearListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitStruct_statement_comment([NotNull] LinearParser.Struct_statement_commentContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="LinearParser.range_end"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterRange_end([NotNull] LinearParser.Range_endContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="LinearParser.range_end"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitRange_end([NotNull] LinearParser.Range_endContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="LinearParser.range_length"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterRange_length([NotNull] LinearParser.Range_lengthContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="LinearParser.range_length"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitRange_length([NotNull] LinearParser.Range_lengthContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="LinearParser.property_group"/>.
 	/// <para>The default implementation does nothing.</para>
@@ -307,6 +271,20 @@ public partial class LinearBaseListener : ILinearListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitExprOp([NotNull] LinearParser.ExprOpContext context) { }
 	/// <summary>
+	/// Enter a parse tree produced by the <c>ExprRangeLength</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterExprRangeLength([NotNull] LinearParser.ExprRangeLengthContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>ExprRangeLength</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitExprRangeLength([NotNull] LinearParser.ExprRangeLengthContext context) { }
+	/// <summary>
 	/// Enter a parse tree produced by the <c>ExprWrapped</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
 	/// <para>The default implementation does nothing.</para>
@@ -334,6 +312,20 @@ public partial class LinearBaseListener : ILinearListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitExprMember([NotNull] LinearParser.ExprMemberContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by the <c>ExprRangeEnd</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterExprRangeEnd([NotNull] LinearParser.ExprRangeEndContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>ExprRangeEnd</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitExprRangeEnd([NotNull] LinearParser.ExprRangeEndContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="LinearParser.op"/>.
 	/// <para>The default implementation does nothing.</para>

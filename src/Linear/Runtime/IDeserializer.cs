@@ -26,6 +26,6 @@ namespace Linear.Runtime
         /// <param name="length">Length of structure</param>
         /// <returns>Deserialized object</returns>
         public abstract object Deserialize(StructureInstance instance, Stream stream, byte[] tempBuffer, long offset, bool littleEndian,
-            Dictionary<string, object>? parameters, int length = 0);
+            Dictionary<string, object>? parameters, long length = 0);
     }
 }

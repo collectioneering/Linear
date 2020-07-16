@@ -90,27 +90,6 @@ namespace Linear
             _currentDefinition!.Members.Add((dataName, dataElement));
         }
 
-        public override void EnterStruct_statement_define_range(
-            LinearParser.Struct_statement_define_rangeContext context)
-        {
-            string dataName = context.IDENTIFIER().GetText();
-            ExpressionDefinition expr;
-            if (context.range_end() is {} range_end)
-            {
-                LinearParser.ExprContext[] exprs = range_end.expr();
-                expr = new RangeExpression(GetExpression(exprs[0]), GetExpression(exprs[1]), null);
-            }
-            else
-            {
-                LinearParser.ExprContext[] exprs = context.range_length().expr();
-                expr = new RangeExpression(GetExpression(exprs[0]), null, GetExpression(exprs[1]));
-            }
-
-            Element dataElement = new ValueElement(dataName, expr);
-
-            _currentDefinition!.Members.Add((dataName, dataElement));
-        }
-
         public override void EnterStruct_statement_output(LinearParser.Struct_statement_outputContext context)
         {
             ExpressionDefinition formatExpression = new ConstantExpression<string>(context.IDENTIFIER().GetText());
@@ -172,6 +151,8 @@ namespace Linear
                 LinearParser.ExprOpContext exprOpContext => new OperatorDualExpression(
                     GetExpression(exprOpContext.expr(0)), GetExpression(exprOpContext.expr(1)),
                     OperatorDualExpression.GetOperator(exprOpContext.op().GetText())),
+                LinearParser.ExprRangeEndContext exprRangeEndContext => new RangeExpression(GetExpression(exprRangeEndContext.expr(0)), GetExpression(exprRangeEndContext.expr(1)), null),
+                LinearParser.ExprRangeLengthContext exprRangeLengthContext => new RangeExpression(GetExpression(exprRangeLengthContext.expr(0)), null, GetExpression(exprRangeLengthContext.expr(1))),
                 LinearParser.ExprTermContext exprTermContext => GetTerm(exprTermContext.term()),
                 LinearParser.ExprUnOpContext exprUnOpContext => new OperatorUnaryExpression(
                     GetExpression(exprUnOpContext.expr()),

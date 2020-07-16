@@ -81,16 +81,6 @@ public interface ILinearListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitStruct_statement_define_value([NotNull] LinearParser.Struct_statement_define_valueContext context);
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="LinearParser.struct_statement_define_range"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterStruct_statement_define_range([NotNull] LinearParser.Struct_statement_define_rangeContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="LinearParser.struct_statement_define_range"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitStruct_statement_define_range([NotNull] LinearParser.Struct_statement_define_rangeContext context);
-	/// <summary>
 	/// Enter a parse tree produced by <see cref="LinearParser.struct_statement_define_array"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -130,26 +120,6 @@ public interface ILinearListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitStruct_statement_comment([NotNull] LinearParser.Struct_statement_commentContext context);
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="LinearParser.range_end"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterRange_end([NotNull] LinearParser.Range_endContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="LinearParser.range_end"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitRange_end([NotNull] LinearParser.Range_endContext context);
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="LinearParser.range_length"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterRange_length([NotNull] LinearParser.Range_lengthContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="LinearParser.range_length"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitRange_length([NotNull] LinearParser.Range_lengthContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="LinearParser.property_group"/>.
 	/// </summary>
@@ -259,6 +229,18 @@ public interface ILinearListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitExprOp([NotNull] LinearParser.ExprOpContext context);
 	/// <summary>
+	/// Enter a parse tree produced by the <c>ExprRangeLength</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterExprRangeLength([NotNull] LinearParser.ExprRangeLengthContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>ExprRangeLength</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitExprRangeLength([NotNull] LinearParser.ExprRangeLengthContext context);
+	/// <summary>
 	/// Enter a parse tree produced by the <c>ExprWrapped</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
 	/// </summary>
@@ -282,6 +264,18 @@ public interface ILinearListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitExprMember([NotNull] LinearParser.ExprMemberContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>ExprRangeEnd</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterExprRangeEnd([NotNull] LinearParser.ExprRangeEndContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>ExprRangeEnd</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitExprRangeEnd([NotNull] LinearParser.ExprRangeEndContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="LinearParser.op"/>.
 	/// </summary>

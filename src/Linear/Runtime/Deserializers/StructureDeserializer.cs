@@ -24,7 +24,7 @@ namespace Linear.Runtime.Deserializers
 
         /// <inheritdoc />
         public object Deserialize(StructureInstance instance, Stream stream, byte[] tempBuffer, long offset,
-            bool littleEndian, Dictionary<string, object>? parameters, int length = 0)
+            bool littleEndian, Dictionary<string, object>? parameters, long length = 0)
         {
             return instance.Registry[_name].Parse(instance.Registry, stream, offset, length, instance);
         }
