@@ -88,8 +88,7 @@ namespace Linear.Runtime
         }
 
         private IEnumerable<(StructureInstance instance, string name, string format, Dictionary<string, object>?
-            parameters,
-            (long offset, long length) range)> GetOutputsInternal(bool recurse = true)
+            parameters, (long offset, long length) range)> GetOutputsInternal(bool recurse = true)
         {
             var outputs = _outputs.Select(x => (this, x.name, x.format, x.parameters, x.range));
             if (recurse)

@@ -1,4 +1,6 @@
-// "main": a structure named "main" (one with this name is required)
+// BREW MP .bar file (found in NFS Undercover)
+
+// structure named "main" (one with this name is required)
 main {
 
 // "countOffset": literal value 0x14 (only using as an example, could just put 0x14 into "count")
@@ -13,12 +15,13 @@ int count 0x14;
  *
  * the + in ->+ means the difference between an offset and the next one
  * is used to populate the $length variable if the elements are structures
+ * (this also means the int array will need to have count+1 elements)
  */
 int[count] ->+ entry[] table 0x28,0;
 
 }
 
-// "entry": sub-entry
+// sub-entry
 entry {
 
 // "hLength": Variable of type short (s16le) at "0x0" relative to this structure
