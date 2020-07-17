@@ -25,15 +25,17 @@ namespace Linear.Runtime.Elements
 
 
         /// <inheritdoc />
-        public override IEnumerable<Element> GetDependencies(StructureDefinition definition) => _expression.GetDependencies(definition);
+        public override IEnumerable<Element> GetDependencies(StructureDefinition definition) =>
+            _expression.GetDependencies(definition);
 
         /// <inheritdoc />
         public override Action<StructureInstance, Stream, byte[]> GetDelegate()
         {
             Func<StructureInstance, Stream, byte[], object?> expressionDelegate = _expression.GetDelegate();
-             return (instance, stream, tempBuffer) =>
-             {
-                 object? expression = expressionDelegate(instance, stream, tempBuffer) ?? throw new NullReferenceException();
+            return (instance, stream, tempBuffer) =>
+            {
+                object? expression = expressionDelegate(instance, stream, tempBuffer) ??
+                                     throw new NullReferenceException();
                 instance.SetMember(_name, expression);
             };
         }

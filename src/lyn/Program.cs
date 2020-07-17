@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using CommandLine;
 using Linear;
 using Linear.Runtime;
 
@@ -11,8 +10,17 @@ namespace lyn
     [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Local")]
     internal static class Program
     {
-        private static int Main(string[] args) =>
-            Parser.Default.ParseArguments<Configuration>(args).MapResult(Run, errors => 1);
+        private static int Main(string[] args)
+        {
+            //return Parser.Default.ParseArguments<Configuration>(args).MapResult(Run, errors => 1);
+            if (args.Length != 3)
+            {
+                Console.WriteLine("Usage: <formatFile> <input> <outputDir>");
+                return 1;
+            }
+
+            return Run(new Configuration(args[0], args[1], args[2]));
+        }
 
         private static int Run(Configuration conf)
         {
@@ -71,14 +79,21 @@ namespace lyn
 
         private class Configuration
         {
-            [Value(0, Required = true, MetaName = nameof(LayoutFile))]
+            //[Value(0, Required = true, MetaName = nameof(LayoutFile))]
             public string? LayoutFile { get; set; }
 
-            [Value(1, Required = true, MetaName = nameof(Input))]
+            //[Value(1, Required = true, MetaName = nameof(Input))]
             public string? Input { get; set; }
 
-            [Value(2, Required = true, MetaName = nameof(OutputDir))]
+            //[Value(2, Required = true, MetaName = nameof(OutputDir))]
             public string? OutputDir { get; set; }
+
+            internal Configuration(string layoutFile, string input, string outputDir)
+            {
+                LayoutFile = layoutFile;
+                Input = input;
+                OutputDir = outputDir;
+            }
         }
     }
 }

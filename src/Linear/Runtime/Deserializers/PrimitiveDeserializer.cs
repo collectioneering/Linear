@@ -28,7 +28,8 @@ namespace Linear.Runtime.Deserializers
 
         /// <inheritdoc />
         public (object value, long length) Deserialize(StructureInstance instance, Stream stream, byte[] tempBuffer,
-            long offset, bool littleEndian, Dictionary<LinearCommon.StandardProperty, object>? standardProperties,Dictionary<string, object>? parameters, long length = 0, int index = 0)
+            long offset, bool littleEndian, Dictionary<LinearCommon.StandardProperty, object>? standardProperties,
+            Dictionary<string, object>? parameters, long length = 0, int index = 0)
         {
             // Possible addition: property group support little endian (requires boolean expressions)
             offset += instance.AbsoluteOffset;

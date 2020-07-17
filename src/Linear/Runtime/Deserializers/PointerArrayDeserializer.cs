@@ -42,7 +42,7 @@ namespace Linear.Runtime.Deserializers
             long offset, bool littleEndian, Dictionary<LinearCommon.StandardProperty, object>? standardProperties,
             Dictionary<string, object>? parameters, long length = 0, int index = 0)
         {
-            if(standardProperties == null) throw new NullReferenceException();
+            if (standardProperties == null) throw new NullReferenceException();
             (object src, _) = _mainDeserializer.Deserialize(instance, stream, tempBuffer, offset, littleEndian,
                 standardProperties, parameters);
             Array baseArray = (Array)src;

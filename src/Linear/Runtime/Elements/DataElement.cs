@@ -74,7 +74,9 @@ namespace Linear.Runtime.Elements
                             kvp.Value(instance, stream, tempBuffer) ?? throw new NullReferenceException();
 
                 Dictionary<LinearCommon.StandardProperty, object>? standardProperties =
-                    standardPropertiesCompact.Count != 0 ? new Dictionary<LinearCommon.StandardProperty, object>() : null;
+                    standardPropertiesCompact.Count != 0
+                        ? new Dictionary<LinearCommon.StandardProperty, object>()
+                        : null;
                 if (standardProperties != null)
                     foreach (var kvp in standardPropertiesCompact)
                         standardProperties[kvp.Key] =

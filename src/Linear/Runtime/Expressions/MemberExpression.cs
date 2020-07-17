@@ -28,6 +28,7 @@ namespace Linear.Runtime.Expressions
         }
 
         /// <inheritdoc />
-        public override Func<StructureInstance, Stream, byte[], object?> GetDelegate() => (instance, stream, tempBuffer) => instance[_name];
+        public override Func<StructureInstance, Stream, byte[], object?> GetDelegate() =>
+            (instance, stream, tempBuffer) => instance[_name];
     }
 }

@@ -84,7 +84,8 @@ namespace Linear.Runtime.Deserializers
 
         /// <inheritdoc />
         public (object value, long length) Deserialize(StructureInstance instance, Stream stream, byte[] tempBuffer,
-            long offset, bool littleEndian,Dictionary<LinearCommon.StandardProperty, object>? standardProperties, Dictionary<string, object>? parameters, long length = 0, int index = 0)
+            long offset, bool littleEndian, Dictionary<LinearCommon.StandardProperty, object>? standardProperties,
+            Dictionary<string, object>? parameters, long length = 0, int index = 0)
         {
             stream.Position = instance.AbsoluteOffset + offset;
             switch (_mode)
@@ -92,7 +93,9 @@ namespace Linear.Runtime.Deserializers
                 case Mode.Utf8Fixed:
                 {
                     (string item1, int item2) = ReadUtf8String(stream, (int)length);
-                    if(length != item2) throw new Exception($"UTF-8 fixed length mismatch between specified length {length} and result length {item2}");
+                    if (length != item2)
+                        throw new Exception(
+                            $"UTF-8 fixed length mismatch between specified length {length} and result length {item2}");
                     return (item1, item2);
                 }
                 case Mode.Utf8Null:
@@ -103,7 +106,9 @@ namespace Linear.Runtime.Deserializers
                 case Mode.Utf16Fixed:
                 {
                     (string item1, int item2) = ReadUtf16String(stream, (int)length);
-                    if(length != item2) throw new Exception($"UTF-16 fixed length mismatch between specified length {length} and result length {item2}");
+                    if (length != item2)
+                        throw new Exception(
+                            $"UTF-16 fixed length mismatch between specified length {length} and result length {item2}");
                     return (item1, item2);
                 }
                 case Mode.Utf16Null:

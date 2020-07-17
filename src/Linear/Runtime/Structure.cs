@@ -49,7 +49,8 @@ namespace Linear.Runtime
             StructureInstance? parent = null, long length = 0, int index = 0)
         {
             byte[] tempBuf = new byte[sizeof(ulong)];
-            StructureInstance instance = new StructureInstance(registry, parent, offset, length == 0 ? DefaultLength : length, index);
+            StructureInstance instance =
+                new StructureInstance(registry, parent, offset, length == 0 ? DefaultLength : length, index);
             foreach ((string? _, Action<StructureInstance, Stream, byte[]> method) in _members)
             {
                 method(instance, stream, tempBuf);

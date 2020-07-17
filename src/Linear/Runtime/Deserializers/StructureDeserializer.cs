@@ -27,10 +27,13 @@ namespace Linear.Runtime.Deserializers
         public Type GetTargetType() => typeof(StructureInstance);
 
         /// <inheritdoc />
-        public (object value, long length) Deserialize(StructureInstance instance, Stream stream, byte[] tempBuffer, long offset,
-            bool littleEndian, Dictionary<LinearCommon.StandardProperty, object>? standardProperties,Dictionary<string, object>? parameters, long length = 0, int index = 0)
+        public (object value, long length) Deserialize(StructureInstance instance, Stream stream, byte[] tempBuffer,
+            long offset,
+            bool littleEndian, Dictionary<LinearCommon.StandardProperty, object>? standardProperties,
+            Dictionary<string, object>? parameters, long length = 0, int index = 0)
         {
-            StructureInstance i = instance.Registry[_name].Parse(instance.Registry, stream, offset, instance, length, index);
+            StructureInstance i = instance.Registry[_name]
+                .Parse(instance.Registry, stream, offset, instance, length, index);
             return (i, i.Length);
         }
     }

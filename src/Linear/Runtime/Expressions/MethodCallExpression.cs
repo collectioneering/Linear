@@ -38,7 +38,8 @@ namespace Linear.Runtime.Expressions
         /// <inheritdoc />
         public override Func<StructureInstance, Stream, byte[], object?> GetDelegate()
         {
-            List<Func<StructureInstance, Stream, byte[], object?>> argsCompact = _args.Select(arg => arg.GetDelegate()).ToList();
+            List<Func<StructureInstance, Stream, byte[], object?>> argsCompact =
+                _args.Select(arg => arg.GetDelegate()).ToList();
             return (instance, stream, tempBuffer) =>
             {
                 object?[] res = argsCompact.Select(arg => arg(instance, stream, tempBuffer)).ToArray();
