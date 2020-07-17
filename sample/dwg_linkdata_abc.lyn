@@ -8,6 +8,6 @@ main {
 file 0x8 {
     intb offsetChunk 0;
     intb length 0x4;
-    value offset offsetChunk * 0x800;
+    value offset (offsetChunk * 0x800) - ($i * 8) - 0x10; // TODO support $a replacement for absolute offset
     output data [offset, length: length] $i+".dat";
 }
