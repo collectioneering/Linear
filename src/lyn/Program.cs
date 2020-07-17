@@ -18,8 +18,8 @@ namespace lyn
         private static int Run(Configuration conf)
         {
             StructureRegistry registry;
-            using (FileStream fs = File.OpenRead(conf.LayoutFile))
-                registry = LinearUtil.GenerateRegistry(fs);
+            using (StreamReader sr = File.OpenText(conf.LayoutFile))
+                registry = LinearUtil.GenerateRegistry(sr);
             if (!registry.TryGetValue(LinearUtil.MainLayout, out Structure structure))
             {
                 Console.WriteLine($"Failed to find structure named {LinearUtil.MainLayout}");

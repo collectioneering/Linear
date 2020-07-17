@@ -199,9 +199,21 @@ namespace Linear
                     GetExpression(exprArrayAccessContext.expr(0)), GetExpression(exprArrayAccessContext.expr(1))),
                 LinearParser.ExprMemberContext exprMemberContext => new ProxyMemberExpression(
                     exprMemberContext.IDENTIFIER().GetText(), GetExpression(exprMemberContext.expr())),
-                LinearParser.ExprOpContext exprOpContext => new OperatorDualExpression(
-                    GetExpression(exprOpContext.expr(0)), GetExpression(exprOpContext.expr(1)),
-                    OperatorDualExpression.GetOperator(exprOpContext.op().GetText())),
+                LinearParser.ExprOpAddSubContext exprOpAddSubContext =>  new OperatorDualExpression(
+                    GetExpression(exprOpAddSubContext.expr(0)), GetExpression(exprOpAddSubContext.expr(1)),
+                    OperatorDualExpression.GetOperator(exprOpAddSubContext.op_add_sub().GetText())),
+                LinearParser.ExprOpAmpContext exprOpAmpContext => new OperatorDualExpression(
+                    GetExpression(exprOpAmpContext.expr(0)), GetExpression(exprOpAmpContext.expr(1)),
+                    OperatorDualExpression.GetOperator(exprOpAmpContext.AMP().GetText())),
+                LinearParser.ExprOpBitwiseOrContext exprOpBitwiseOrContext => new OperatorDualExpression(
+                    GetExpression(exprOpBitwiseOrContext.expr(0)), GetExpression(exprOpBitwiseOrContext.expr(1)),
+                    OperatorDualExpression.GetOperator(exprOpBitwiseOrContext.BITWISE_OR().GetText())),
+                LinearParser.ExprOpCaretContext exprOpCaretContext => new OperatorDualExpression(
+                    GetExpression(exprOpCaretContext.expr(0)), GetExpression(exprOpCaretContext.expr(1)),
+                    OperatorDualExpression.GetOperator(exprOpCaretContext.CARET().GetText())),
+                LinearParser.ExprOpMulDivContext exprOpMulDivContext =>  new OperatorDualExpression(
+                    GetExpression(exprOpMulDivContext.expr(0)), GetExpression(exprOpMulDivContext.expr(1)),
+                    OperatorDualExpression.GetOperator(exprOpMulDivContext.op_mul_div().GetText())),
                 LinearParser.ExprRangeEndContext exprRangeEndContext => new RangeExpression(
                     GetExpression(exprRangeEndContext.expr(0)), GetExpression(exprRangeEndContext.expr(1)), null),
                 LinearParser.ExprRangeLengthContext exprRangeLengthContext => new RangeExpression(
@@ -229,6 +241,7 @@ namespace Linear
                     long.Parse(termIntContext.GetText())),
                 LinearParser.TermRealContext termRealContext => new ConstantExpression<double>(
                     double.Parse(termRealContext.GetText())),
+                LinearParser.TermRepAContext _ => new StructureEvaluateExpression<long>(i => i.AbsoluteOffset),
                 LinearParser.TermRepIContext _ => new StructureEvaluateExpression<long>(i => i.Index),
                 LinearParser.TermRepLengthContext _ => new StructureEvaluateExpression<long>(i =>
                     i.Length),

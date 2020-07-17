@@ -51,6 +51,7 @@ property_group: OPEN (WS? property_statement)* WS? CLOSE WS?;
 property_statement: IDENTIFIER WS? '=' WS? expr WS? ';';
 
 term_replacement_length: '$length';
+term_replacement_a: '$a';
 term_replacement_i: '$i';
 term_replacement_p: '$p' | '$parent';
 term_replacement_u: '$u' | '$unique';
@@ -60,10 +61,14 @@ expr:
 	| OPENSQ WS? expr WS? ',' WS? 'length:' WS? expr WS? CLOSESQ	# ExprRangeLength
 	| expr '.' IDENTIFIER											# ExprMember
 	| expr '[' WS? expr WS? ']'										# ExprArrayAccess
-	| expr WS? op WS? expr											# ExprOp
-	//	| expr WS? bool_op WS? expr # ExprBoolOp
-	| un_op WS? expr		# ExprUnOp
-	| '(' WS? expr WS? ')'	# ExprWrapped;
+	| '(' WS? expr WS? ')'											# ExprWrapped
+	| un_op WS? expr												# ExprUnOp
+	| expr WS? op_mul_div WS? expr									# ExprOpMulDiv
+	| expr WS? op_add_sub WS? expr									# ExprOpAddSub
+	| expr WS? AMP WS? expr											# ExprOpAmp
+	| expr WS? CARET WS? expr										# ExprOpCaret
+	| expr WS? BITWISE_OR WS? expr									# ExprOpBitwiseOr;
+//	| expr WS? bool_op WS? expr # ExprBoolOp
 
 OPEN: '{';
 CLOSE: '}';
@@ -71,15 +76,8 @@ OPENSQ: '[';
 CLOSESQ: ']';
 ENDL: ';';
 
-op:
-	PLUS
-	| MINUS
-	| STAR
-	| DIV
-	| PERCENT
-	| AMP
-	| BITWISE_OR
-	| CARET;
+op_mul_div: STAR | DIV | PERCENT;
+op_add_sub: PLUS | MINUS;
 un_op: PLUS | MINUS | BANG | TILDE;
 bool_op:
 	LT
@@ -95,6 +93,7 @@ struct_size:
 	| HEX_INTEGER_LITERAL	# StrictSizeHex;
 term:
 	term_replacement_length	# TermRepLength
+	| term_replacement_a	# TermRepA
 	| term_replacement_i	# TermRepI
 	| term_replacement_p	# TermRepP
 	| term_replacement_u	# TermRepU

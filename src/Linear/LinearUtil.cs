@@ -48,9 +48,9 @@ namespace Linear
         /// <summary>
         /// Generate processor
         /// </summary>
-        /// <param name="input">Lyn format stream</param>
+        /// <param name="input">Lyn format reader</param>
         /// <param name="deserializers">Custom deserializers to use</param>
-        public static StructureRegistry GenerateRegistry(Stream input,
+        public static StructureRegistry GenerateRegistry(TextReader input,
             IReadOnlyCollection<IDeserializer>? deserializers = null)
         {
             var inputStream = new AntlrInputStream(input);

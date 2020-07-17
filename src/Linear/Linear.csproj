@@ -15,7 +15,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <PackageVersion>0.1.0</PackageVersion>
+    <PackageVersion>0.1.1</PackageVersion>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>3021;1584;1658</NoWarn>
     <Nullable>enable</Nullable>
