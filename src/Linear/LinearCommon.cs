@@ -53,11 +53,16 @@ namespace Linear
         /// Generate processor
         /// </summary>
         /// <param name="input">Lyn format reader</param>
+        /// <param name="registry">Generated registry</param>
+        /// <param name="logDelegate">Log delegate</param>
         /// <param name="deserializers">Custom deserializers to use</param>
         /// <param name="methods">Custom expression methods to use</param>
-        public static StructureRegistry GenerateRegistry(TextReader input,
+        /// <param name="errorHandler">Parser error handler</param>
+        /// <returns>True if succeeded</returns>
+        public static bool TryGenerateRegistry(TextReader input, out StructureRegistry? registry, Action<string> logDelegate,
             IReadOnlyCollection<IDeserializer>? deserializers = null,
-            IReadOnlyCollection<(string, MethodCallExpression.MethodCallDelegate)>? methods = null)
+            IReadOnlyCollection<(string, MethodCallExpression.MethodCallDelegate)>? methods = null,
+            IAntlrErrorStrategy? errorHandler = null)
         {
             var inputStream = new AntlrInputStream(input);
             var lexer = new LinearLexer(inputStream);
@@ -65,16 +70,27 @@ namespace Linear
             var parser = new LinearParser(tokens);
 
             var listenerPre = new LinearPreListener();
-            parser.ErrorHandler = new BailErrorStrategy();
+            if (errorHandler != null)
+                parser.ErrorHandler = errorHandler;
             ParseTreeWalker.Default.Walk(listenerPre, parser.compilation_unit());
+            if (listenerPre.Fail)
+            {
+                registry = null;
+                return false;
+            }
+
             Dictionary<string, IDeserializer> r_deserializers = CreateDefaultDeserializerRegistry();
             if (deserializers != null)
             {
                 foreach (var deserializer in deserializers)
                 {
-                    string dname =
-                        deserializer.GetTargetTypeName() ??
-                        throw new NullReferenceException("Target name is required for user-defined deserializers");
+                    string? dname = deserializer.GetTargetTypeName();
+                    if (dname == null)
+                    {
+                        logDelegate( "Target name is required for all user-defined deserializers");
+                        registry = null;
+                        return false;
+                    }
                     r_deserializers[dname] = deserializer;
                 }
             }
@@ -90,17 +106,17 @@ namespace Linear
 
             foreach (string name in listenerPre.GetStructureNames())
                 r_deserializers[name] = new StructureDeserializer(name);
-            var listener = new LinearListener(r_deserializers, r_methods);
+            var listener = new LinearListener(r_deserializers, r_methods, logDelegate);
             parser.Reset();
             ParseTreeWalker.Default.Walk(listener, parser.compilation_unit());
             List<StructureDefinition> structures = listener.GetStructures();
-            StructureRegistry registry = new StructureRegistry();
+            registry = new StructureRegistry();
             foreach (StructureDefinition structure in structures)
             {
                 registry.Add(structure.Build());
             }
 
-            return registry;
+            return true;
         }
 
         private static readonly Dictionary<string, MethodCallExpression.MethodCallDelegate> _defaultMethods =

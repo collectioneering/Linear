@@ -16,18 +16,19 @@ namespace Linear
     {
         private readonly Dictionary<string, IDeserializer> _deserializers;
         private readonly Dictionary<string, MethodCallExpression.MethodCallDelegate> _methods;
-
         private readonly List<StructureDefinition> _structures;
+        private readonly Action<string> _logTarget;
 
         /// <summary>
         /// Create new instance of <see cref="LinearListener"/>
         /// </summary>
         public LinearListener(Dictionary<string, IDeserializer> deserializers,
-            Dictionary<string, MethodCallExpression.MethodCallDelegate> methods)
+            Dictionary<string, MethodCallExpression.MethodCallDelegate> methods, Action<string> logTarget)
         {
             _deserializers = deserializers;
             _methods = methods;
             _structures = new List<StructureDefinition>();
+            _logTarget = logTarget;
         }
 
         /// <summary>
@@ -69,8 +70,10 @@ namespace Linear
             string dataName = ids[1].GetText();
             (int _, bool littleEndian) = StringToPrimitiveInfo(typeName);
             ExpressionDefinition littleEndianExpression = new ConstantExpression<bool>(littleEndian);
+            IDeserializer? deserializer = StringToDeserializer(typeName);
+            if (deserializer == null) return;
             Element dataElement = new DataElement(dataName, offsetExpression, littleEndianExpression,
-                StringToDeserializer(typeName), GetPropertyGroup(context.property_group()),
+                deserializer, GetPropertyGroup(context.property_group()),
                 new Dictionary<LinearCommon.StandardProperty, ExpressionDefinition>());
 
             _currentDefinition!.Members.Add((dataName, dataElement));
@@ -92,8 +95,10 @@ namespace Linear
             standardProperties.Add(LinearCommon.StandardProperty.ArrayLengthProperty, countExpression);
             // "Should" add some other way for length instead of routing through a dictionary...
             // "Should" add efficient primitive array deserialization...
+            IDeserializer? deserializer = StringToDeserializer(typeName);
+            if (deserializer == null) return;
             Element dataElement = new DataElement(dataName, offsetExpression, littleEndianExpression,
-                new ArrayDeserializer(StringToDeserializer(typeName)), GetPropertyGroup(context.property_group()),
+                new ArrayDeserializer(deserializer), GetPropertyGroup(context.property_group()),
                 standardProperties);
 
             _currentDefinition!.Members.Add((dataName, dataElement));
@@ -122,9 +127,13 @@ namespace Linear
                     : countExpression);
             standardProperties.Add(LinearCommon.StandardProperty.PointerOffsetProperty, pointerOffsetExpression);
             standardProperties.Add(LinearCommon.StandardProperty.PointerArrayLengthProperty, countExpression);
-            ArrayDeserializer arrayDeserializer = new ArrayDeserializer(StringToDeserializer(typeName));
+            IDeserializer? deserializer = StringToDeserializer(typeName);
+            if (deserializer == null) return;
+            IDeserializer? targetDeserializer = StringToDeserializer(targetTypeName);
+            if (targetDeserializer == null) return;
+            ArrayDeserializer arrayDeserializer = new ArrayDeserializer(deserializer);
             Element dataElement = new DataElement(dataName, offsetExpression, littleEndianExpression,
-                new PointerArrayDeserializer(arrayDeserializer, StringToDeserializer(targetTypeName), lenFinder),
+                new PointerArrayDeserializer(arrayDeserializer, targetDeserializer, lenFinder),
                 GetPropertyGroup(context.property_group()), standardProperties);
 
             _currentDefinition!.Members.Add((dataName, dataElement));
@@ -200,10 +209,13 @@ namespace Linear
             _ => (0, false)
         };
 
-        private IDeserializer StringToDeserializer(string identifier) =>
-            _deserializers.TryGetValue(identifier, out IDeserializer deserializer)
-                ? deserializer
-                : throw new Exception($"Failed to find deserializer for type {identifier}");
+        private IDeserializer? StringToDeserializer(string identifier)
+        {
+            if (_deserializers.TryGetValue(identifier, out IDeserializer deserializer))
+                return deserializer;
+            _logTarget($"Failed to find deserializer for type {identifier}");
+            return null;
+        }
 
         private ExpressionDefinition GetExpression(LinearParser.ExprContext context)
         {

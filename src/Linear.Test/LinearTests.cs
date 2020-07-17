@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using Linear.Runtime;
 using NUnit.Framework;
@@ -23,7 +24,9 @@ main {
         [Test]
         public void Test1()
         {
-            StructureRegistry res = LinearCommon.GenerateRegistry(new StringReader(_test1));
+            Assert.IsTrue(LinearCommon.TryGenerateRegistry(new StringReader(_test1), out StructureRegistry res,
+                Console.WriteLine));
+            Assert.IsNotNull(res);
             Assert.IsTrue(res.TryGetValue(LinearCommon.MainLayout, out Structure structure));
             MemoryStream ms = new MemoryStream();
             StructureInstance si = structure.Parse(res, ms);

@@ -24,10 +24,15 @@ namespace lyn
 
         private static int Run(Configuration conf)
         {
-            StructureRegistry registry;
+            StructureRegistry? registry;
             using (StreamReader sr = File.OpenText(conf.LayoutFile!))
-                registry = LinearCommon.GenerateRegistry(sr);
-            if (!registry.TryGetValue(LinearCommon.MainLayout, out Structure structure))
+                if (!LinearCommon.TryGenerateRegistry(sr, out registry, Console.WriteLine))
+                {
+                    Console.WriteLine("Errors occurred while parsing structure file, aborting.");
+                    return 5;
+                }
+
+            if (!registry!.TryGetValue(LinearCommon.MainLayout, out Structure structure))
             {
                 Console.WriteLine($"Failed to find structure named {LinearCommon.MainLayout}");
                 return 2;
