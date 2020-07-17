@@ -8,11 +8,11 @@ namespace Linear.Test
     {
         private const string _test1 = @"
 main {
-    value a 4*2+5;
-    value b 5+8*9;
-    value c 4/2*8;
-    value d 9*7/3;
-    value e 0xff&0x11;
+    $value a 4*2+5;
+    $value b 5+8*9;
+    $value c 4/2*8;
+    $value d 9*7/3;
+    $value e 0xff&0x11;
 }";
 
         [SetUp]
