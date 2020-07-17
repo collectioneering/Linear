@@ -24,7 +24,6 @@
 
   <ItemGroup>
     <PackageReference Include="Antlr4.Runtime.Standard" Version="4.8.0" />
-    <PackageReference Include="Esper" Version="0.3.3" />
     <PackageReference Include="System.Memory" Version="4.5.3" />
   </ItemGroup>
 

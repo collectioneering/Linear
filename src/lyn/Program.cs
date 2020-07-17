@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using CommandLine;
-using Esper;
 using Linear;
 using Linear.Runtime;
 
@@ -18,7 +17,7 @@ namespace lyn
         private static int Run(Configuration conf)
         {
             StructureRegistry registry;
-            using (StreamReader sr = File.OpenText(conf.LayoutFile))
+            using (StreamReader sr = File.OpenText(conf.LayoutFile!))
                 registry = LinearCommon.GenerateRegistry(sr);
             if (!registry.TryGetValue(LinearCommon.MainLayout, out Structure structure))
             {
@@ -26,7 +25,26 @@ namespace lyn
                 return 2;
             }
 
-            using Stream baseStream = File.OpenRead(conf.InputFile);
+            if (File.Exists(conf.Input))
+                return OperateFile(registry, structure, conf.Input!, conf.OutputDir!);
+            if (Directory.Exists(conf.Input))
+            {
+                foreach (string file in Directory.GetFiles(conf.Input!))
+                {
+                    int resCode = OperateFile(registry, structure, file,
+                        Path.Combine(conf.OutputDir!, Path.GetFileName(file)));
+                    if (resCode != 0) return resCode;
+                }
+            }
+
+            Console.WriteLine($"Input {conf.Input} not found");
+            return 4;
+        }
+
+        private static int OperateFile(StructureRegistry registry, Structure structure, string inputFile,
+            string outputDir)
+        {
+            using Stream baseStream = File.OpenRead(inputFile);
             using MultiBufferStream mbs = new MultiBufferStream(baseStream);
             StructureInstance si = structure.Parse(registry, mbs, 0, null, baseStream.Length);
             Dictionary<string, IExporter> exporterDictionary = LinearCommon.CreateDefaultExporterDictionary();
@@ -39,7 +57,7 @@ namespace lyn
                     return 3;
                 }
 
-                string file = Path.Combine(conf.OutputDir!, name);
+                string file = Path.Combine(outputDir, name);
                 string dir = Path.GetDirectoryName(file) ??
                              throw new ApplicationException("Invalid output file, cannot be root");
                 if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
@@ -56,8 +74,8 @@ namespace lyn
             [Value(0, Required = true, MetaName = nameof(LayoutFile))]
             public string? LayoutFile { get; set; }
 
-            [Value(1, Required = true, MetaName = nameof(InputFile))]
-            public string? InputFile { get; set; }
+            [Value(1, Required = true, MetaName = nameof(Input))]
+            public string? Input { get; set; }
 
             [Value(2, Required = true, MetaName = nameof(OutputDir))]
             public string? OutputDir { get; set; }
