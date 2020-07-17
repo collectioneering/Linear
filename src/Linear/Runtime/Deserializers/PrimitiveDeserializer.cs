@@ -36,7 +36,7 @@ namespace Linear.Runtime.Deserializers
             return Type.GetTypeCode(_type) switch
             {
                 TypeCode.Boolean => (LinearCommon.ReadBool(stream, offset, tempBuffer), 1),
-                TypeCode.Byte => (LinearCommon.ReadS8(stream, offset, tempBuffer), 1),
+                TypeCode.Byte => (LinearCommon.ReadU8(stream, offset, tempBuffer), 1),
                 TypeCode.Char => (LinearCommon.ReadU16(stream, offset, tempBuffer, littleEndian), 2),
                 TypeCode.DateTime => throw new NotSupportedException(),
                 TypeCode.DBNull => throw new NotSupportedException(),

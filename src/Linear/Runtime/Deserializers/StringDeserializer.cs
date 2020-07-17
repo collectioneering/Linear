@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Linear.Runtime.Deserializers
@@ -13,15 +12,6 @@ namespace Linear.Runtime.Deserializers
     {
         private const int StringDefaultCapacity = 4 * 1024;
         private const int StringExcessiveCapacity = 128 * 1024;
-
-        /*private Encoder[] Utf16Encoders => _utf16Encoders ??= new Encoder[GUtf16Encodings.Length];
-        private Encoder[]? _utf16Encoders;
-
-        private Encoder GetUtf16Encoder(bool bigEndian, bool bom)
-        {
-            int i = (bigEndian ? 1 : 0) + (bom ? 2 : 0);
-            return Utf16Encoders[i] ??= GUtf16Encodings[i].GetEncoder();
-        }*/
 
         private static Encoding GetUtf16Encoding(bool bigEndian, bool bom) =>
             GUtf16Encodings[(bigEndian ? 1 : 0) + (bom ? 2 : 0)];
@@ -126,6 +116,7 @@ namespace Linear.Runtime.Deserializers
             try
             {
                 TempMs.Position = 0;
+                TempMs.SetLength(0);
                 int c = 0;
                 do
                 {
@@ -139,7 +130,8 @@ namespace Linear.Runtime.Deserializers
                     c++;
                 } while (c < maxLength);
 
-                string str = ReadUtf8String(TempMs.GetBuffer().AsSpan(0, (int)TempMs.Length));
+                TempMs.TryGetBuffer(out ArraySegment<byte> buffer);
+                string str = ReadUtf8String(buffer);
 
                 return (str, c);
             }
@@ -152,16 +144,17 @@ namespace Linear.Runtime.Deserializers
             }
         }
 
-        private static string ReadUtf8String(ReadOnlySpan<byte> span, int maxLength = int.MaxValue)
+        private static string ReadUtf8String(ArraySegment<byte> segment, int maxLength = int.MaxValue)
         {
-            int lim = Math.Min(span.Length, maxLength);
-            int end = span.Slice(0, lim).IndexOf((byte)0);
+            int lim = Math.Min(segment.Count, maxLength);
+
+            int end = Array.IndexOf(segment.Array, 0, segment.Offset, lim) - segment.Offset;
             if (end == -1)
             {
                 end = lim;
             }
 
-            return DecodeSpan(span.Slice(0, end), Encoding.UTF8);
+            return DecodeSegment(new ArraySegment<byte>(segment.Array, segment.Offset, end), Encoding.UTF8);
         }
 
         private (string, int) ReadUtf16String(Stream stream, int maxLength = int.MaxValue)
@@ -169,6 +162,7 @@ namespace Linear.Runtime.Deserializers
             try
             {
                 TempMs.Position = 0;
+                TempMs.SetLength(0);
                 int c = 0;
                 do
                 {
@@ -183,7 +177,8 @@ namespace Linear.Runtime.Deserializers
                 } while (c < maxLength * 2);
                 // WARNING: maxLength here is treated as # code units
 
-                return (ReadUtf16String(TempMs.GetBuffer().AsSpan(0, (int)TempMs.Length)), c);
+                TempMs.TryGetBuffer(out ArraySegment<byte> buffer);
+                return (ReadUtf16String(buffer), c);
             }
             finally
             {
@@ -194,23 +189,29 @@ namespace Linear.Runtime.Deserializers
             }
         }
 
-        private static unsafe string DecodeSpan(ReadOnlySpan<byte> span, Encoding encoding)
+        private static string DecodeSegment(ArraySegment<byte> segment, Encoding encoding)
         {
-            if (span.Length == 0)
-            {
-                return string.Empty;
-            }
-
-            fixed (byte* spanFixed = &span.GetPinnableReference())
-            {
-                return encoding.GetString(spanFixed, span.Length);
-            }
+            return segment.Count == 0 ? string.Empty : encoding.GetString(segment.Array, segment.Offset, segment.Count);
         }
 
-        private static string ReadUtf16String(ReadOnlySpan<byte> span, int maxLength = int.MaxValue)
+        private static unsafe string ReadUtf16String(ArraySegment<byte> segment, int maxLength = int.MaxValue)
         {
-            int lim = Math.Min(span.Length, maxLength);
-            int end = MemoryMarshal.Cast<byte, char>(span.Slice(0, lim)).IndexOf('\0');
+            int lim = Math.Min(segment.Count, maxLength);
+            int end = -1;
+            byte[] array = segment.Array;
+            int offset = segment.Offset;
+            int count = segment.Count;
+            fixed (byte* p = array)
+            {
+                char* c = (char*)(p + offset);
+                for (int i = 0; i < lim; i++)
+                    if (c[i] == '\0')
+                    {
+                        end = i;
+                        break;
+                    }
+            }
+
             if (end == -1)
             {
                 end = lim;
@@ -220,17 +221,17 @@ namespace Linear.Runtime.Deserializers
                 end *= sizeof(char);
             }
 
-            bool big = span.Length >= 2 && span[0] == 0xFE && span[1] == 0xFF;
-            bool bom = big || span.Length >= 2 && span[0] == 0xFF && span[1] == 0xFE;
+            bool big = count >= 2 && array[offset + 0] == 0xFE && array[offset + 1] == 0xFF;
+            bool bom = big || count >= 2 && array[offset + 0] == 0xFF && array[offset + 1] == 0xFE;
 
-            if (!bom && span.Length > 1)
+            if (!bom && count > 1)
             {
                 const int numBytes = 16 * sizeof(char);
                 const float threshold = 0.75f;
-                int countAscii = 0, countTotal = 0, sl = span.Length;
-                for (int i = 0; i < numBytes && i + 1 < sl; i += 2)
+                int countAscii = 0, countTotal = 0;
+                for (int i = 0; i < numBytes && i + 1 < count; i += 2)
                 {
-                    if (span[i] == 0 && span[i + 1] < 0x80)
+                    if (array[offset + i] == 0 && array[offset + i + 1] < 0x80)
                     {
                         countAscii++;
                     }
@@ -241,7 +242,7 @@ namespace Linear.Runtime.Deserializers
                 big = (float)countAscii / countTotal >= threshold;
             }
 
-            return DecodeSpan(span.Slice(0, end), GetUtf16Encoding(big, bom));
+            return DecodeSegment(new ArraySegment<byte>(array, offset, end), GetUtf16Encoding(big, bom));
         }
 
         private static int ReadBaseArray(Stream stream, byte[] array, int offset, int length)
