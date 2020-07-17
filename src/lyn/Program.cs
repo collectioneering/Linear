@@ -19,21 +19,21 @@ namespace lyn
         {
             StructureRegistry registry;
             using (StreamReader sr = File.OpenText(conf.LayoutFile))
-                registry = LinearUtil.GenerateRegistry(sr);
-            if (!registry.TryGetValue(LinearUtil.MainLayout, out Structure structure))
+                registry = LinearCommon.GenerateRegistry(sr);
+            if (!registry.TryGetValue(LinearCommon.MainLayout, out Structure structure))
             {
-                Console.WriteLine($"Failed to find structure named {LinearUtil.MainLayout}");
+                Console.WriteLine($"Failed to find structure named {LinearCommon.MainLayout}");
                 return 2;
             }
 
             using Stream baseStream = File.OpenRead(conf.InputFile);
             using MultiBufferStream mbs = new MultiBufferStream(baseStream);
             StructureInstance si = structure.Parse(registry, mbs, 0, null, baseStream.Length);
-            Dictionary<string, IExporter> exporterRegistry = LinearUtil.CreateDefaultExporterDictionary();
+            Dictionary<string, IExporter> exporterDictionary = LinearCommon.CreateDefaultExporterDictionary();
             foreach ((StructureInstance instance, string name, string format, Dictionary<string, object>? parameters,
                 (long offset, long length) range) in si.GetOutputs())
             {
-                if (!exporterRegistry.TryGetValue(format, out IExporter? exporter))
+                if (!exporterDictionary.TryGetValue(format, out IExporter? exporter))
                 {
                     Console.WriteLine($"Failed to find exporter named {format}");
                     return 3;

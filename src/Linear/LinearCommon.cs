@@ -17,7 +17,7 @@ namespace Linear
     /// <summary>
     /// Lyn processing utility
     /// </summary>
-    public static class LinearUtil
+    public static class LinearCommon
     {
         /// <summary>
         /// Preferred name for primary structure

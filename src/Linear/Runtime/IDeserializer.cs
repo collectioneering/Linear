@@ -38,6 +38,6 @@ namespace Linear.Runtime
         /// <param name="index">Array index</param>
         /// <returns>Deserialized object</returns>
         public abstract (object value, long length) Deserialize(StructureInstance instance, Stream stream, byte[] tempBuffer, long offset, bool littleEndian,
-            Dictionary<LinearUtil.StandardProperty, object>? standardProperties, Dictionary<string, object>? parameters, long length = 0, int index = 0);
+            Dictionary<LinearCommon.StandardProperty, object>? standardProperties, Dictionary<string, object>? parameters, long length = 0, int index = 0);
     }
 }

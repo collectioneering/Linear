@@ -23,8 +23,8 @@ main {
         [Test]
         public void Test1()
         {
-            StructureRegistry res = LinearUtil.GenerateRegistry(new StringReader(_test1));
-            Assert.IsTrue(res.TryGetValue(LinearUtil.MainLayout, out Structure structure));
+            StructureRegistry res = LinearCommon.GenerateRegistry(new StringReader(_test1));
+            Assert.IsTrue(res.TryGetValue(LinearCommon.MainLayout, out Structure structure));
             MemoryStream ms = new MemoryStream();
             StructureInstance si = structure.Parse(res, ms);
             Assert.AreEqual(4 * 2 + 5, si["a"]);

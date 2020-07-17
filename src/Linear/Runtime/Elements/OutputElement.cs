@@ -65,10 +65,10 @@ namespace Linear.Runtime.Elements
                     foreach (var kvp in exporterParamsCompact)
                         exporterParams![kvp.Key] =
                             kvp.Value(instance, stream, tempBuffer) ?? throw new NullReferenceException();
-                if (!LinearUtil.TryCast(format, out string formatValue))
+                if (!LinearCommon.TryCast(format, out string formatValue))
                     throw new InvalidCastException(
                         $"Could not cast expression of type {format?.GetType().FullName} to type {nameof(String)}");
-                if (!LinearUtil.TryCast(range, out (long, long) rangeValue))
+                if (!LinearCommon.TryCast(range, out (long, long) rangeValue))
                     throw new InvalidCastException(
                         $"Could not cast expression of type {range?.GetType().FullName} to type {nameof(ValueTuple<long, long>)}");
                 instance.AddOutput((name?.ToString() ?? instance.GetUniqueId().ToString(), formatValue, exporterParams,

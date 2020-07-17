@@ -36,7 +36,7 @@ namespace Linear.Runtime.Expressions
             return (instance, stream, tempBuffer) =>
             {
                 object? val = del(instance, stream, tempBuffer);
-                if (!LinearUtil.TryCast(val, out StructureInstance i2))
+                if (!LinearCommon.TryCast(val, out StructureInstance i2))
                     throw new InvalidCastException(
                         $"Could not cast object of type {val?.GetType().FullName} to {nameof(StructureInstance)}");
                 return i2[_name];

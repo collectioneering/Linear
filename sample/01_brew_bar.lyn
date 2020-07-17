@@ -7,7 +7,7 @@ main {
 value countOffset 0x14;
 
 // "count": Variable of type int (s32le) at "countOffset" relative to this structure
-int count 0x14;
+int count countOffset;
 
 /* "table": Offset array of length "count" starting at "0x28"
  * Elements point to <entry> array (based on relative offset
@@ -21,7 +21,7 @@ int[count] ->+ entry[] table 0x28,0;
 
 }
 
-// sub-entry
+// File entry
 entry {
 
 // "hLength": Variable of type short (s16le) at "0x0" relative to this structure

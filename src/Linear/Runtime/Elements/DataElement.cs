@@ -15,7 +15,7 @@ namespace Linear.Runtime.Elements
         private readonly ExpressionDefinition _littleEndianDefinition;
         private readonly IDeserializer _deserializer;
         private readonly Dictionary<string, ExpressionDefinition> _deserializerParams;
-        private readonly Dictionary<LinearUtil.StandardProperty, ExpressionDefinition> _standardProperties;
+        private readonly Dictionary<LinearCommon.StandardProperty, ExpressionDefinition> _standardProperties;
 
         /// <summary>
         /// Create new instance of <see cref="DataElement"/>
@@ -29,7 +29,7 @@ namespace Linear.Runtime.Elements
         public DataElement(string name, ExpressionDefinition offsetDefinition,
             ExpressionDefinition littleEndianDefinition, IDeserializer deserializer,
             Dictionary<string, ExpressionDefinition> deserializerParams,
-            Dictionary<LinearUtil.StandardProperty, ExpressionDefinition> standardProperties)
+            Dictionary<LinearCommon.StandardProperty, ExpressionDefinition> standardProperties)
         {
             _name = name;
             _offsetDefinition = offsetDefinition;
@@ -59,9 +59,9 @@ namespace Linear.Runtime.Elements
                 new Dictionary<string, Func<StructureInstance, Stream, byte[], object?>>();
             foreach (var kvp in _deserializerParams)
                 deserializerParamsCompact[kvp.Key] = kvp.Value.GetDelegate();
-            Dictionary<LinearUtil.StandardProperty, Func<StructureInstance, Stream, byte[], object?>>
+            Dictionary<LinearCommon.StandardProperty, Func<StructureInstance, Stream, byte[], object?>>
                 standardPropertiesCompact =
-                    new Dictionary<LinearUtil.StandardProperty, Func<StructureInstance, Stream, byte[], object?>>();
+                    new Dictionary<LinearCommon.StandardProperty, Func<StructureInstance, Stream, byte[], object?>>();
             foreach (var kvp in _standardProperties)
                 standardPropertiesCompact[kvp.Key] = kvp.Value.GetDelegate();
             return (instance, stream, tempBuffer) =>
@@ -73,8 +73,8 @@ namespace Linear.Runtime.Elements
                         deserializerParams[kvp.Key] =
                             kvp.Value(instance, stream, tempBuffer) ?? throw new NullReferenceException();
 
-                Dictionary<LinearUtil.StandardProperty, object>? standardProperties =
-                    standardPropertiesCompact.Count != 0 ? new Dictionary<LinearUtil.StandardProperty, object>() : null;
+                Dictionary<LinearCommon.StandardProperty, object>? standardProperties =
+                    standardPropertiesCompact.Count != 0 ? new Dictionary<LinearCommon.StandardProperty, object>() : null;
                 if (standardProperties != null)
                     foreach (var kvp in standardPropertiesCompact)
                         standardProperties[kvp.Key] =
@@ -82,12 +82,12 @@ namespace Linear.Runtime.Elements
                 object? offset = srcDelegate(instance, stream, tempBuffer);
                 object? littleEndian = littleEndianDelegate(instance, stream, tempBuffer);
                 (long offset, long length) range = default;
-                if (LinearUtil.TryCastLong(offset, out long offsetValue))
+                if (LinearCommon.TryCastLong(offset, out long offsetValue))
                     range.offset = offsetValue;
-                else if (!LinearUtil.TryCast(offset, out range))
+                else if (!LinearCommon.TryCast(offset, out range))
                     throw new InvalidCastException("Cannot find offset or range type for source delegate");
 
-                if (!LinearUtil.TryCast(littleEndian, out bool littleEndianValue))
+                if (!LinearCommon.TryCast(littleEndian, out bool littleEndianValue))
                     throw new InvalidCastException(
                         $"Could not cast expression of type {littleEndian?.GetType().FullName} to type {nameof(Boolean)}");
                 instance.SetMember(_name, _deserializer.Deserialize(instance, stream, tempBuffer, range.offset,

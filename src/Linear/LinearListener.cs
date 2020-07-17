@@ -71,7 +71,7 @@ namespace Linear
             ExpressionDefinition littleEndianExpression = new ConstantExpression<bool>(littleEndian);
             Element dataElement = new DataElement(dataName, offsetExpression, littleEndianExpression,
                 StringToDeserializer(typeName), GetPropertyGroup(context.property_group()),
-                new Dictionary<LinearUtil.StandardProperty, ExpressionDefinition>());
+                new Dictionary<LinearCommon.StandardProperty, ExpressionDefinition>());
 
             _currentDefinition!.Members.Add((dataName, dataElement));
         }
@@ -87,9 +87,9 @@ namespace Linear
             string dataName = ids[1].GetText();
             (int _, bool littleEndian) = StringToPrimitiveInfo(typeName);
             ExpressionDefinition littleEndianExpression = new ConstantExpression<bool>(littleEndian);
-            Dictionary<LinearUtil.StandardProperty, ExpressionDefinition> standardProperties =
-                new Dictionary<LinearUtil.StandardProperty, ExpressionDefinition>();
-            standardProperties.Add(LinearUtil.StandardProperty.ArrayLengthProperty, countExpression);
+            Dictionary<LinearCommon.StandardProperty, ExpressionDefinition> standardProperties =
+                new Dictionary<LinearCommon.StandardProperty, ExpressionDefinition>();
+            standardProperties.Add(LinearCommon.StandardProperty.ArrayLengthProperty, countExpression);
             // "Should" add some other way for length instead of routing through a dictionary...
             // "Should" add efficient primitive array deserialization...
             Element dataElement = new DataElement(dataName, offsetExpression, littleEndianExpression,
@@ -112,16 +112,16 @@ namespace Linear
             string dataName = ids[2].GetText();
             (int _, bool littleEndian) = StringToPrimitiveInfo(typeName);
             ExpressionDefinition littleEndianExpression = new ConstantExpression<bool>(littleEndian);
-            Dictionary<LinearUtil.StandardProperty, ExpressionDefinition> standardProperties =
-                new Dictionary<LinearUtil.StandardProperty, ExpressionDefinition>();
+            Dictionary<LinearCommon.StandardProperty, ExpressionDefinition> standardProperties =
+                new Dictionary<LinearCommon.StandardProperty, ExpressionDefinition>();
             bool lenFinder = context.PLUS() != null;
-            standardProperties.Add(LinearUtil.StandardProperty.ArrayLengthProperty,
+            standardProperties.Add(LinearCommon.StandardProperty.ArrayLengthProperty,
                 lenFinder
                     ? new OperatorDualExpression(countExpression, new ConstantExpression<int>(1),
                         OperatorDualExpression.Operator.Add)
                     : countExpression);
-            standardProperties.Add(LinearUtil.StandardProperty.PointerOffsetProperty, pointerOffsetExpression);
-            standardProperties.Add(LinearUtil.StandardProperty.PointerArrayLengthProperty, countExpression);
+            standardProperties.Add(LinearCommon.StandardProperty.PointerOffsetProperty, pointerOffsetExpression);
+            standardProperties.Add(LinearCommon.StandardProperty.PointerArrayLengthProperty, countExpression);
             ArrayDeserializer arrayDeserializer = new ArrayDeserializer(StringToDeserializer(typeName));
             Element dataElement = new DataElement(dataName, offsetExpression, littleEndianExpression,
                 new PointerArrayDeserializer(arrayDeserializer, StringToDeserializer(targetTypeName), lenFinder),

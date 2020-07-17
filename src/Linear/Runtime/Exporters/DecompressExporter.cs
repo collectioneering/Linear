@@ -16,6 +16,8 @@ namespace Linear.Runtime.Exporters
             SupportedDecompressors = new Dictionary<string, Func<Stream, Dictionary<string, object>, Stream>>();
             SupportedDecompressors["gzip"] =
                 (stream, configuration) => new GZipStream(stream, CompressionMode.Decompress);
+            SupportedDecompressors["deflate"] =
+                (stream, configuration) => new DeflateStream(stream, CompressionMode.Decompress);
         }
 
         /// <summary>

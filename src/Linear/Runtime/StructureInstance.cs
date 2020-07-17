@@ -128,6 +128,6 @@ namespace Linear.Runtime
         /// <typeparam name="T">Target type</typeparam>
         /// <returns>True if cast succeeded</returns>
         /// <exception cref="KeyNotFoundException">If key was not found in members</exception>
-        public bool TryGetCasted<T>(string member, out T result) => LinearUtil.TryCast(_members[member], out result);
+        public bool TryGetCasted<T>(string member, out T result) => LinearCommon.TryCast(_members[member], out result);
     }
 }
