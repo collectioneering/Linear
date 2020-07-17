@@ -120,6 +120,7 @@ namespace Linear.Runtime.Deserializers
         {
             try
             {
+                TempMs.Position = 0;
                 int c = 0;
                 do
                 {
@@ -162,6 +163,7 @@ namespace Linear.Runtime.Deserializers
         {
             try
             {
+                TempMs.Position = 0;
                 int c = 0;
                 do
                 {

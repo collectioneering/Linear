@@ -36,7 +36,7 @@ namespace Linear.Runtime
         /// <remarks>
         /// Only available in trailing-length pointer array
         /// </remarks>
-        public long Length { get; }
+        public long Length { get; set; }
 
         /// <summary>
         /// Get unique sequential identifier

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generated from C:\Users\black\Documents\GitHub\Linear\scripts\\..\spec\Linear.g4 by ANTLR 4.8
+// Generated from /Users/jake/Projects/GitHub/Linear/scripts/../spec/Linear.g4 by ANTLR 4.8
 
 // Unreachable code detected
 #pragma warning disable 0162
@@ -100,6 +100,16 @@ public interface ILinearListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitStruct_statement_call([NotNull] LinearParser.Struct_statement_callContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="LinearParser.struct_statement_length"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterStruct_statement_length([NotNull] LinearParser.Struct_statement_lengthContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="LinearParser.struct_statement_length"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitStruct_statement_length([NotNull] LinearParser.Struct_statement_lengthContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="LinearParser.struct_statement_define_array"/>.
 	/// </summary>

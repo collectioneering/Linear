@@ -7,7 +7,7 @@ main {
 
 entry {
     short hLength 0x0;
-    output compressed [hLength, end: $length] $i+".dat" {
+    $output compressed [hLength, end: $length] $i+".dat" {
         format="gzip";
     };
 }

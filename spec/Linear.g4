@@ -13,6 +13,7 @@ struct:
 struct_statement:
 	struct_statement_define
 	| struct_statement_call
+	| struct_statement_length
 	| struct_statement_define_value
 	| struct_statement_define_array
 	| struct_statement_define_array_indirect
@@ -27,11 +28,13 @@ struct_statement_define:
 // value memberName valueExpr;
 struct_statement_define_value:
 	//	'value' WS IDENTIFIER WS IDENTIFIER WS expr WS? ENDL;
-	'value' WS IDENTIFIER WS expr WS? ENDL;
+	'$value' WS IDENTIFIER WS expr WS? ENDL;
 
 // call methodExpr;
-struct_statement_call:
-	'call' WS expr WS? ENDL;
+struct_statement_call: '$call' WS expr WS? ENDL;
+
+// length lengthExpr;
+struct_statement_length: '$setlength' WS expr WS? ENDL;
 
 // elementType[lengthExpr] memberName locationExpr {};
 struct_statement_define_array:
@@ -44,7 +47,7 @@ struct_statement_define_array_indirect:
 
 // output formatName rangeExpr nameExpr {};
 struct_statement_output:
-	'output' WS IDENTIFIER WS expr WS expr WS? property_group? ENDL;
+	'$output' WS IDENTIFIER WS expr WS expr WS? property_group? ENDL;
 // maybe "outputvar" for expression-based format selection?
 
 // // Comments

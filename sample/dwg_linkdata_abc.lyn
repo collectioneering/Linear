@@ -8,5 +8,5 @@ main {
 file 0x8 {
     intb offsetChunk 0;
     intb length 0x4;
-    output data [(offsetChunk * 0x800) - $a, length: length] format("{0:D6}.dat", $i);
+    $output data [(offsetChunk * 0x800) - $a, length: length] format("{0:D6}.dat", $i);
 }

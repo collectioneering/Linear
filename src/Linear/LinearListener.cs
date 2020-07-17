@@ -149,6 +149,13 @@ namespace Linear
             _currentDefinition!.Members.Add((null, dataElement));
         }
 
+        public override void EnterStruct_statement_length(LinearParser.Struct_statement_lengthContext context)
+        {
+            ExpressionDefinition expr = GetExpression(context.expr());
+            Element dataElement = new LengthElement(expr);
+            _currentDefinition!.Members.Add((null, dataElement));
+        }
+
         public override void EnterStruct_statement_output(LinearParser.Struct_statement_outputContext context)
         {
             ExpressionDefinition formatExpression = new ConstantExpression<string>(context.IDENTIFIER().GetText());
