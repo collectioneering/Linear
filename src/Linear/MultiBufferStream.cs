@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Buffers;
 using System.IO;
 
 namespace Linear
@@ -10,7 +9,6 @@ namespace Linear
     public class MultiBufferStream : Stream
     {
         private readonly Stream _sourceStream;
-        private readonly bool _longRunning;
         private readonly CircleBuffer<(long chunk, int length, byte[] buffer)> _buffers;
         private readonly int _bufferCount;
         private readonly int _bufferLength;
@@ -27,10 +25,9 @@ namespace Linear
         /// Create new instance of <see cref="MultiBufferStream"/>
         /// </summary>
         /// <param name="sourceStream">Stream to wrap</param>
-        /// <param name="longRunning">If true, allocate arrays independent of pool</param>
         /// <param name="bufferCount">Number of buffers to use</param>
         /// <param name="bufferLength">Individual buffer length</param>
-        public MultiBufferStream(Stream sourceStream, bool longRunning = false, int bufferCount = 32,
+        public MultiBufferStream(Stream sourceStream, int bufferCount = 32,
             int bufferLength = 4096)
         {
             if (!sourceStream.CanSeek)
@@ -38,7 +35,6 @@ namespace Linear
             if (!sourceStream.CanRead)
                 throw new ArgumentException($"Cannot create {nameof(MultiBufferStream)} with non-readable stream");
             _sourceStream = sourceStream;
-            _longRunning = longRunning;
             _bufferCount = bufferCount;
             _bufferLength = bufferLength;
             _buffers = new CircleBuffer<(long chunk, int length, byte[] buffer)>(bufferCount);
@@ -46,7 +42,7 @@ namespace Linear
             _disposed = false;
         }
 
-        private Span<byte> GetOrRead(long position, int length)
+        private ArraySegment<byte> GetOrRead(long position, int length)
         {
             long chunk = position / _bufferLength;
             int ofs = (int)(position % _bufferLength);
@@ -57,8 +53,8 @@ namespace Linear
                 if (target.chunk == chunk)
                 {
                     return ofs > target.length
-                        ? Span<byte>.Empty
-                        : target.buffer.AsSpan(ofs, Math.Min(target.length - ofs, length));
+                        ? new ArraySegment<byte>()
+                        : new ArraySegment<byte>(target.buffer,ofs, Math.Min(target.length - ofs, length));
                 }
             }
 
@@ -66,7 +62,7 @@ namespace Linear
             if (_buffers.Count != _bufferCount)
             {
                 // Allocate new
-                byte[] newBuf = _longRunning ? new byte[_bufferLength] : ArrayPool<byte>.Shared.Rent(_bufferLength);
+                byte[] newBuf = new byte[_bufferLength];
                 target = ForceRead(chunk, newBuf);
             }
             else
@@ -81,8 +77,8 @@ namespace Linear
             _buffers.Insert(0, target);
 
             return ofs > target.length
-                ? Span<byte>.Empty
-                : target.buffer.AsSpan(ofs, Math.Min(target.length - ofs, length));
+                ? new ArraySegment<byte>()
+                : new ArraySegment<byte>(target.buffer,ofs, Math.Min(target.length - ofs, length));
         }
 
         private (long chunk, int length, byte[] buffer) ForceRead(long chunk, byte[] buffer)
@@ -128,14 +124,13 @@ namespace Linear
             }
 
             int read = 0;
-            Span<byte> bs = buffer.AsSpan();
             while (count > 0)
             {
-                Span<byte> source = GetOrRead(_position, Math.Min(count, buffer.Length - offset));
-                int r = source.Length;
+                ArraySegment<byte> source = GetOrRead(_position, Math.Min(count, buffer.Length - offset));
+                int r = source.Count;
                 if (r == 0)
                     return read;
-                source.CopyTo(bs.Slice(offset, r));
+                Array.Copy(source.Array, source.Offset, buffer, offset, r);
                 count -= r;
                 read += r;
                 offset += r;
@@ -186,18 +181,7 @@ namespace Linear
         protected override void Dispose(bool disposing)
         {
             if (_disposed) return;
-
-            if (disposing && !_longRunning)
-            {
-                while (_buffers.Count > 0)
-                {
-                    ArrayPool<byte>.Shared.Return(_buffers[0].buffer);
-                    _buffers.RemoveAt(0);
-                }
-            }
-
             _disposed = true;
-
             base.Dispose(disposing);
         }
     }

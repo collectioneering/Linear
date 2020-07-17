@@ -4,7 +4,7 @@
 main {
 
     // "countOffset": literal value 0x14 (only using as an example, could just put 0x14 into "count")
-    value countOffset 0x14;
+    $value countOffset 0x14;
 
     // "count": Variable of type int (s32le) at "countOffset" relative to this structure
     int count countOffset;
@@ -29,6 +29,9 @@ entry {
 
     // null-terminated utf-8 string starting at 0x2 and ending at "hLength" relative to this structure
     cstring mimeType [2, end: hLength];
+
+    // log information
+    $call log(format("{0}: mimeType {1} offset {2}", $i, mimeType, hLength + $a));
 
     /* Generate output data using the "compressed" exporter
     * The output file is located in the range "hLength" to "$length" (the length of the structure)

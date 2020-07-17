@@ -1,16 +1,14 @@
 using System;
-using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 using Linear.Runtime;
 using Linear.Runtime.Deserializers;
 using Linear.Runtime.Exporters;
 using Linear.Runtime.Expressions;
-using static System.Buffers.ArrayPool<byte>;
 
 namespace Linear
 {
@@ -23,6 +21,8 @@ namespace Linear
         /// Preferred name for primary structure
         /// </summary>
         public const string MainLayout = "main";
+
+        private static readonly bool _little = BitConverter.IsLittleEndian;
 
         /*internal const string ArrayLengthProperty = "array_length";
         internal const string PointerArrayLengthProperty = "pointer_array_length";
@@ -399,133 +399,152 @@ namespace Linear
             return item2;
         }
 
-        internal static bool ReadBool(Stream stream, long offset, byte[]? tempBuffer)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static short Reverse(short value)
         {
-            stream.Seek(offset, SeekOrigin.Begin);
-            Span<byte> span = stackalloc byte[1];
-            ReadBaseSpan(stream, span, tempBuffer);
-            return span[0] != 0;
+            return (short)((value & 0x00FF) << 8 | (value & 0xFF00) >> 8);
         }
 
-        internal static byte ReadU8(Stream stream, long offset, byte[]? tempBuffer)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static int Reverse(int value) => (int)Reverse((uint)value);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static long Reverse(long value) => (long)Reverse((ulong)value);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static ushort Reverse(ushort value)
         {
-            stream.Seek(offset, SeekOrigin.Begin);
-            Span<byte> span = stackalloc byte[1];
-            ReadBaseSpan(stream, span, tempBuffer);
-            return span[0];
+            return (ushort)((value << 8) + (value >> 8));
         }
 
-        internal static sbyte ReadS8(Stream stream, long offset, byte[]? tempBuffer)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static uint Reverse(uint value)
         {
-            stream.Seek(offset, SeekOrigin.Begin);
-            Span<byte> span = stackalloc byte[1];
-            ReadBaseSpan(stream, span, tempBuffer);
-            return (sbyte)span[0];
+            uint mask_xx_zz = value & 0x00FF00FFU;
+            uint mask_ww_yy = value & 0xFF00FF00U;
+            return ((mask_xx_zz >> 8) | (mask_xx_zz << 24))
+                   + ((mask_ww_yy << 8) | (mask_ww_yy >> 24));
         }
 
-        internal static ushort ReadU16(Stream stream, long offset, byte[]? tempBuffer, bool littleEndian)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static ulong Reverse(ulong value)
         {
-            stream.Seek(offset, SeekOrigin.Begin);
-            Span<byte> span = stackalloc byte[2];
-            ReadBaseSpan(stream, span, tempBuffer);
-            return littleEndian
-                ? BinaryPrimitives.ReadUInt16LittleEndian(span)
-                : BinaryPrimitives.ReadUInt16BigEndian(span);
+            return ((ulong)Reverse((uint)value) << 32)
+                   + Reverse((uint)(value >> 32));
         }
 
-        internal static short ReadS16(Stream stream, long offset, byte[]? tempBuffer, bool littleEndian)
+        internal static unsafe bool ReadBool(Stream stream, long offset, byte[]? tempBuffer)
         {
             stream.Seek(offset, SeekOrigin.Begin);
-            Span<byte> span = stackalloc byte[2];
-            ReadBaseSpan(stream, span, tempBuffer);
-            return littleEndian
-                ? BinaryPrimitives.ReadInt16LittleEndian(span)
-                : BinaryPrimitives.ReadInt16BigEndian(span);
+            tempBuffer ??= new byte[1];
+            ReadBase(stream, tempBuffer, 0, 1);
+            fixed (void* p = tempBuffer)
+                return *(bool*)p;
         }
 
-        internal static uint ReadU32(Stream stream, long offset, byte[]? tempBuffer, bool littleEndian)
+        internal static unsafe byte ReadU8(Stream stream, long offset, byte[]? tempBuffer)
         {
             stream.Seek(offset, SeekOrigin.Begin);
-            Span<byte> span = stackalloc byte[4];
-            ReadBaseSpan(stream, span, tempBuffer);
-            return littleEndian
-                ? BinaryPrimitives.ReadUInt32LittleEndian(span)
-                : BinaryPrimitives.ReadUInt32BigEndian(span);
+            tempBuffer ??= new byte[1];
+            ReadBase(stream, tempBuffer, 0, 1);
+            fixed (void* p = tempBuffer)
+                return *(byte*)p;
         }
 
-        internal static int ReadS32(Stream stream, long offset, byte[]? tempBuffer, bool littleEndian)
+        internal static unsafe sbyte ReadS8(Stream stream, long offset, byte[]? tempBuffer)
         {
             stream.Seek(offset, SeekOrigin.Begin);
-            Span<byte> span = stackalloc byte[4];
-            ReadBaseSpan(stream, span, tempBuffer);
-            return littleEndian
-                ? BinaryPrimitives.ReadInt32LittleEndian(span)
-                : BinaryPrimitives.ReadInt32BigEndian(span);
+            tempBuffer ??= new byte[1];
+            ReadBase(stream, tempBuffer, 0, 1);
+            fixed (void* p = tempBuffer)
+                return *(sbyte*)p;
         }
 
-        internal static ulong ReadU64(Stream stream, long offset, byte[]? tempBuffer, bool littleEndian)
+        internal static unsafe ushort ReadU16(Stream stream, long offset, byte[]? tempBuffer, bool littleEndian)
         {
             stream.Seek(offset, SeekOrigin.Begin);
-            Span<byte> span = stackalloc byte[8];
-            ReadBaseSpan(stream, span, tempBuffer);
-            return littleEndian
-                ? BinaryPrimitives.ReadUInt64LittleEndian(span)
-                : BinaryPrimitives.ReadUInt64BigEndian(span);
+            tempBuffer ??= new byte[2];
+            ReadBase(stream, tempBuffer, 0, 2);
+            fixed (void* p = tempBuffer)
+                return littleEndian ^ _little ? Reverse(*(ushort*)p) : *(ushort*)p;
         }
 
-        internal static long ReadS64(Stream stream, long offset, byte[]? tempBuffer, bool littleEndian)
+        internal static unsafe short ReadS16(Stream stream, long offset, byte[]? tempBuffer, bool littleEndian)
         {
             stream.Seek(offset, SeekOrigin.Begin);
-            Span<byte> span = stackalloc byte[8];
-            ReadBaseSpan(stream, span, tempBuffer);
-            return littleEndian
-                ? BinaryPrimitives.ReadInt64LittleEndian(span)
-                : BinaryPrimitives.ReadInt64BigEndian(span);
+            tempBuffer ??= new byte[2];
+            ReadBase(stream, tempBuffer, 0, 2);
+            fixed (void* p = tempBuffer)
+                return littleEndian ^ _little ? Reverse(*(short*)p) : *(short*)p;
         }
 
-        internal static float ReadSingle(Stream stream, long offset, byte[]? tempBuffer)
+        internal static unsafe uint ReadU32(Stream stream, long offset, byte[]? tempBuffer, bool littleEndian)
         {
             stream.Seek(offset, SeekOrigin.Begin);
-            Span<byte> span = stackalloc byte[4];
-            ReadBaseSpan(stream, span, tempBuffer);
-            return MemoryMarshal.Cast<byte, float>(span)[0];
+            tempBuffer ??= new byte[4];
+            ReadBase(stream, tempBuffer, 0, 4);
+            fixed (void* p = tempBuffer)
+                return littleEndian ^ _little ? Reverse(*(uint*)p) : *(uint*)p;
         }
 
-        internal static double ReadDouble(Stream stream, long offset, byte[]? tempBuffer)
+        internal static unsafe int ReadS32(Stream stream, long offset, byte[]? tempBuffer, bool littleEndian)
         {
             stream.Seek(offset, SeekOrigin.Begin);
-            Span<byte> span = stackalloc byte[8];
-            ReadBaseSpan(stream, span, tempBuffer);
-            return MemoryMarshal.Cast<byte, double>(span)[0];
+            tempBuffer ??= new byte[4];
+            ReadBase(stream, tempBuffer, 0, 4);
+            fixed (void* p = tempBuffer)
+                return littleEndian ^ _little ? Reverse(*(int*)p) : *(int*)p;
         }
 
-        private static void ReadBaseSpan(Stream stream, Span<byte> span, byte[]? tempBuffer)
+        internal static unsafe ulong ReadU64(Stream stream, long offset, byte[]? tempBuffer, bool littleEndian)
         {
-            var buf = (span.Length <= sizeof(long) ? tempBuffer : null) ?? Shared.Rent(4096);
-            Span<byte> bufSpan = buf.AsSpan();
-            int bufLen = buf.Length;
-            try
+            stream.Seek(offset, SeekOrigin.Begin);
+            tempBuffer ??= new byte[8];
+            ReadBase(stream, tempBuffer, 0, 8);
+            fixed (void* p = tempBuffer)
+                return littleEndian ^ _little ? Reverse(*(ulong*)p) : *(ulong*)p;
+        }
+
+        internal static unsafe long ReadS64(Stream stream, long offset, byte[]? tempBuffer, bool littleEndian)
+        {
+            stream.Seek(offset, SeekOrigin.Begin);
+            tempBuffer ??= new byte[8];
+            ReadBase(stream, tempBuffer, 0, 8);
+            fixed (void* p = tempBuffer)
+                return littleEndian ^ _little ? Reverse(*(long*)p) : *(long*)p;
+        }
+
+        internal static unsafe float ReadSingle(Stream stream, long offset, byte[]? tempBuffer)
+        {
+            stream.Seek(offset, SeekOrigin.Begin);
+            tempBuffer ??= new byte[4];
+            ReadBase(stream, tempBuffer, 0, 4);
+            fixed (void* p = tempBuffer)
+                return *(float*)p;
+        }
+
+        internal static unsafe double ReadDouble(Stream stream, long offset, byte[]? tempBuffer)
+        {
+            stream.Seek(offset, SeekOrigin.Begin);
+            tempBuffer ??= new byte[8];
+            ReadBase(stream, tempBuffer, 0, 8);
+            fixed (void* p = tempBuffer)
+                return *(double*)p;
+        }
+
+        private static void ReadBase(Stream stream, byte[] buffer, int offset, int length)
+        {
+            int left = length, read, tot = 0;
+            do
             {
-                int left = span.Length, read, tot = 0;
-                do
-                {
-                    read = stream.Read(buf, 0, Math.Min(left, bufLen));
-                    bufSpan.Slice(0, read).CopyTo(span.Slice(tot));
-                    left -= read;
-                    tot += read;
-                } while (left > 0 && read != 0);
+                read = stream.Read(buffer, offset + tot, left);
+                left -= read;
+                tot += read;
+            } while (left > 0 && read != 0);
 
-                if (left > 0)
-                    throw new EndOfStreamException(
-                        $"Failed to read required number of bytes! 0x{read:X} read, 0x{left:X} left, 0x{stream.Position:X} end position");
-            }
-            finally
-            {
-                if (buf != tempBuffer)
-                {
-                    Shared.Return(buf);
-                }
-            }
+            if (left > 0)
+                throw new EndOfStreamException(
+                    $"Failed to read required number of bytes! 0x{read:X} read, 0x{left:X} left, 0x{stream.Position:X} end position");
         }
     }
 }
