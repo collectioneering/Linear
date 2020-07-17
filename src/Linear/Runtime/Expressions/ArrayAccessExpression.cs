@@ -37,10 +37,10 @@ namespace Linear.Runtime.Expressions
             {
                 object? source = delSource(instance, stream, tempBuffer);
                 object index = delIndex(instance, stream, tempBuffer) ?? throw new NullReferenceException();
-                if (!LinearUtil.TryCast(source, out Array sourceValue))
+                if (!LinearCommon.TryCast(source, out Array sourceValue))
                     throw new InvalidCastException(
                         $"Could not cast object of type {source?.GetType().FullName} to {nameof(Array)}");
-                return sourceValue.GetValue(LinearUtil.CastInt(index));
+                return sourceValue.GetValue(LinearCommon.CastInt(index));
             };
         }
     }

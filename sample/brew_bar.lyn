@@ -1,42 +1,13 @@
 // BREW MP .bar file (found in NFS Undercover)
 
-// structure named "main" (one with this name is required)
 main {
-
-// "countOffset": literal value 0x14 (only using as an example, could just put 0x14 into "count")
-value countOffset 0x14;
-
-// "count": Variable of type int (s32le) at "countOffset" relative to this structure
-int count 0x14;
-
-/* "table": Offset array of length "count" starting at "0x28"
- * Elements point to <entry> array (based on relative offset
- * "0" from the start of this structure)
- *
- * the + in ->+ means the difference between an offset and the next one
- * is used to populate the $length variable if the elements are structures
- * (this also means the int array will need to have count+1 elements)
- */
-int[count] ->+ entry[] table 0x28,0;
-
+    int count 0x14;
+    int[count] ->+ entry[] table 0x28,0;
 }
 
-// sub-entry
 entry {
-
-// "hLength": Variable of type short (s16le) at "0x0" relative to this structure
-short hLength 0x0;
-
-// null-terminated utf-8 string starting at 0x2 and ending at "hLength" relative to this structure
-cstring mimeType [2, end: hLength];
-
-/* Generate output data using the "compressed" exporter
- * The output file is located in the range "hLength" to "$length" (the length of the structure)
- * The output file is named "<arrayIndex>.dat" (string concatenation should work as expected)
- * Provide the exporter the expression "gzip" as its "format" configuration property
- */
-output compressed [hLength, end: $length] $i+".dat" {
-    format="gzip";
-};
-
+    short hLength 0x0;
+    $output compressed [hLength, end: $length] $i+".dat" {
+        format="gzip";
+    };
 }

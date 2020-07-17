@@ -45,11 +45,12 @@ namespace Linear.Runtime
         /// <param name="length">Length of structure</param>
         /// <param name="index">Array index</param>
         /// <returns>Parsed structure</returns>
-        public StructureInstance Parse(StructureRegistry registry, Stream stream, long offset,
-            StructureInstance? parent, long length = 0, int index = 0)
+        public StructureInstance Parse(StructureRegistry registry, Stream stream, long offset = 0,
+            StructureInstance? parent = null, long length = 0, int index = 0)
         {
             byte[] tempBuf = new byte[sizeof(ulong)];
-            StructureInstance instance = new StructureInstance(registry, parent, offset, length == 0 ? DefaultLength : length, index);
+            StructureInstance instance =
+                new StructureInstance(registry, parent, offset, length == 0 ? DefaultLength : length, index);
             foreach ((string? _, Action<StructureInstance, Stream, byte[]> method) in _members)
             {
                 method(instance, stream, tempBuf);

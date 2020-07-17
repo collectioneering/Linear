@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Antlr4.Runtime.Tree;
 using Linear.Runtime;
 using Linear.Runtime.Deserializers;
@@ -13,19 +14,19 @@ namespace Linear
     /// </summary>
     internal class LinearListener : LinearBaseListener
     {
-        /// <summary>
-        /// Deserializers
-        /// </summary>
         private readonly Dictionary<string, IDeserializer> _deserializers;
+        private readonly Dictionary<string, MethodCallExpression.MethodCallDelegate> _methods;
 
         private readonly List<StructureDefinition> _structures;
 
         /// <summary>
         /// Create new instance of <see cref="LinearListener"/>
         /// </summary>
-        public LinearListener(Dictionary<string, IDeserializer> deserializers)
+        public LinearListener(Dictionary<string, IDeserializer> deserializers,
+            Dictionary<string, MethodCallExpression.MethodCallDelegate> methods)
         {
             _deserializers = deserializers;
+            _methods = methods;
             _structures = new List<StructureDefinition>();
         }
 
@@ -70,7 +71,7 @@ namespace Linear
             ExpressionDefinition littleEndianExpression = new ConstantExpression<bool>(littleEndian);
             Element dataElement = new DataElement(dataName, offsetExpression, littleEndianExpression,
                 StringToDeserializer(typeName), GetPropertyGroup(context.property_group()),
-                new Dictionary<LinearUtil.StandardProperty, ExpressionDefinition>());
+                new Dictionary<LinearCommon.StandardProperty, ExpressionDefinition>());
 
             _currentDefinition!.Members.Add((dataName, dataElement));
         }
@@ -86,9 +87,9 @@ namespace Linear
             string dataName = ids[1].GetText();
             (int _, bool littleEndian) = StringToPrimitiveInfo(typeName);
             ExpressionDefinition littleEndianExpression = new ConstantExpression<bool>(littleEndian);
-            Dictionary<LinearUtil.StandardProperty, ExpressionDefinition> standardProperties =
-                new Dictionary<LinearUtil.StandardProperty, ExpressionDefinition>();
-            standardProperties.Add(LinearUtil.StandardProperty.ArrayLengthProperty, countExpression);
+            Dictionary<LinearCommon.StandardProperty, ExpressionDefinition> standardProperties =
+                new Dictionary<LinearCommon.StandardProperty, ExpressionDefinition>();
+            standardProperties.Add(LinearCommon.StandardProperty.ArrayLengthProperty, countExpression);
             // "Should" add some other way for length instead of routing through a dictionary...
             // "Should" add efficient primitive array deserialization...
             Element dataElement = new DataElement(dataName, offsetExpression, littleEndianExpression,
@@ -111,16 +112,16 @@ namespace Linear
             string dataName = ids[2].GetText();
             (int _, bool littleEndian) = StringToPrimitiveInfo(typeName);
             ExpressionDefinition littleEndianExpression = new ConstantExpression<bool>(littleEndian);
-            Dictionary<LinearUtil.StandardProperty, ExpressionDefinition> standardProperties =
-                new Dictionary<LinearUtil.StandardProperty, ExpressionDefinition>();
+            Dictionary<LinearCommon.StandardProperty, ExpressionDefinition> standardProperties =
+                new Dictionary<LinearCommon.StandardProperty, ExpressionDefinition>();
             bool lenFinder = context.PLUS() != null;
-            standardProperties.Add(LinearUtil.StandardProperty.ArrayLengthProperty,
+            standardProperties.Add(LinearCommon.StandardProperty.ArrayLengthProperty,
                 lenFinder
                     ? new OperatorDualExpression(countExpression, new ConstantExpression<int>(1),
                         OperatorDualExpression.Operator.Add)
                     : countExpression);
-            standardProperties.Add(LinearUtil.StandardProperty.PointerOffsetProperty, pointerOffsetExpression);
-            standardProperties.Add(LinearUtil.StandardProperty.PointerArrayLengthProperty, countExpression);
+            standardProperties.Add(LinearCommon.StandardProperty.PointerOffsetProperty, pointerOffsetExpression);
+            standardProperties.Add(LinearCommon.StandardProperty.PointerArrayLengthProperty, countExpression);
             ArrayDeserializer arrayDeserializer = new ArrayDeserializer(StringToDeserializer(typeName));
             Element dataElement = new DataElement(dataName, offsetExpression, littleEndianExpression,
                 new PointerArrayDeserializer(arrayDeserializer, StringToDeserializer(targetTypeName), lenFinder),
@@ -141,6 +142,20 @@ namespace Linear
             _currentDefinition!.Members.Add((dataName, dataElement));
         }
 
+        public override void EnterStruct_statement_call(LinearParser.Struct_statement_callContext context)
+        {
+            ExpressionDefinition expr = GetExpression(context.expr());
+            Element dataElement = new MethodCallElement(expr);
+            _currentDefinition!.Members.Add((null, dataElement));
+        }
+
+        public override void EnterStruct_statement_length(LinearParser.Struct_statement_lengthContext context)
+        {
+            ExpressionDefinition expr = GetExpression(context.expr());
+            Element dataElement = new LengthElement(expr);
+            _currentDefinition!.Members.Add((null, dataElement));
+        }
+
         public override void EnterStruct_statement_output(LinearParser.Struct_statement_outputContext context)
         {
             ExpressionDefinition formatExpression = new ConstantExpression<string>(context.IDENTIFIER().GetText());
@@ -152,7 +167,7 @@ namespace Linear
             _currentDefinition!.Members.Add((null, outputElement));
         }
 
-        private static Dictionary<string, ExpressionDefinition> GetPropertyGroup(
+        private Dictionary<string, ExpressionDefinition> GetPropertyGroup(
             LinearParser.Property_groupContext? context)
         {
             Dictionary<string, ExpressionDefinition> res = new Dictionary<string, ExpressionDefinition>();
@@ -190,7 +205,7 @@ namespace Linear
                 ? deserializer
                 : throw new Exception($"Failed to find deserializer for type {identifier}");
 
-        private static ExpressionDefinition GetExpression(LinearParser.ExprContext context)
+        private ExpressionDefinition GetExpression(LinearParser.ExprContext context)
         {
             //Console.WriteLine($"Rule ihndex {context.RuleIndex}");
             return context switch
@@ -199,9 +214,24 @@ namespace Linear
                     GetExpression(exprArrayAccessContext.expr(0)), GetExpression(exprArrayAccessContext.expr(1))),
                 LinearParser.ExprMemberContext exprMemberContext => new ProxyMemberExpression(
                     exprMemberContext.IDENTIFIER().GetText(), GetExpression(exprMemberContext.expr())),
-                LinearParser.ExprOpContext exprOpContext => new OperatorDualExpression(
-                    GetExpression(exprOpContext.expr(0)), GetExpression(exprOpContext.expr(1)),
-                    OperatorDualExpression.GetOperator(exprOpContext.op().GetText())),
+                LinearParser.ExprMethodCallContext exprMethodCallContext => new MethodCallExpression(
+                    _methods[exprMethodCallContext.IDENTIFIER().GetText()],
+                    exprMethodCallContext.expr().Select(GetExpression).ToList()),
+                LinearParser.ExprOpAddSubContext exprOpAddSubContext => new OperatorDualExpression(
+                    GetExpression(exprOpAddSubContext.expr(0)), GetExpression(exprOpAddSubContext.expr(1)),
+                    OperatorDualExpression.GetOperator(exprOpAddSubContext.op_add_sub().GetText())),
+                LinearParser.ExprOpAmpContext exprOpAmpContext => new OperatorDualExpression(
+                    GetExpression(exprOpAmpContext.expr(0)), GetExpression(exprOpAmpContext.expr(1)),
+                    OperatorDualExpression.GetOperator(exprOpAmpContext.AMP().GetText())),
+                LinearParser.ExprOpBitwiseOrContext exprOpBitwiseOrContext => new OperatorDualExpression(
+                    GetExpression(exprOpBitwiseOrContext.expr(0)), GetExpression(exprOpBitwiseOrContext.expr(1)),
+                    OperatorDualExpression.GetOperator(exprOpBitwiseOrContext.BITWISE_OR().GetText())),
+                LinearParser.ExprOpCaretContext exprOpCaretContext => new OperatorDualExpression(
+                    GetExpression(exprOpCaretContext.expr(0)), GetExpression(exprOpCaretContext.expr(1)),
+                    OperatorDualExpression.GetOperator(exprOpCaretContext.CARET().GetText())),
+                LinearParser.ExprOpMulDivContext exprOpMulDivContext => new OperatorDualExpression(
+                    GetExpression(exprOpMulDivContext.expr(0)), GetExpression(exprOpMulDivContext.expr(1)),
+                    OperatorDualExpression.GetOperator(exprOpMulDivContext.op_mul_div().GetText())),
                 LinearParser.ExprRangeEndContext exprRangeEndContext => new RangeExpression(
                     GetExpression(exprRangeEndContext.expr(0)), GetExpression(exprRangeEndContext.expr(1)), null),
                 LinearParser.ExprRangeLengthContext exprRangeLengthContext => new RangeExpression(
@@ -229,6 +259,7 @@ namespace Linear
                     long.Parse(termIntContext.GetText())),
                 LinearParser.TermRealContext termRealContext => new ConstantExpression<double>(
                     double.Parse(termRealContext.GetText())),
+                LinearParser.TermRepAContext _ => new StructureEvaluateExpression<long>(i => i.AbsoluteOffset),
                 LinearParser.TermRepIContext _ => new StructureEvaluateExpression<long>(i => i.Index),
                 LinearParser.TermRepLengthContext _ => new StructureEvaluateExpression<long>(i =>
                     i.Length),

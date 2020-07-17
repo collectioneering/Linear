@@ -1,7 +1,7 @@
 # Linear
  Linear file structure ingest library
 
-[![NuGet](https://img.shields.io/nuget/v/Linear.svg)](https://www.nuget.org/packages/Linear/)
+[![NuGet](https://img.shields.io/nuget/v/Linear.svg)](https://www.nuget.org/packages/Linear/) ![.NET Core](https://github.com/Lucina/Linear/workflows/.NET%20Core/badge.svg)
 
 This library uses structure specification files to read
 structured data from files. It is built for .NET Standard 2.0.

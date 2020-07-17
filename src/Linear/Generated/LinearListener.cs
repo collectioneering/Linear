@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generated from C:\Users\black\Documents\GitHub\Linear\scripts\\..\Linear.g4 by ANTLR 4.8
+// Generated from /Users/jake/Projects/GitHub/Linear/scripts/../spec/Linear.g4 by ANTLR 4.8
 
 // Unreachable code detected
 #pragma warning disable 0162
@@ -91,6 +91,26 @@ public interface ILinearListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitStruct_statement_define_value([NotNull] LinearParser.Struct_statement_define_valueContext context);
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="LinearParser.struct_statement_call"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterStruct_statement_call([NotNull] LinearParser.Struct_statement_callContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="LinearParser.struct_statement_call"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitStruct_statement_call([NotNull] LinearParser.Struct_statement_callContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="LinearParser.struct_statement_length"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterStruct_statement_length([NotNull] LinearParser.Struct_statement_lengthContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="LinearParser.struct_statement_length"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitStruct_statement_length([NotNull] LinearParser.Struct_statement_lengthContext context);
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="LinearParser.struct_statement_define_array"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -151,6 +171,16 @@ public interface ILinearListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitTerm_replacement_length([NotNull] LinearParser.Term_replacement_lengthContext context);
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="LinearParser.term_replacement_a"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterTerm_replacement_a([NotNull] LinearParser.Term_replacement_aContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="LinearParser.term_replacement_a"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitTerm_replacement_a([NotNull] LinearParser.Term_replacement_aContext context);
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="LinearParser.term_replacement_i"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -181,17 +211,41 @@ public interface ILinearListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitTerm_replacement_u([NotNull] LinearParser.Term_replacement_uContext context);
 	/// <summary>
-	/// Enter a parse tree produced by the <c>ExprArrayAccess</c>
+	/// Enter a parse tree produced by the <c>ExprMethodCall</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterExprArrayAccess([NotNull] LinearParser.ExprArrayAccessContext context);
+	void EnterExprMethodCall([NotNull] LinearParser.ExprMethodCallContext context);
 	/// <summary>
-	/// Exit a parse tree produced by the <c>ExprArrayAccess</c>
+	/// Exit a parse tree produced by the <c>ExprMethodCall</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitExprArrayAccess([NotNull] LinearParser.ExprArrayAccessContext context);
+	void ExitExprMethodCall([NotNull] LinearParser.ExprMethodCallContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>ExprOpAmp</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterExprOpAmp([NotNull] LinearParser.ExprOpAmpContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>ExprOpAmp</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitExprOpAmp([NotNull] LinearParser.ExprOpAmpContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>ExprOpBitwiseOr</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterExprOpBitwiseOr([NotNull] LinearParser.ExprOpBitwiseOrContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>ExprOpBitwiseOr</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitExprOpBitwiseOr([NotNull] LinearParser.ExprOpBitwiseOrContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>ExprUnOp</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
@@ -217,18 +271,6 @@ public interface ILinearListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitExprTerm([NotNull] LinearParser.ExprTermContext context);
 	/// <summary>
-	/// Enter a parse tree produced by the <c>ExprOp</c>
-	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterExprOp([NotNull] LinearParser.ExprOpContext context);
-	/// <summary>
-	/// Exit a parse tree produced by the <c>ExprOp</c>
-	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitExprOp([NotNull] LinearParser.ExprOpContext context);
-	/// <summary>
 	/// Enter a parse tree produced by the <c>ExprRangeLength</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
 	/// </summary>
@@ -253,17 +295,17 @@ public interface ILinearListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitExprWrapped([NotNull] LinearParser.ExprWrappedContext context);
 	/// <summary>
-	/// Enter a parse tree produced by the <c>ExprMember</c>
+	/// Enter a parse tree produced by the <c>ExprOpMulDiv</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterExprMember([NotNull] LinearParser.ExprMemberContext context);
+	void EnterExprOpMulDiv([NotNull] LinearParser.ExprOpMulDivContext context);
 	/// <summary>
-	/// Exit a parse tree produced by the <c>ExprMember</c>
+	/// Exit a parse tree produced by the <c>ExprOpMulDiv</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitExprMember([NotNull] LinearParser.ExprMemberContext context);
+	void ExitExprOpMulDiv([NotNull] LinearParser.ExprOpMulDivContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>ExprRangeEnd</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
@@ -277,15 +319,73 @@ public interface ILinearListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitExprRangeEnd([NotNull] LinearParser.ExprRangeEndContext context);
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="LinearParser.op"/>.
+	/// Enter a parse tree produced by the <c>ExprArrayAccess</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterOp([NotNull] LinearParser.OpContext context);
+	void EnterExprArrayAccess([NotNull] LinearParser.ExprArrayAccessContext context);
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="LinearParser.op"/>.
+	/// Exit a parse tree produced by the <c>ExprArrayAccess</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitOp([NotNull] LinearParser.OpContext context);
+	void ExitExprArrayAccess([NotNull] LinearParser.ExprArrayAccessContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>ExprOpAddSub</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterExprOpAddSub([NotNull] LinearParser.ExprOpAddSubContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>ExprOpAddSub</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitExprOpAddSub([NotNull] LinearParser.ExprOpAddSubContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>ExprOpCaret</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterExprOpCaret([NotNull] LinearParser.ExprOpCaretContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>ExprOpCaret</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitExprOpCaret([NotNull] LinearParser.ExprOpCaretContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>ExprMember</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterExprMember([NotNull] LinearParser.ExprMemberContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>ExprMember</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitExprMember([NotNull] LinearParser.ExprMemberContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="LinearParser.op_mul_div"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterOp_mul_div([NotNull] LinearParser.Op_mul_divContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="LinearParser.op_mul_div"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitOp_mul_div([NotNull] LinearParser.Op_mul_divContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="LinearParser.op_add_sub"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterOp_add_sub([NotNull] LinearParser.Op_add_subContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="LinearParser.op_add_sub"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitOp_add_sub([NotNull] LinearParser.Op_add_subContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="LinearParser.un_op"/>.
 	/// </summary>
@@ -342,6 +442,18 @@ public interface ILinearListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitTermRepLength([NotNull] LinearParser.TermRepLengthContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>TermRepA</c>
+	/// labeled alternative in <see cref="LinearParser.term"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterTermRepA([NotNull] LinearParser.TermRepAContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>TermRepA</c>
+	/// labeled alternative in <see cref="LinearParser.term"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitTermRepA([NotNull] LinearParser.TermRepAContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>TermRepI</c>
 	/// labeled alternative in <see cref="LinearParser.term"/>.

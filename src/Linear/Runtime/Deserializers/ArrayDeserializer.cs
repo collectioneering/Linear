@@ -32,11 +32,12 @@ namespace Linear.Runtime.Deserializers
 
         /// <inheritdoc />
         public (object value, long length) Deserialize(StructureInstance instance, Stream stream, byte[] tempBuffer,
-            long offset, bool littleEndian, Dictionary<LinearUtil.StandardProperty, object>? standardProperties,
+            long offset, bool littleEndian, Dictionary<LinearCommon.StandardProperty, object>? standardProperties,
             Dictionary<string, object>? parameters, long length = 0, int index = 0)
         {
             if (standardProperties == null) throw new NullReferenceException();
-            int arrayLength = LinearUtil.CastInt(standardProperties[LinearUtil.StandardProperty.ArrayLengthProperty]);
+            int arrayLength =
+                LinearCommon.CastInt(standardProperties[LinearCommon.StandardProperty.ArrayLengthProperty]);
             Array res = Array.CreateInstance(_elementType, arrayLength);
             long curOffset = offset;
             for (int i = 0; i < arrayLength; i++)

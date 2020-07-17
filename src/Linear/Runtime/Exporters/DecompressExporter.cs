@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
-using Esper;
 
 namespace Linear.Runtime.Exporters
 {
@@ -16,6 +15,8 @@ namespace Linear.Runtime.Exporters
             SupportedDecompressors = new Dictionary<string, Func<Stream, Dictionary<string, object>, Stream>>();
             SupportedDecompressors["gzip"] =
                 (stream, configuration) => new GZipStream(stream, CompressionMode.Decompress);
+            SupportedDecompressors["deflate"] =
+                (stream, configuration) => new DeflateStream(stream, CompressionMode.Decompress);
         }
 
         /// <summary>

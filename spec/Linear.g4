@@ -12,6 +12,8 @@ struct:
 
 struct_statement:
 	struct_statement_define
+	| struct_statement_call
+	| struct_statement_length
 	| struct_statement_define_value
 	| struct_statement_define_array
 	| struct_statement_define_array_indirect
@@ -26,7 +28,13 @@ struct_statement_define:
 // value memberName valueExpr;
 struct_statement_define_value:
 	//	'value' WS IDENTIFIER WS IDENTIFIER WS expr WS? ENDL;
-	'value' WS IDENTIFIER WS expr WS? ENDL;
+	'$value' WS IDENTIFIER WS expr WS? ENDL;
+
+// call methodExpr;
+struct_statement_call: '$call' WS expr WS? ENDL;
+
+// length lengthExpr;
+struct_statement_length: '$setlength' WS expr WS? ENDL;
 
 // elementType[lengthExpr] memberName locationExpr {};
 struct_statement_define_array:
@@ -39,7 +47,7 @@ struct_statement_define_array_indirect:
 
 // output formatName rangeExpr nameExpr {};
 struct_statement_output:
-	'output' WS IDENTIFIER WS expr WS expr WS? property_group? ENDL;
+	'$output' WS IDENTIFIER WS expr WS expr WS? property_group? ENDL;
 // maybe "outputvar" for expression-based format selection?
 
 // // Comments
@@ -51,19 +59,25 @@ property_group: OPEN (WS? property_statement)* WS? CLOSE WS?;
 property_statement: IDENTIFIER WS? '=' WS? expr WS? ';';
 
 term_replacement_length: '$length';
+term_replacement_a: '$a';
 term_replacement_i: '$i';
 term_replacement_p: '$p' | '$parent';
 term_replacement_u: '$u' | '$unique';
 expr:
-	term															# ExprTerm
+	IDENTIFIER WS? '(' WS? expr? WS? (',' WS? expr WS?)* ')'		# ExprMethodCall
+	| term															# ExprTerm
 	| OPENSQ WS? expr WS? ',' WS? 'end:' WS? expr WS? CLOSESQ		# ExprRangeEnd
 	| OPENSQ WS? expr WS? ',' WS? 'length:' WS? expr WS? CLOSESQ	# ExprRangeLength
 	| expr '.' IDENTIFIER											# ExprMember
 	| expr '[' WS? expr WS? ']'										# ExprArrayAccess
-	| expr WS? op WS? expr											# ExprOp
-	//	| expr WS? bool_op WS? expr # ExprBoolOp
-	| un_op WS? expr		# ExprUnOp
-	| '(' WS? expr WS? ')'	# ExprWrapped;
+	| '(' WS? expr WS? ')'											# ExprWrapped
+	| un_op WS? expr												# ExprUnOp
+	| expr WS? op_mul_div WS? expr									# ExprOpMulDiv
+	| expr WS? op_add_sub WS? expr									# ExprOpAddSub
+	| expr WS? AMP WS? expr											# ExprOpAmp
+	| expr WS? CARET WS? expr										# ExprOpCaret
+	| expr WS? BITWISE_OR WS? expr									# ExprOpBitwiseOr;
+//	| expr WS? bool_op WS? expr # ExprBoolOp
 
 OPEN: '{';
 CLOSE: '}';
@@ -71,15 +85,8 @@ OPENSQ: '[';
 CLOSESQ: ']';
 ENDL: ';';
 
-op:
-	PLUS
-	| MINUS
-	| STAR
-	| DIV
-	| PERCENT
-	| AMP
-	| BITWISE_OR
-	| CARET;
+op_mul_div: STAR | DIV | PERCENT;
+op_add_sub: PLUS | MINUS;
 un_op: PLUS | MINUS | BANG | TILDE;
 bool_op:
 	LT
@@ -95,6 +102,7 @@ struct_size:
 	| HEX_INTEGER_LITERAL	# StrictSizeHex;
 term:
 	term_replacement_length	# TermRepLength
+	| term_replacement_a	# TermRepA
 	| term_replacement_i	# TermRepI
 	| term_replacement_p	# TermRepP
 	| term_replacement_u	# TermRepU

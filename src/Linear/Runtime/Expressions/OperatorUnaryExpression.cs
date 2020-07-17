@@ -17,6 +17,7 @@ namespace Linear.Runtime.Expressions
         {
             Plus,
             Minus,
+
             //Not,
             Tilde
         }
@@ -49,7 +50,8 @@ namespace Linear.Runtime.Expressions
             {
                 Operator.Plus => (instance, stream, tempBuffer) =>
                 {
-                    object value = delExpr(instance, stream, tempBuffer) ?? throw new NullReferenceException("Expr value null");
+                    object value = delExpr(instance, stream, tempBuffer) ??
+                                   throw new NullReferenceException("Expr value null");
 
                     return value switch
                     {
@@ -68,7 +70,8 @@ namespace Linear.Runtime.Expressions
                 },
                 Operator.Minus => (instance, stream, tempBuffer) =>
                 {
-                    object value = delExpr(instance, stream, tempBuffer) ?? throw new NullReferenceException("Expr value null");
+                    object value = delExpr(instance, stream, tempBuffer) ??
+                                   throw new NullReferenceException("Expr value null");
 
                     return value switch
                     {
@@ -86,7 +89,8 @@ namespace Linear.Runtime.Expressions
                 },
                 Operator.Tilde => (instance, stream, tempBuffer) =>
                 {
-                    object value = delExpr(instance, stream, tempBuffer) ?? throw new NullReferenceException("Expr value null");
+                    object value = delExpr(instance, stream, tempBuffer) ??
+                                   throw new NullReferenceException("Expr value null");
 
                     return value switch
                     {

@@ -20,7 +20,7 @@ jobs:
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.1.101
+        dotnet-version: 5.0.0-preview.6.20305.6
     - name: Install dependencies
       run: dotnet restore
     - name: Build
@@ -28,13 +28,13 @@ jobs:
     - name: Test
       run: dotnet test --framework netcoreapp3.1 --no-restore --verbosity normal
     - name: Publish netcoreapp3.1 osx-x64
-      run: dotnet publish lyn --framework netcoreapp3.1 --configuration Release --no-build --runtime osx-x64 --self-contained false
+      run: dotnet publish lyn --framework netcoreapp3.1 --configuration Release --runtime osx-x64 --self-contained false
     - name: Publish netcoreapp3.1 linux-x64
-      run: dotnet publish lyn --framework netcoreapp3.1 --configuration Release --no-build --runtime linux-x64 --self-contained false
+      run: dotnet publish lyn --framework netcoreapp3.1 --configuration Release --runtime linux-x64 --self-contained false
     - name: Publish netcoreapp3.1 win-x64
-      run: dotnet publish lyn --framework netcoreapp3.1 --configuration Release --no-build --runtime win-x64 --self-contained false
+      run: dotnet publish lyn --framework netcoreapp3.1 --configuration Release --runtime win-x64 --self-contained false
     - name: Publish net472
-      run: dotnet publish lyn --framework net472 --configuration Release --no-build
+      run: dotnet publish lyn --framework net472 --configuration Release
     - uses: actions/upload-artifact@v2
       with:
         name: lyn-netcoreapp3.1-osx-64

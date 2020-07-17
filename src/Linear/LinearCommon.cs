@@ -2,12 +2,14 @@ using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 using Linear.Runtime;
 using Linear.Runtime.Deserializers;
 using Linear.Runtime.Exporters;
+using Linear.Runtime.Expressions;
 using static System.Buffers.ArrayPool<byte>;
 
 namespace Linear
@@ -15,7 +17,7 @@ namespace Linear
     /// <summary>
     /// Lyn processing utility
     /// </summary>
-    public static class LinearUtil
+    public static class LinearCommon
     {
         /// <summary>
         /// Preferred name for primary structure
@@ -35,10 +37,12 @@ namespace Linear
             /// Array length
             /// </summary>
             ArrayLengthProperty,
+
             /// <summary>
             /// Pointer length
             /// </summary>
             PointerArrayLengthProperty,
+
             /// <summary>
             /// Pointer offset
             /// </summary>
@@ -48,10 +52,12 @@ namespace Linear
         /// <summary>
         /// Generate processor
         /// </summary>
-        /// <param name="input">Lyn format stream</param>
+        /// <param name="input">Lyn format reader</param>
         /// <param name="deserializers">Custom deserializers to use</param>
-        public static StructureRegistry GenerateRegistry(Stream input,
-            IReadOnlyCollection<IDeserializer>? deserializers = null)
+        /// <param name="methods">Custom expression methods to use</param>
+        public static StructureRegistry GenerateRegistry(TextReader input,
+            IReadOnlyCollection<IDeserializer>? deserializers = null,
+            IReadOnlyCollection<(string, MethodCallExpression.MethodCallDelegate)>? methods = null)
         {
             var inputStream = new AntlrInputStream(input);
             var lexer = new LinearLexer(inputStream);
@@ -73,9 +79,18 @@ namespace Linear
                 }
             }
 
+            Dictionary<string, MethodCallExpression.MethodCallDelegate> r_methods = CreateDefaultMethodDictionary();
+            if (methods != null)
+            {
+                foreach (var method in methods)
+                {
+                    r_methods[method.Item1] = method.Item2;
+                }
+            }
+
             foreach (string name in listenerPre.GetStructureNames())
                 r_deserializers[name] = new StructureDeserializer(name);
-            var listener = new LinearListener(r_deserializers);
+            var listener = new LinearListener(r_deserializers, r_methods);
             parser.Reset();
             ParseTreeWalker.Default.Walk(listener, parser.compilation_unit());
             List<StructureDefinition> structures = listener.GetStructures();
@@ -88,6 +103,29 @@ namespace Linear
             return registry;
         }
 
+        private static readonly Dictionary<string, MethodCallExpression.MethodCallDelegate> _defaultMethods =
+            new Dictionary<string, MethodCallExpression.MethodCallDelegate>
+            {
+                {
+                    "log", args =>
+                    {
+                        string? value = args[0]?.ToString();
+                        Console.WriteLine(value);
+                        return args[0];
+                    }
+                },
+                {"format", args => string.Format(args[0]?.ToString() ?? "", args.Skip(1).ToArray())}
+            };
+
+        /// <summary>
+        /// Create default method dictionary with standard exporters
+        /// </summary>
+        /// <returns>Default registry</returns>
+        public static Dictionary<string, MethodCallExpression.MethodCallDelegate> CreateDefaultMethodDictionary()
+        {
+            return new Dictionary<string, MethodCallExpression.MethodCallDelegate>(_defaultMethods);
+        }
+
         private static readonly Dictionary<string, IExporter> _defaultExporters = new Dictionary<string, IExporter>
         {
             {DataExporter.ExporterName, new DataExporter()},
@@ -95,10 +133,10 @@ namespace Linear
         };
 
         /// <summary>
-        /// Create default exporter registry with standard exporters
+        /// Create default exporter dictionary with standard exporters
         /// </summary>
         /// <returns>Default registry</returns>
-        public static Dictionary<string, IExporter> CreateDefaultExporterRegistry()
+        public static Dictionary<string, IExporter> CreateDefaultExporterDictionary()
         {
             return new Dictionary<string, IExporter>(_defaultExporters);
         }

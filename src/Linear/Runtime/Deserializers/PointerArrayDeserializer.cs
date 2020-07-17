@@ -39,26 +39,26 @@ namespace Linear.Runtime.Deserializers
 
         /// <inheritdoc />
         public (object value, long length) Deserialize(StructureInstance instance, Stream stream, byte[] tempBuffer,
-            long offset, bool littleEndian, Dictionary<LinearUtil.StandardProperty, object>? standardProperties,
+            long offset, bool littleEndian, Dictionary<LinearCommon.StandardProperty, object>? standardProperties,
             Dictionary<string, object>? parameters, long length = 0, int index = 0)
         {
-            if(standardProperties == null) throw new NullReferenceException();
+            if (standardProperties == null) throw new NullReferenceException();
             (object src, _) = _mainDeserializer.Deserialize(instance, stream, tempBuffer, offset, littleEndian,
                 standardProperties, parameters);
             Array baseArray = (Array)src;
             int pointerArrayLength =
-                LinearUtil.CastInt(standardProperties[LinearUtil.StandardProperty.PointerArrayLengthProperty]);
+                LinearCommon.CastInt(standardProperties[LinearCommon.StandardProperty.PointerArrayLengthProperty]);
             long pointerOffset =
-                LinearUtil.CastLong(standardProperties[LinearUtil.StandardProperty.PointerOffsetProperty]);
+                LinearCommon.CastLong(standardProperties[LinearCommon.StandardProperty.PointerOffsetProperty]);
             Array tarArray = Array.CreateInstance(_elementType, pointerArrayLength);
             long curOffset = offset;
             for (int i = 0; i < pointerArrayLength; i++)
             {
                 long preElemLength = _lenFinder
-                    ? LinearUtil.CastLong(baseArray.GetValue(i + 1)) - LinearUtil.CastLong(baseArray.GetValue(i))
+                    ? LinearCommon.CastLong(baseArray.GetValue(i + 1)) - LinearCommon.CastLong(baseArray.GetValue(i))
                     : 0;
                 (object value, long elemLength) = _elementDeserializer.Deserialize(instance, stream, tempBuffer,
-                    pointerOffset + LinearUtil.CastLong(baseArray.GetValue(i)), littleEndian,
+                    pointerOffset + LinearCommon.CastLong(baseArray.GetValue(i)), littleEndian,
                     standardProperties, parameters, preElemLength, i);
                 tarArray.SetValue(value, i);
                 curOffset += elemLength;

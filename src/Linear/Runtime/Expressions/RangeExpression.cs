@@ -46,8 +46,8 @@ namespace Linear.Runtime.Expressions
                 Func<StructureInstance, Stream, byte[], object?> endDelegate = _endExpression.GetDelegate();
                 return (instance, stream, tempBuffer) =>
                 {
-                    long start = LinearUtil.CastLong(startDelegate(instance, stream, tempBuffer));
-                    long end = LinearUtil.CastLong(endDelegate(instance, stream, tempBuffer));
+                    long start = LinearCommon.CastLong(startDelegate(instance, stream, tempBuffer));
+                    long end = LinearCommon.CastLong(endDelegate(instance, stream, tempBuffer));
                     return (start, end - start);
                 };
             }
@@ -55,8 +55,8 @@ namespace Linear.Runtime.Expressions
             Func<StructureInstance, Stream, byte[], object?> lengthDelegate = _lengthExpression!.GetDelegate();
             return (instance, stream, tempBuffer) =>
             {
-                long start = LinearUtil.CastLong(startDelegate(instance, stream, tempBuffer));
-                long length = LinearUtil.CastLong(lengthDelegate(instance, stream, tempBuffer));
+                long start = LinearCommon.CastLong(startDelegate(instance, stream, tempBuffer));
+                long length = LinearCommon.CastLong(lengthDelegate(instance, stream, tempBuffer));
                 return (start, length);
             };
         }
