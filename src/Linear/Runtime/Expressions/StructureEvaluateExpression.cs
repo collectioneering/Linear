@@ -6,7 +6,7 @@ using System.Linq;
 namespace Linear.Runtime.Expressions
 {
     /// <summary>
-    /// Index expression
+    /// Structure evaluation expression
     /// </summary>
     public class StructureEvaluateExpression<T> : ExpressionDefinition
     {
@@ -21,7 +21,7 @@ namespace Linear.Runtime.Expressions
         /// <summary>
         /// Create new instance of <see cref="StructureEvaluateExpression{T}"/>
         /// </summary>
-        /// <param name="evaluateDelegate"></param>
+        /// <param name="evaluateDelegate">Delegate</param>
         public StructureEvaluateExpression(StructureEvaluateDelegate evaluateDelegate)
         {
             _delegate = evaluateDelegate;

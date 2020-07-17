@@ -8,6 +8,7 @@ main {
 file 0x8 {
     intb offsetChunk 0;
     intb length 0x4;
-    value offset (offsetChunk * 0x800) - $a; // $a is a replacement
-    output data [offset, length: length] $i+".dat";
+    value offset (offsetChunk * 0x800); // $a is a replacement
+    call log(format("Entry {0} offset {1} length {2}", $i, offset, length));
+    output data [offset - $a, length: length] format("{0:D6}.dat", $i);
 }

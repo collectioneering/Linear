@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Antlr4.Runtime.Tree;
 using Linear.Runtime;
 using Linear.Runtime.Deserializers;
@@ -13,19 +14,19 @@ namespace Linear
     /// </summary>
     internal class LinearListener : LinearBaseListener
     {
-        /// <summary>
-        /// Deserializers
-        /// </summary>
         private readonly Dictionary<string, IDeserializer> _deserializers;
+        private readonly Dictionary<string, MethodCallExpression.MethodCallDelegate> _methods;
 
         private readonly List<StructureDefinition> _structures;
 
         /// <summary>
         /// Create new instance of <see cref="LinearListener"/>
         /// </summary>
-        public LinearListener(Dictionary<string, IDeserializer> deserializers)
+        public LinearListener(Dictionary<string, IDeserializer> deserializers,
+            Dictionary<string, MethodCallExpression.MethodCallDelegate> methods)
         {
             _deserializers = deserializers;
+            _methods = methods;
             _structures = new List<StructureDefinition>();
         }
 
@@ -141,6 +142,13 @@ namespace Linear
             _currentDefinition!.Members.Add((dataName, dataElement));
         }
 
+        public override void EnterStruct_statement_call(LinearParser.Struct_statement_callContext context)
+        {
+            ExpressionDefinition expr = GetExpression(context.expr());
+            Element dataElement = new MethodCallElement(expr);
+            _currentDefinition!.Members.Add((null, dataElement));
+        }
+
         public override void EnterStruct_statement_output(LinearParser.Struct_statement_outputContext context)
         {
             ExpressionDefinition formatExpression = new ConstantExpression<string>(context.IDENTIFIER().GetText());
@@ -152,7 +160,7 @@ namespace Linear
             _currentDefinition!.Members.Add((null, outputElement));
         }
 
-        private static Dictionary<string, ExpressionDefinition> GetPropertyGroup(
+        private Dictionary<string, ExpressionDefinition> GetPropertyGroup(
             LinearParser.Property_groupContext? context)
         {
             Dictionary<string, ExpressionDefinition> res = new Dictionary<string, ExpressionDefinition>();
@@ -190,7 +198,7 @@ namespace Linear
                 ? deserializer
                 : throw new Exception($"Failed to find deserializer for type {identifier}");
 
-        private static ExpressionDefinition GetExpression(LinearParser.ExprContext context)
+        private ExpressionDefinition GetExpression(LinearParser.ExprContext context)
         {
             //Console.WriteLine($"Rule ihndex {context.RuleIndex}");
             return context switch
@@ -199,7 +207,10 @@ namespace Linear
                     GetExpression(exprArrayAccessContext.expr(0)), GetExpression(exprArrayAccessContext.expr(1))),
                 LinearParser.ExprMemberContext exprMemberContext => new ProxyMemberExpression(
                     exprMemberContext.IDENTIFIER().GetText(), GetExpression(exprMemberContext.expr())),
-                LinearParser.ExprOpAddSubContext exprOpAddSubContext =>  new OperatorDualExpression(
+                LinearParser.ExprMethodCallContext exprMethodCallContext => new MethodCallExpression(
+                    _methods[exprMethodCallContext.IDENTIFIER().GetText()],
+                    exprMethodCallContext.expr().Select(GetExpression).ToList()),
+                LinearParser.ExprOpAddSubContext exprOpAddSubContext => new OperatorDualExpression(
                     GetExpression(exprOpAddSubContext.expr(0)), GetExpression(exprOpAddSubContext.expr(1)),
                     OperatorDualExpression.GetOperator(exprOpAddSubContext.op_add_sub().GetText())),
                 LinearParser.ExprOpAmpContext exprOpAmpContext => new OperatorDualExpression(
@@ -211,7 +222,7 @@ namespace Linear
                 LinearParser.ExprOpCaretContext exprOpCaretContext => new OperatorDualExpression(
                     GetExpression(exprOpCaretContext.expr(0)), GetExpression(exprOpCaretContext.expr(1)),
                     OperatorDualExpression.GetOperator(exprOpCaretContext.CARET().GetText())),
-                LinearParser.ExprOpMulDivContext exprOpMulDivContext =>  new OperatorDualExpression(
+                LinearParser.ExprOpMulDivContext exprOpMulDivContext => new OperatorDualExpression(
                     GetExpression(exprOpMulDivContext.expr(0)), GetExpression(exprOpMulDivContext.expr(1)),
                     OperatorDualExpression.GetOperator(exprOpMulDivContext.op_mul_div().GetText())),
                 LinearParser.ExprRangeEndContext exprRangeEndContext => new RangeExpression(

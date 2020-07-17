@@ -29,7 +29,7 @@ namespace lyn
             using Stream baseStream = File.OpenRead(conf.InputFile);
             using MultiBufferStream mbs = new MultiBufferStream(baseStream);
             StructureInstance si = structure.Parse(registry, mbs, 0, null, baseStream.Length);
-            Dictionary<string, IExporter> exporterRegistry = LinearUtil.CreateDefaultExporterRegistry();
+            Dictionary<string, IExporter> exporterRegistry = LinearUtil.CreateDefaultExporterDictionary();
             foreach ((StructureInstance instance, string name, string format, Dictionary<string, object>? parameters,
                 (long offset, long length) range) in si.GetOutputs())
             {

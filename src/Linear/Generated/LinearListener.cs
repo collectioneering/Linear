@@ -91,6 +91,16 @@ public interface ILinearListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitStruct_statement_define_value([NotNull] LinearParser.Struct_statement_define_valueContext context);
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="LinearParser.struct_statement_call"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterStruct_statement_call([NotNull] LinearParser.Struct_statement_callContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="LinearParser.struct_statement_call"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitStruct_statement_call([NotNull] LinearParser.Struct_statement_callContext context);
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="LinearParser.struct_statement_define_array"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -191,6 +201,18 @@ public interface ILinearListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitTerm_replacement_u([NotNull] LinearParser.Term_replacement_uContext context);
 	/// <summary>
+	/// Enter a parse tree produced by the <c>ExprMethodCall</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterExprMethodCall([NotNull] LinearParser.ExprMethodCallContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>ExprMethodCall</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitExprMethodCall([NotNull] LinearParser.ExprMethodCallContext context);
+	/// <summary>
 	/// Enter a parse tree produced by the <c>ExprOpAmp</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
 	/// </summary>
@@ -214,30 +236,6 @@ public interface ILinearListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitExprOpBitwiseOr([NotNull] LinearParser.ExprOpBitwiseOrContext context);
-	/// <summary>
-	/// Enter a parse tree produced by the <c>ExprArrayAccess</c>
-	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterExprArrayAccess([NotNull] LinearParser.ExprArrayAccessContext context);
-	/// <summary>
-	/// Exit a parse tree produced by the <c>ExprArrayAccess</c>
-	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitExprArrayAccess([NotNull] LinearParser.ExprArrayAccessContext context);
-	/// <summary>
-	/// Enter a parse tree produced by the <c>ExprOpAddSub</c>
-	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterExprOpAddSub([NotNull] LinearParser.ExprOpAddSubContext context);
-	/// <summary>
-	/// Exit a parse tree produced by the <c>ExprOpAddSub</c>
-	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitExprOpAddSub([NotNull] LinearParser.ExprOpAddSubContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>ExprUnOp</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
@@ -299,6 +297,42 @@ public interface ILinearListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitExprOpMulDiv([NotNull] LinearParser.ExprOpMulDivContext context);
 	/// <summary>
+	/// Enter a parse tree produced by the <c>ExprRangeEnd</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterExprRangeEnd([NotNull] LinearParser.ExprRangeEndContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>ExprRangeEnd</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitExprRangeEnd([NotNull] LinearParser.ExprRangeEndContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>ExprArrayAccess</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterExprArrayAccess([NotNull] LinearParser.ExprArrayAccessContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>ExprArrayAccess</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitExprArrayAccess([NotNull] LinearParser.ExprArrayAccessContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>ExprOpAddSub</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterExprOpAddSub([NotNull] LinearParser.ExprOpAddSubContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>ExprOpAddSub</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitExprOpAddSub([NotNull] LinearParser.ExprOpAddSubContext context);
+	/// <summary>
 	/// Enter a parse tree produced by the <c>ExprOpCaret</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
 	/// </summary>
@@ -322,18 +356,6 @@ public interface ILinearListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitExprMember([NotNull] LinearParser.ExprMemberContext context);
-	/// <summary>
-	/// Enter a parse tree produced by the <c>ExprRangeEnd</c>
-	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterExprRangeEnd([NotNull] LinearParser.ExprRangeEndContext context);
-	/// <summary>
-	/// Exit a parse tree produced by the <c>ExprRangeEnd</c>
-	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitExprRangeEnd([NotNull] LinearParser.ExprRangeEndContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="LinearParser.op_mul_div"/>.
 	/// </summary>

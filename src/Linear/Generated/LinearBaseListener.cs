@@ -107,6 +107,18 @@ public partial class LinearBaseListener : ILinearListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitStruct_statement_define_value([NotNull] LinearParser.Struct_statement_define_valueContext context) { }
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="LinearParser.struct_statement_call"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterStruct_statement_call([NotNull] LinearParser.Struct_statement_callContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="LinearParser.struct_statement_call"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitStruct_statement_call([NotNull] LinearParser.Struct_statement_callContext context) { }
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="LinearParser.struct_statement_define_array"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
@@ -227,6 +239,20 @@ public partial class LinearBaseListener : ILinearListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitTerm_replacement_u([NotNull] LinearParser.Term_replacement_uContext context) { }
 	/// <summary>
+	/// Enter a parse tree produced by the <c>ExprMethodCall</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterExprMethodCall([NotNull] LinearParser.ExprMethodCallContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>ExprMethodCall</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitExprMethodCall([NotNull] LinearParser.ExprMethodCallContext context) { }
+	/// <summary>
 	/// Enter a parse tree produced by the <c>ExprOpAmp</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
 	/// <para>The default implementation does nothing.</para>
@@ -254,34 +280,6 @@ public partial class LinearBaseListener : ILinearListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitExprOpBitwiseOr([NotNull] LinearParser.ExprOpBitwiseOrContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by the <c>ExprArrayAccess</c>
-	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterExprArrayAccess([NotNull] LinearParser.ExprArrayAccessContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by the <c>ExprArrayAccess</c>
-	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitExprArrayAccess([NotNull] LinearParser.ExprArrayAccessContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by the <c>ExprOpAddSub</c>
-	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterExprOpAddSub([NotNull] LinearParser.ExprOpAddSubContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by the <c>ExprOpAddSub</c>
-	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitExprOpAddSub([NotNull] LinearParser.ExprOpAddSubContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by the <c>ExprUnOp</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
@@ -353,6 +351,48 @@ public partial class LinearBaseListener : ILinearListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitExprOpMulDiv([NotNull] LinearParser.ExprOpMulDivContext context) { }
 	/// <summary>
+	/// Enter a parse tree produced by the <c>ExprRangeEnd</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterExprRangeEnd([NotNull] LinearParser.ExprRangeEndContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>ExprRangeEnd</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitExprRangeEnd([NotNull] LinearParser.ExprRangeEndContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by the <c>ExprArrayAccess</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterExprArrayAccess([NotNull] LinearParser.ExprArrayAccessContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>ExprArrayAccess</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitExprArrayAccess([NotNull] LinearParser.ExprArrayAccessContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by the <c>ExprOpAddSub</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterExprOpAddSub([NotNull] LinearParser.ExprOpAddSubContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>ExprOpAddSub</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitExprOpAddSub([NotNull] LinearParser.ExprOpAddSubContext context) { }
+	/// <summary>
 	/// Enter a parse tree produced by the <c>ExprOpCaret</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
 	/// <para>The default implementation does nothing.</para>
@@ -380,20 +420,6 @@ public partial class LinearBaseListener : ILinearListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitExprMember([NotNull] LinearParser.ExprMemberContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by the <c>ExprRangeEnd</c>
-	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterExprRangeEnd([NotNull] LinearParser.ExprRangeEndContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by the <c>ExprRangeEnd</c>
-	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitExprRangeEnd([NotNull] LinearParser.ExprRangeEndContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="LinearParser.op_mul_div"/>.
 	/// <para>The default implementation does nothing.</para>
