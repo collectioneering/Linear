@@ -1,0 +1,10 @@
+main{
+    int firstOff 0;
+    $value count firstOff/4;
+    int[count] -> str[] entries 0,0;
+}
+
+str {
+    cstring16 text 0;
+    $call log(format("entry {0} {1}: {2}", $i, $a, text));
+}

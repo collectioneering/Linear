@@ -103,7 +103,7 @@ namespace Linear.Runtime.Deserializers
                 }
                 case Mode.Utf16Null:
                 {
-                    (string item1, int item2) = ReadUtf8String(stream);
+                    (string item1, int item2) = ReadUtf16String(stream);
                     return (item1, item2 + 2);
                 }
                 default:
@@ -118,7 +118,7 @@ namespace Linear.Runtime.Deserializers
                 TempMs.Position = 0;
                 TempMs.SetLength(0);
                 int c = 0;
-                do
+                while (c < maxLength)
                 {
                     int v = stream.ReadByte();
                     if (v == -1 || v == 0)
@@ -128,7 +128,7 @@ namespace Linear.Runtime.Deserializers
 
                     TempMs.WriteByte((byte)v);
                     c++;
-                } while (c < maxLength);
+                }
 
                 TempMs.TryGetBuffer(out ArraySegment<byte> buffer);
                 string str = ReadUtf8String(buffer);
@@ -157,14 +157,14 @@ namespace Linear.Runtime.Deserializers
             return DecodeSegment(new ArraySegment<byte>(segment.Array, segment.Offset, end), Encoding.UTF8);
         }
 
-        private (string, int) ReadUtf16String(Stream stream, int maxLength = int.MaxValue)
+        private (string, int) ReadUtf16String(Stream stream, int maxLength = int.MaxValue / 2)
         {
             try
             {
                 TempMs.Position = 0;
                 TempMs.SetLength(0);
                 int c = 0;
-                do
+                while (c < maxLength * 2)
                 {
                     int cc = ReadBaseArray(stream, _tempBuffer, 0, 2);
                     c += cc;
@@ -174,7 +174,7 @@ namespace Linear.Runtime.Deserializers
                     }
 
                     TempMs.Write(_tempBuffer, 0, 2);
-                } while (c < maxLength * 2);
+                }
                 // WARNING: maxLength here is treated as # code units
 
                 TempMs.TryGetBuffer(out ArraySegment<byte> buffer);
@@ -254,12 +254,6 @@ namespace Linear.Runtime.Deserializers
                 left -= read;
                 tot += read;
             } while (left > 0 && read != 0);
-
-            if (left > 0 && read == 0)
-            {
-                throw new Exception(
-                    $"Failed to read required number of bytes! 0x{read:X} read, 0x{left:X} left, 0x{stream.Position:X} end position");
-            }
 
             return tot;
         }
