@@ -4,6 +4,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Linear;
 using Linear.Runtime;
+using Linear.Runtime.Expressions;
+using Microsoft.CodeAnalysis.CSharp.Scripting;
 
 namespace lyn
 {
@@ -25,8 +27,14 @@ namespace lyn
         private static int Run(Configuration conf)
         {
             StructureRegistry? registry;
+            List<(string, MethodCallExpression.MethodCallDelegate)> methods;
+#if EnableLinearLambda
+            methods = new List<(string, MethodCallExpression.MethodCallDelegate)>();
+#else
+            methods = null;
+#endif
             using (StreamReader sr = File.OpenText(conf.LayoutFile!))
-                if (!LinearCommon.TryGenerateRegistry(sr, out registry, Console.WriteLine))
+                if (!LinearCommon.TryGenerateRegistry(sr, out registry, Console.WriteLine, null, methods))
                 {
                     Console.WriteLine("Errors occurred while parsing structure file, aborting.");
                     return 5;
