@@ -6,7 +6,8 @@ methods:
 * find() - find first occurrence of buffer
 * decrypt(range/array, algorithm, mode, key, iv?)
 * toarray(range) - get byte array
-* fromhex(string) fromascii(string) fromutf8(string) fromutf16(string) - get decoded buffers
+* fromhex(string) - get decoded buffer
+* toascii(string) toutf8(string) toutf16(string) - get encoded buffer
 
 structure deserializer properties:
 * Source - custom source array (resets absolute offset/length by default)
