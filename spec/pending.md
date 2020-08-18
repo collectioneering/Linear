@@ -3,7 +3,7 @@
 ### methods
 * only support on lyn with EnableLinearLambda:
   - compile<types...>(string) - compile lambda
-  - decode(range/array, Func<int abs, int rel, byte in, byte out> lambda)
+  - decode(range/array, Func<int a, int r, byte v, byte> lambda)
     - C# lambda string for weird xors, etc
 * find() - find first occurrence of buffer
 * decrypt(range/array, algorithm, mode, key, iv?)
