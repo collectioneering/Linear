@@ -9,11 +9,14 @@ namespace Linear.Test
     {
         private const string _test1 = @"
 main {
-    $value a 4*2+5;
-    $value b 5+8*9;
-    $value c 4/2*8;
-    $value d 9*7/3;
-    $value e 0xff&0x11;
+    var a 4*2+5;
+    var b 5+8*9;
+    var c 4/2*8;
+    var d 9*7/3;
+    var e 0xff&0x11;
+    ushort f `0;
+    var f2 ushort`2;
+    byte g `5;
 }";
 
         [SetUp]
@@ -28,13 +31,16 @@ main {
                 Console.WriteLine));
             Assert.IsNotNull(res);
             Assert.IsTrue(res.TryGetValue(LinearCommon.MainLayout, out Structure structure));
-            MemoryStream ms = new MemoryStream();
+            MemoryStream ms = new MemoryStream(new byte[]{0, 1, 2, 3, 4, 5});
             StructureInstance si = structure.Parse(res, ms);
             Assert.AreEqual(4 * 2 + 5, si["a"]);
             Assert.AreEqual(5 + 8 * 9, si["b"]);
             Assert.AreEqual(4 / 2 * 8, si["c"]);
             Assert.AreEqual(9 * 7 / 3, si["d"]);
             Assert.AreEqual(0xff & 0x11, si["e"]);
+            Assert.AreEqual(0x100, si["f"]);
+            Assert.AreEqual(0x0302, si["f2"]);
+            Assert.AreEqual(0x5, si["g"]);
         }
     }
 }

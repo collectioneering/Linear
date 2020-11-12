@@ -64,18 +64,10 @@ namespace Linear
 
         public override void EnterStruct_statement_define(LinearParser.Struct_statement_defineContext context)
         {
-            ExpressionDefinition offsetExpression = GetExpression(context.expr());
             ITerminalNode[] ids = context.IDENTIFIER();
             string typeName = ids[0].GetText();
             string dataName = ids[1].GetText();
-            (int _, bool littleEndian) = StringToPrimitiveInfo(typeName);
-            ExpressionDefinition littleEndianExpression = new ConstantExpression<bool>(littleEndian);
-            IDeserializer? deserializer = StringToDeserializer(typeName);
-            if (deserializer == null) return;
-            Element dataElement = new DataElement(dataName, offsetExpression, littleEndianExpression,
-                deserializer, GetPropertyGroup(context.property_group()),
-                new Dictionary<LinearCommon.StandardProperty, ExpressionDefinition>());
-
+            Element dataElement = new ValueElement(dataName, GetExpression(context.expr(), typeName));
             _currentDefinition!.Members.Add((dataName, dataElement));
         }
 
@@ -97,10 +89,9 @@ namespace Linear
             // "Should" add efficient primitive array deserialization...
             IDeserializer? deserializer = StringToDeserializer(typeName);
             if (deserializer == null) return;
-            Element dataElement = new DataElement(dataName, offsetExpression, littleEndianExpression,
-                new ArrayDeserializer(deserializer), GetPropertyGroup(context.property_group()),
-                standardProperties);
-
+            Element dataElement = new ValueElement(dataName, new DeserializeExpression(offsetExpression,
+                littleEndianExpression, new ArrayDeserializer(deserializer), GetPropertyGroup(context.property_group()),
+                standardProperties));
             _currentDefinition!.Members.Add((dataName, dataElement));
         }
 
@@ -132,24 +123,24 @@ namespace Linear
             IDeserializer? targetDeserializer = StringToDeserializer(targetTypeName);
             if (targetDeserializer == null) return;
             ArrayDeserializer arrayDeserializer = new ArrayDeserializer(deserializer);
-            Element dataElement = new DataElement(dataName, offsetExpression, littleEndianExpression,
-                new PointerArrayDeserializer(arrayDeserializer, targetDeserializer, lenFinder),
-                GetPropertyGroup(context.property_group()), standardProperties);
-
+            Element dataElement = new ValueElement(dataName,
+                new DeserializeExpression(offsetExpression, littleEndianExpression,
+                    new PointerArrayDeserializer(arrayDeserializer, targetDeserializer, lenFinder),
+                    GetPropertyGroup(context.property_group()), standardProperties));
             _currentDefinition!.Members.Add((dataName, dataElement));
         }
 
-        public override void EnterStruct_statement_define_value(
+        /*public override void EnterStruct_statement_define_value(
             LinearParser.Struct_statement_define_valueContext context)
         {
             /*ITerminalNode[] ids = context.IDENTIFIER();
             string typeName = ids[0].GetText();
-            string dataName = ids[1].GetText();*/
+            string dataName = ids[1].GetText();#1#
             string dataName = context.IDENTIFIER().GetText();
             ExpressionDefinition expr = GetExpression(context.expr());
             Element dataElement = new ValueElement(dataName, expr);
             _currentDefinition!.Members.Add((dataName, dataElement));
-        }
+        }*/
 
         public override void EnterStruct_statement_call(LinearParser.Struct_statement_callContext context)
         {
@@ -217,7 +208,7 @@ namespace Linear
             return null;
         }
 
-        private ExpressionDefinition GetExpression(LinearParser.ExprContext context)
+        private ExpressionDefinition GetExpression(LinearParser.ExprContext context, string? activeType = null)
         {
             //Console.WriteLine($"Rule ihndex {context.RuleIndex}");
             return context switch
@@ -228,7 +219,7 @@ namespace Linear
                     exprMemberContext.IDENTIFIER().GetText(), GetExpression(exprMemberContext.expr())),
                 LinearParser.ExprMethodCallContext exprMethodCallContext => new MethodCallExpression(
                     _methods[exprMethodCallContext.IDENTIFIER().GetText()],
-                    exprMethodCallContext.expr().Select(GetExpression).ToList()),
+                    exprMethodCallContext.expr().Select(e => GetExpression(e)).ToList()),
                 LinearParser.ExprOpAddSubContext exprOpAddSubContext => new OperatorDualExpression(
                     GetExpression(exprOpAddSubContext.expr(0)), GetExpression(exprOpAddSubContext.expr(1)),
                     OperatorDualExpression.GetOperator(exprOpAddSubContext.op_add_sub().GetText())),
@@ -249,12 +240,34 @@ namespace Linear
                 LinearParser.ExprRangeLengthContext exprRangeLengthContext => new RangeExpression(
                     GetExpression(exprRangeLengthContext.expr(0)), null, GetExpression(exprRangeLengthContext.expr(1))),
                 LinearParser.ExprTermContext exprTermContext => GetTerm(exprTermContext.term()),
+                LinearParser.ExprDeserializeContext exprDeserializeContext => GetDeserializeExpression(
+                    exprDeserializeContext.IDENTIFIER().GetText(),
+                    GetExpression(exprDeserializeContext.expr()), GetPropertyGroup(exprDeserializeContext.property_group()),
+                    new Dictionary<LinearCommon.StandardProperty, ExpressionDefinition>()),
+                LinearParser.ExprUnboundDeserializeContext exprUnboundDeserializeContext => GetDeserializeExpression(
+                    activeType ??
+                    throw new ApplicationException(
+                        $"{nameof(DeserializeExpression)} cannot be used without type name"),
+                    GetExpression(exprUnboundDeserializeContext.expr()),
+                    GetPropertyGroup(exprUnboundDeserializeContext.property_group()),
+                    new Dictionary<LinearCommon.StandardProperty, ExpressionDefinition>()),
                 LinearParser.ExprUnOpContext exprUnOpContext => new OperatorUnaryExpression(
                     GetExpression(exprUnOpContext.expr()),
                     OperatorUnaryExpression.GetOperator(exprUnOpContext.un_op().GetText())),
                 LinearParser.ExprWrappedContext exprWrappedContext => GetExpression(exprWrappedContext.expr()),
                 _ => throw new ArgumentOutOfRangeException(nameof(context))
             };
+        }
+
+        private ExpressionDefinition GetDeserializeExpression(string typeName, ExpressionDefinition offsetDefinition,
+            Dictionary<string, ExpressionDefinition> deserializerParams,
+            Dictionary<LinearCommon.StandardProperty, ExpressionDefinition> standardProperties)
+        {
+            (int _, bool littleEndian) = StringToPrimitiveInfo(typeName);
+            IDeserializer? deserializer = StringToDeserializer(typeName);
+            if (deserializer == null) throw new ArgumentException($"Unknown deserializer \"{typeName}\" referenced.");
+            return new DeserializeExpression(offsetDefinition, new ConstantExpression<bool>(littleEndian), deserializer,
+                deserializerParams, standardProperties);
         }
 
         private static ExpressionDefinition GetTerm(LinearParser.TermContext context)

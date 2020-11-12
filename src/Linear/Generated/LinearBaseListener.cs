@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generated from /Users/jake/Projects/GitHub/Linear/scripts/../spec/Linear.g4 by ANTLR 4.8
+// Generated from C:\Users\black\Documents\GitHub\Linear\scripts\\..\spec\Linear.g4 by ANTLR 4.8
 
 // Unreachable code detected
 #pragma warning disable 0162
@@ -94,18 +94,6 @@ public partial class LinearBaseListener : ILinearListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitStruct_statement_define([NotNull] LinearParser.Struct_statement_defineContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="LinearParser.struct_statement_define_value"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterStruct_statement_define_value([NotNull] LinearParser.Struct_statement_define_valueContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="LinearParser.struct_statement_define_value"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitStruct_statement_define_value([NotNull] LinearParser.Struct_statement_define_valueContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="LinearParser.struct_statement_call"/>.
 	/// <para>The default implementation does nothing.</para>
@@ -293,6 +281,20 @@ public partial class LinearBaseListener : ILinearListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitExprOpBitwiseOr([NotNull] LinearParser.ExprOpBitwiseOrContext context) { }
 	/// <summary>
+	/// Enter a parse tree produced by the <c>ExprUnboundDeserialize</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterExprUnboundDeserialize([NotNull] LinearParser.ExprUnboundDeserializeContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>ExprUnboundDeserialize</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitExprUnboundDeserialize([NotNull] LinearParser.ExprUnboundDeserializeContext context) { }
+	/// <summary>
 	/// Enter a parse tree produced by the <c>ExprUnOp</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
 	/// <para>The default implementation does nothing.</para>
@@ -404,6 +406,20 @@ public partial class LinearBaseListener : ILinearListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitExprOpAddSub([NotNull] LinearParser.ExprOpAddSubContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by the <c>ExprDeserialize</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterExprDeserialize([NotNull] LinearParser.ExprDeserializeContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>ExprDeserialize</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitExprDeserialize([NotNull] LinearParser.ExprDeserializeContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by the <c>ExprOpCaret</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.

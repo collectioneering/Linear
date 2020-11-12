@@ -1,3 +1,0 @@
-vectors?
-find()
-toascii() toutf8() toutf16()

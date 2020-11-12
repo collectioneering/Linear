@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace Linear.Runtime.Elements
+namespace Linear.Runtime.Expressions
 {
     /// <summary>
-    /// Expression from offset
+    /// Deserializable expression
     /// </summary>
-    public class DataElement : Element
+    public class DeserializeExpression : ExpressionDefinition
     {
-        private readonly string _name;
         private readonly ExpressionDefinition _offsetDefinition;
         private readonly ExpressionDefinition _littleEndianDefinition;
         private readonly IDeserializer _deserializer;
@@ -18,27 +17,23 @@ namespace Linear.Runtime.Elements
         private readonly Dictionary<LinearCommon.StandardProperty, ExpressionDefinition> _standardProperties;
 
         /// <summary>
-        /// Create new instance of <see cref="DataElement"/>
+        /// Create new instance of <see cref="DeserializeExpression"/>
         /// </summary>
-        /// <param name="name">Name of element</param>
         /// <param name="offsetDefinition">Offset value definition</param>
         /// <param name="littleEndianDefinition">Endianness value definition</param>
         /// <param name="deserializer">Custom deserializer</param>
         /// <param name="deserializerParams">Deserializer parameters</param>
         /// <param name="standardProperties">Standard property expressions</param>
-        public DataElement(string name, ExpressionDefinition offsetDefinition,
-            ExpressionDefinition littleEndianDefinition, IDeserializer deserializer,
-            Dictionary<string, ExpressionDefinition> deserializerParams,
+        public DeserializeExpression(ExpressionDefinition offsetDefinition, ExpressionDefinition littleEndianDefinition,
+            IDeserializer deserializer, Dictionary<string, ExpressionDefinition> deserializerParams,
             Dictionary<LinearCommon.StandardProperty, ExpressionDefinition> standardProperties)
         {
-            _name = name;
             _offsetDefinition = offsetDefinition;
             _littleEndianDefinition = littleEndianDefinition;
             _deserializer = deserializer;
             _deserializerParams = deserializerParams;
             _standardProperties = standardProperties;
         }
-
 
         /// <inheritdoc />
         public override IEnumerable<Element> GetDependencies(StructureDefinition definition)
@@ -50,36 +45,43 @@ namespace Linear.Runtime.Elements
         }
 
         /// <inheritdoc />
-        public override Action<StructureInstance, Stream, byte[]> GetDelegate()
+        public override Func<StructureInstance, Stream, byte[], object?> GetDelegate() => CreateDelegate(
+            _offsetDefinition, _littleEndianDefinition, _deserializer, _deserializerParams, _standardProperties);
+
+        internal static Func<StructureInstance, Stream, byte[], object?> CreateDelegate(
+            ExpressionDefinition offsetDefinition,
+            ExpressionDefinition littleEndianDefinition, IDeserializer deserializer,
+            Dictionary<string, ExpressionDefinition> deserializerParams,
+            Dictionary<LinearCommon.StandardProperty, ExpressionDefinition> standardProperties)
         {
-            Func<StructureInstance, Stream, byte[], object?> srcDelegate = _offsetDefinition.GetDelegate();
+            Func<StructureInstance, Stream, byte[], object?> srcDelegate = offsetDefinition.GetDelegate();
             Func<StructureInstance, Stream, byte[], object?>
-                littleEndianDelegate = _littleEndianDefinition.GetDelegate();
+                littleEndianDelegate = littleEndianDefinition.GetDelegate();
             Dictionary<string, Func<StructureInstance, Stream, byte[], object?>> deserializerParamsCompact =
                 new Dictionary<string, Func<StructureInstance, Stream, byte[], object?>>();
-            foreach (var kvp in _deserializerParams)
+            foreach (var kvp in deserializerParams)
                 deserializerParamsCompact[kvp.Key] = kvp.Value.GetDelegate();
             Dictionary<LinearCommon.StandardProperty, Func<StructureInstance, Stream, byte[], object?>>
                 standardPropertiesCompact =
                     new Dictionary<LinearCommon.StandardProperty, Func<StructureInstance, Stream, byte[], object?>>();
-            foreach (var kvp in _standardProperties)
+            foreach (var kvp in standardProperties)
                 standardPropertiesCompact[kvp.Key] = kvp.Value.GetDelegate();
             return (instance, stream, tempBuffer) =>
             {
-                Dictionary<string, object>? deserializerParams =
+                Dictionary<string, object>? deserializerParamsGen =
                     deserializerParamsCompact.Count != 0 ? new Dictionary<string, object>() : null;
-                if (deserializerParams != null)
+                if (deserializerParamsGen != null)
                     foreach (var kvp in deserializerParamsCompact)
-                        deserializerParams[kvp.Key] =
+                        deserializerParamsGen[kvp.Key] =
                             kvp.Value(instance, stream, tempBuffer) ?? throw new NullReferenceException();
 
-                Dictionary<LinearCommon.StandardProperty, object>? standardProperties =
+                Dictionary<LinearCommon.StandardProperty, object>? standardPropertiesGen =
                     standardPropertiesCompact.Count != 0
                         ? new Dictionary<LinearCommon.StandardProperty, object>()
                         : null;
-                if (standardProperties != null)
+                if (standardPropertiesGen != null)
                     foreach (var kvp in standardPropertiesCompact)
-                        standardProperties[kvp.Key] =
+                        standardPropertiesGen[kvp.Key] =
                             kvp.Value(instance, stream, tempBuffer) ?? throw new NullReferenceException();
                 object? offset = srcDelegate(instance, stream, tempBuffer);
                 object? littleEndian = littleEndianDelegate(instance, stream, tempBuffer);
@@ -92,8 +94,8 @@ namespace Linear.Runtime.Elements
                 if (!LinearCommon.TryCast(littleEndian, out bool littleEndianValue))
                     throw new InvalidCastException(
                         $"Could not cast expression of type {littleEndian?.GetType().FullName} to type {nameof(Boolean)}");
-                instance.SetMember(_name, _deserializer.Deserialize(instance, stream, tempBuffer, range.offset,
-                    littleEndianValue, standardProperties, deserializerParams, range.length).value);
+                return deserializer.Deserialize(instance, stream, tempBuffer, range.offset,
+                    littleEndianValue, standardPropertiesGen, deserializerParamsGen, range.length).value;
             };
         }
     }
