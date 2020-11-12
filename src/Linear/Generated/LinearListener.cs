@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generated from /Users/jake/Projects/GitHub/Linear/scripts/../spec/Linear.g4 by ANTLR 4.8
+// Generated from C:\Users\black\Documents\GitHub\Linear\scripts\\..\spec\Linear.g4 by ANTLR 4.8
 
 // Unreachable code detected
 #pragma warning disable 0162
@@ -80,16 +80,6 @@ public interface ILinearListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitStruct_statement_define([NotNull] LinearParser.Struct_statement_defineContext context);
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="LinearParser.struct_statement_define_value"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterStruct_statement_define_value([NotNull] LinearParser.Struct_statement_define_valueContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="LinearParser.struct_statement_define_value"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitStruct_statement_define_value([NotNull] LinearParser.Struct_statement_define_valueContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="LinearParser.struct_statement_call"/>.
 	/// </summary>
@@ -247,6 +237,18 @@ public interface ILinearListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitExprOpBitwiseOr([NotNull] LinearParser.ExprOpBitwiseOrContext context);
 	/// <summary>
+	/// Enter a parse tree produced by the <c>ExprUnboundDeserialize</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterExprUnboundDeserialize([NotNull] LinearParser.ExprUnboundDeserializeContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>ExprUnboundDeserialize</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitExprUnboundDeserialize([NotNull] LinearParser.ExprUnboundDeserializeContext context);
+	/// <summary>
 	/// Enter a parse tree produced by the <c>ExprUnOp</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
 	/// </summary>
@@ -342,6 +344,18 @@ public interface ILinearListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitExprOpAddSub([NotNull] LinearParser.ExprOpAddSubContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>ExprDeserialize</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterExprDeserialize([NotNull] LinearParser.ExprDeserializeContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>ExprDeserialize</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitExprDeserialize([NotNull] LinearParser.ExprDeserializeContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>ExprOpCaret</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.

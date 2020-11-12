@@ -1,13 +1,11 @@
 // BREW MP .bar file (found in NFS Undercover)
 
 main {
-    int count 0x14;
-    int[count] ->+ entry[] table 0x28,0;
+    int[int`0x14] ->+ entry[] table 0x28,0;
 }
 
 entry {
-    short hLength 0x0;
-    $output compressed [hLength, end: $length] $i+".dat" {
+    $output compressed [short`0x0, end: $length] $i+".dat" {
         format="gzip";
     };
 }

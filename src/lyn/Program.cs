@@ -5,7 +5,6 @@ using System.IO;
 using Linear;
 using Linear.Runtime;
 using Linear.Runtime.Expressions;
-using Microsoft.CodeAnalysis.CSharp.Scripting;
 
 namespace lyn
 {

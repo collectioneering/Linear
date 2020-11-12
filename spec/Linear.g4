@@ -14,7 +14,7 @@ struct_statement:
 	struct_statement_define
 	| struct_statement_call
 	| struct_statement_length
-	| struct_statement_define_value
+//	| struct_statement_define_value
 	| struct_statement_define_array
 	| struct_statement_define_array_indirect
 	| struct_statement_output
@@ -23,12 +23,13 @@ struct_statement:
 
 // varType memberName locationExpr {};
 struct_statement_define:
-	IDENTIFIER WS IDENTIFIER WS expr WS? property_group? ENDL;
+	IDENTIFIER WS IDENTIFIER WS expr WS? ENDL;
+	//IDENTIFIER WS IDENTIFIER WS expr WS? property_group? ENDL;
 
 // value memberName valueExpr;
-struct_statement_define_value:
+//struct_statement_define_value:
 	//	'value' WS IDENTIFIER WS IDENTIFIER WS expr WS? ENDL;
-	'$value' WS IDENTIFIER WS expr WS? ENDL;
+//	'$value' WS IDENTIFIER WS expr WS? ENDL;
 
 // call methodExpr;
 struct_statement_call: '$call' WS expr WS? ENDL;
@@ -66,6 +67,8 @@ term_replacement_u: '$u' | '$unique';
 expr:
 	IDENTIFIER WS? '(' WS? expr? WS? (',' WS? expr WS?)* ')'		# ExprMethodCall
 	| term															# ExprTerm
+	| '`' expr WS? property_group?									# ExprUnboundDeserialize
+	| IDENTIFIER '`' expr WS? property_group?						# ExprDeserialize
 	| OPENSQ WS? expr WS? ',' WS? 'end:' WS? expr WS? CLOSESQ		# ExprRangeEnd
 	| OPENSQ WS? expr WS? ',' WS? 'length:' WS? expr WS? CLOSESQ	# ExprRangeLength
 	| expr '.' IDENTIFIER											# ExprMember

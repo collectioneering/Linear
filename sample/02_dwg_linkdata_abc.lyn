@@ -1,14 +1,14 @@
 // Dynasty Warriors Gundam linkdata files
 
 main {
-    intb numEntries 0x4; // intb is big-endian int (s32be)
+    intb numEntries `0x4; // intb is big-endian int (s32be)
     file[numEntries] entries 0x10;
 }
 
 file 0x8 {
-    intb offsetChunk 0;
-    intb length 0x4;
-    $value offset (offsetChunk * 0x800); // $a is a replacement
+    intb offsetChunk `0;
+    intb length `0x4;
+    int offset (offsetChunk * 0x800);
     $call log(format("Entry {0} offset {1} length {2}", $i, offset, length));
-    $output data [offset - $a, length: length] format("{0:D6}.dat", $i);
+    $output data [offset - $a, length: length] format("{0:D6}.dat", $i); // $a is a replacement
 }

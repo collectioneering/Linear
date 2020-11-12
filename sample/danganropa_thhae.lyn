@@ -1,15 +1,14 @@
 // main.17.jp.co.spike_chunsoft.DR1.obb
 
 main{
-    int count 0x7;
-    entry[count] entries 0xb;
+    entry[int`0x7] entries 0xb;
 }
 
 entry{
-    byte strLen 0;
-    string path [1, length: strLen];
-    int offsetAbs 1 + strLen;
-    int length 1 + strLen + 4;
+    byte strLen `0;
+    string path `[1, length: strLen];
+    int offsetAbs `(1 + strLen);
+    int length `(1 + strLen + 4);
     $setlength 1 + strLen + 24;
     $output data [offsetAbs - $a, length: length] path;
 }
