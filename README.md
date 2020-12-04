@@ -36,8 +36,8 @@ main {
 // Structure named 'file' with raw size 0x8 (used in plain arrays)
 file 0x8 {
     // Can use explicit deserializer name to get
-    // data with 'int' deserializer at offset 0.
-    var offsetChunk int`0;
+    // data with 'intb' deserializer at offset 0.
+    var offsetChunk intb`0;
 
     intb length `0x4;
     
