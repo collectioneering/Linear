@@ -29,7 +29,7 @@ public class ConstantExpression<T> : ExpressionDefinition
 
     private record ConstantExpressionInstance(T Value) : ExpressionInstance
     {
-        public override object? Deserialize(StructureInstance structure, Stream stream)
+        public override object? Evaluate(StructureInstance structure, Stream stream)
         {
             return Value;
         }

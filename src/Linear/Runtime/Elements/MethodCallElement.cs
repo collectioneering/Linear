@@ -33,7 +33,7 @@ public class MethodCallElement : Element
     {
         public override void Initialize(StructureInstance structure, Stream stream)
         {
-            Expression.Deserialize(structure, stream);
+            Expression.Evaluate(structure, stream);
         }
     }
 }

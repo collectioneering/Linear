@@ -33,10 +33,10 @@ public class ArrayAccessExpression : ExpressionDefinition
 
     private record ArrayAccessExpressionInstance(ExpressionInstance Source, ExpressionInstance Index) : ExpressionInstance
     {
-        public override object? Deserialize(StructureInstance structure, Stream stream)
+        public override object? Evaluate(StructureInstance structure, Stream stream)
         {
-            object? source = Source.Deserialize(structure, stream);
-            object index = Index.Deserialize(structure, stream) ?? throw new NullReferenceException();
+            object? source = Source.Evaluate(structure, stream);
+            object index = Index.Evaluate(structure, stream) ?? throw new NullReferenceException();
             if (!LinearCommon.TryCast(source, out Array sourceValue))
                 throw new InvalidCastException(
                     $"Could not cast object of type {source?.GetType().FullName} to {nameof(Array)}");

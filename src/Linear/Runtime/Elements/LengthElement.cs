@@ -33,7 +33,7 @@ public class LengthElement : Element
     {
         public override void Initialize(StructureInstance structure, Stream stream)
         {
-            structure.Length = LinearCommon.CastLong(Expression.Deserialize(structure, stream));
+            structure.Length = LinearCommon.CastLong(Expression.Evaluate(structure, stream));
         }
     }
 }

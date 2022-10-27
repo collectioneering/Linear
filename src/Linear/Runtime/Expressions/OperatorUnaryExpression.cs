@@ -55,9 +55,9 @@ public class OperatorUnaryExpression : ExpressionDefinition
 
     private record OperatorUnaryPlusExpressionInstance(ExpressionInstance Expression) : ExpressionInstance
     {
-        public override object Deserialize(StructureInstance structure, Stream stream)
+        public override object Evaluate(StructureInstance structure, Stream stream)
         {
-            object value = Expression.Deserialize(structure, stream) ?? throw new NullReferenceException("Expr value null");
+            object value = Expression.Evaluate(structure, stream) ?? throw new NullReferenceException("Expr value null");
 
             return value switch
             {
@@ -78,9 +78,9 @@ public class OperatorUnaryExpression : ExpressionDefinition
 
     private record OperatorUnaryMinusExpressionInstance(ExpressionInstance Expression) : ExpressionInstance
     {
-        public override object Deserialize(StructureInstance structure, Stream stream)
+        public override object Evaluate(StructureInstance structure, Stream stream)
         {
-            object value = Expression.Deserialize(structure, stream) ?? throw new NullReferenceException("Expr value null");
+            object value = Expression.Evaluate(structure, stream) ?? throw new NullReferenceException("Expr value null");
 
             return value switch
             {
@@ -100,9 +100,9 @@ public class OperatorUnaryExpression : ExpressionDefinition
 
     private record OperatorUnaryTildeExpressionInstance(ExpressionInstance Expression) : ExpressionInstance
     {
-        public override object Deserialize(StructureInstance structure, Stream stream)
+        public override object Evaluate(StructureInstance structure, Stream stream)
         {
-            object value = Expression.Deserialize(structure, stream) ?? throw new NullReferenceException("Expr value null");
+            object value = Expression.Evaluate(structure, stream) ?? throw new NullReferenceException("Expr value null");
 
             return value switch
             {

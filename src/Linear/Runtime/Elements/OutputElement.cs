@@ -55,14 +55,14 @@ public class OutputElement : Element
     {
         public override void Initialize(StructureInstance structure, Stream stream)
         {
-            object? format = Format.Deserialize(structure, stream);
-            object? range = Range.Deserialize(structure, stream);
-            object? name = Name.Deserialize(structure, stream);
+            object? format = Format.Evaluate(structure, stream);
+            object? range = Range.Evaluate(structure, stream);
+            object? name = Name.Evaluate(structure, stream);
             Dictionary<string, object>? exporterParams =
                 ExporterParamsCompact == null ? null : new Dictionary<string, object>();
             if (ExporterParamsCompact != null)
                 foreach (var kvp in ExporterParamsCompact)
-                    exporterParams![kvp.Key] = kvp.Value.Deserialize(structure, stream) ?? throw new NullReferenceException();
+                    exporterParams![kvp.Key] = kvp.Value.Evaluate(structure, stream) ?? throw new NullReferenceException();
             if (!LinearCommon.TryCast(format, out string formatValue))
                 throw new InvalidCastException(
                     $"Could not cast expression of type {format?.GetType().FullName} to type {nameof(String)}");

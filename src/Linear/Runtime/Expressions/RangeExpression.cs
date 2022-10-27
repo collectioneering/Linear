@@ -56,20 +56,20 @@ public class RangeExpression : ExpressionDefinition
 
     private record RangeExpressionInstanceStartEnd(ExpressionInstance Start, ExpressionInstance End) : ExpressionInstance
     {
-        public override object Deserialize(StructureInstance structure, Stream stream)
+        public override object Evaluate(StructureInstance structure, Stream stream)
         {
-            long start = LinearCommon.CastLong(Start.Deserialize(structure, stream));
-            long end = LinearCommon.CastLong(End.Deserialize(structure, stream));
+            long start = LinearCommon.CastLong(Start.Evaluate(structure, stream));
+            long end = LinearCommon.CastLong(End.Evaluate(structure, stream));
             return new LongRange(start, end - start);
         }
     }
 
     private record RangeExpressionInstanceStartLength(ExpressionInstance Start, ExpressionInstance Length) : ExpressionInstance
     {
-        public override object Deserialize(StructureInstance structure, Stream stream)
+        public override object Evaluate(StructureInstance structure, Stream stream)
         {
-            long start = LinearCommon.CastLong(Start.Deserialize(structure, stream));
-            long length = LinearCommon.CastLong(Length.Deserialize(structure, stream));
+            long start = LinearCommon.CastLong(Start.Evaluate(structure, stream));
+            long length = LinearCommon.CastLong(Length.Evaluate(structure, stream));
             return new LongRange(start, length);
         }
     }

@@ -67,10 +67,10 @@ public class OperatorDualExpression : ExpressionDefinition
 
     private record OperatorDualAddExpressionInstance(ExpressionInstance Left, ExpressionInstance Right) : ExpressionInstance
     {
-        public override object? Deserialize(StructureInstance structure, Stream stream)
+        public override object? Evaluate(StructureInstance structure, Stream stream)
         {
-            object? left = Left.Deserialize(structure, stream);
-            object? right = Right.Deserialize(structure, stream);
+            object? left = Left.Evaluate(structure, stream);
+            object? right = Right.Evaluate(structure, stream);
 
             if (left is string strLeft) return strLeft + right;
             if (right is string strRight) return left + strRight;
@@ -113,10 +113,10 @@ public class OperatorDualExpression : ExpressionDefinition
 
     private record OperatorDualSubExpressionInstance(ExpressionInstance Left, ExpressionInstance Right) : ExpressionInstance
     {
-        public override object? Deserialize(StructureInstance structure, Stream stream)
+        public override object? Evaluate(StructureInstance structure, Stream stream)
         {
-            object left = Left.Deserialize(structure, stream) ?? throw new NullReferenceException("LHS null");
-            object right = Right.Deserialize(structure, stream) ?? throw new NullReferenceException("RHS null");
+            object left = Left.Evaluate(structure, stream) ?? throw new NullReferenceException("LHS null");
+            object right = Right.Evaluate(structure, stream) ?? throw new NullReferenceException("RHS null");
 
             if (left is double doubleLeft) return doubleLeft - LinearCommon.CastDouble(right);
             if (right is double doubleRight) return LinearCommon.CastDouble(left) - doubleRight;
@@ -153,10 +153,10 @@ public class OperatorDualExpression : ExpressionDefinition
 
     private record OperatorDualMultExpressionInstance(ExpressionInstance Left, ExpressionInstance Right) : ExpressionInstance
     {
-        public override object? Deserialize(StructureInstance structure, Stream stream)
+        public override object? Evaluate(StructureInstance structure, Stream stream)
         {
-            object left = Left.Deserialize(structure, stream) ?? throw new NullReferenceException("LHS null");
-            object right = Right.Deserialize(structure, stream) ?? throw new NullReferenceException("RHS null");
+            object left = Left.Evaluate(structure, stream) ?? throw new NullReferenceException("LHS null");
+            object right = Right.Evaluate(structure, stream) ?? throw new NullReferenceException("RHS null");
 
             if (left is double doubleLeft) return doubleLeft * LinearCommon.CastDouble(right);
             if (right is double doubleRight) return LinearCommon.CastDouble(left) * doubleRight;
@@ -193,10 +193,10 @@ public class OperatorDualExpression : ExpressionDefinition
 
     private record OperatorDualDivExpressionInstance(ExpressionInstance Left, ExpressionInstance Right) : ExpressionInstance
     {
-        public override object? Deserialize(StructureInstance structure, Stream stream)
+        public override object? Evaluate(StructureInstance structure, Stream stream)
         {
-            object left = Left.Deserialize(structure, stream) ?? throw new NullReferenceException("LHS null");
-            object right = Right.Deserialize(structure, stream) ?? throw new NullReferenceException("RHS null");
+            object left = Left.Evaluate(structure, stream) ?? throw new NullReferenceException("LHS null");
+            object right = Right.Evaluate(structure, stream) ?? throw new NullReferenceException("RHS null");
 
             if (left is double doubleLeft) return doubleLeft / LinearCommon.CastDouble(right);
             if (right is double doubleRight) return LinearCommon.CastDouble(left) / doubleRight;
@@ -233,10 +233,10 @@ public class OperatorDualExpression : ExpressionDefinition
 
     private record OperatorDualModExpressionInstance(ExpressionInstance Left, ExpressionInstance Right) : ExpressionInstance
     {
-        public override object? Deserialize(StructureInstance structure, Stream stream)
+        public override object? Evaluate(StructureInstance structure, Stream stream)
         {
-            object left = Left.Deserialize(structure, stream) ?? throw new NullReferenceException("LHS null");
-            object right = Right.Deserialize(structure, stream) ?? throw new NullReferenceException("RHS null");
+            object left = Left.Evaluate(structure, stream) ?? throw new NullReferenceException("LHS null");
+            object right = Right.Evaluate(structure, stream) ?? throw new NullReferenceException("RHS null");
 
             if (left is double doubleLeft) return doubleLeft % LinearCommon.CastDouble(right);
             if (right is double doubleRight) return LinearCommon.CastDouble(left) % doubleRight;
@@ -273,10 +273,10 @@ public class OperatorDualExpression : ExpressionDefinition
 
     private record OperatorDualAndExpressionInstance(ExpressionInstance Left, ExpressionInstance Right) : ExpressionInstance
     {
-        public override object? Deserialize(StructureInstance structure, Stream stream)
+        public override object? Evaluate(StructureInstance structure, Stream stream)
         {
-            object left = Left.Deserialize(structure, stream) ?? throw new NullReferenceException("LHS null");
-            object right = Right.Deserialize(structure, stream) ?? throw new NullReferenceException("RHS null");
+            object left = Left.Evaluate(structure, stream) ?? throw new NullReferenceException("LHS null");
+            object right = Right.Evaluate(structure, stream) ?? throw new NullReferenceException("RHS null");
 
             if (left is long longLeft) return longLeft & LinearCommon.CastLong(right);
             if (right is long longRight) return LinearCommon.CastLong(left) & longRight;
@@ -307,10 +307,10 @@ public class OperatorDualExpression : ExpressionDefinition
 
     private record OperatorDualOrExpressionInstance(ExpressionInstance Left, ExpressionInstance Right) : ExpressionInstance
     {
-        public override object? Deserialize(StructureInstance structure, Stream stream)
+        public override object? Evaluate(StructureInstance structure, Stream stream)
         {
-            object left = Left.Deserialize(structure, stream) ?? throw new NullReferenceException("LHS null");
-            object right = Right.Deserialize(structure, stream) ?? throw new NullReferenceException("RHS null");
+            object left = Left.Evaluate(structure, stream) ?? throw new NullReferenceException("LHS null");
+            object right = Right.Evaluate(structure, stream) ?? throw new NullReferenceException("RHS null");
 
             if (left is long longLeft) return longLeft | LinearCommon.CastLong(right);
             if (right is long longRight) return LinearCommon.CastLong(left) | longRight;
@@ -341,10 +341,10 @@ public class OperatorDualExpression : ExpressionDefinition
 
     private record OperatorDualXorExpressionInstance(ExpressionInstance Left, ExpressionInstance Right) : ExpressionInstance
     {
-        public override object? Deserialize(StructureInstance structure, Stream stream)
+        public override object? Evaluate(StructureInstance structure, Stream stream)
         {
-            object left = Left.Deserialize(structure, stream) ?? throw new NullReferenceException("LHS null");
-            object right = Right.Deserialize(structure, stream) ?? throw new NullReferenceException("RHS null");
+            object left = Left.Evaluate(structure, stream) ?? throw new NullReferenceException("LHS null");
+            object right = Right.Evaluate(structure, stream) ?? throw new NullReferenceException("RHS null");
 
             if (left is long longLeft) return longLeft ^ LinearCommon.CastLong(right);
             if (right is long longRight) return LinearCommon.CastLong(left) ^ longRight;

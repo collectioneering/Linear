@@ -36,6 +36,6 @@ public class StructureEvaluateExpression<T> : ExpressionDefinition
 
     private record StructureEvaluateExpressionInstance(StructureEvaluateDelegate Delegate) : ExpressionInstance
     {
-        public override object? Deserialize(StructureInstance structure, Stream stream) => Delegate(structure);
+        public override object? Evaluate(StructureInstance structure, Stream stream) => Delegate(structure);
     }
 }

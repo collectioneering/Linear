@@ -8,10 +8,10 @@ namespace Linear.Runtime;
 public abstract record ExpressionInstance
 {
     /// <summary>
-    /// Deserialize expression.
+    /// Evaluates expression.
     /// </summary>
     /// <param name="structure">Structure.</param>
     /// <param name="stream">Stream.</param>
-    /// <returns>Deserialized object.</returns>
-    public abstract object? Deserialize(StructureInstance structure, Stream stream);
+    /// <returns>Result of evaluation.</returns>
+    public abstract object? Evaluate(StructureInstance structure, Stream stream);
 }

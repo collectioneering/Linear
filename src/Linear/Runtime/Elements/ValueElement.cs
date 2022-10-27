@@ -38,7 +38,7 @@ public class ValueElement : Element
     {
         public override void Initialize(StructureInstance structure, Stream stream)
         {
-            object expression = Expression.Deserialize(structure, stream) ?? throw new NullReferenceException();
+            object expression = Expression.Evaluate(structure, stream) ?? throw new NullReferenceException();
             structure.SetMember(Name, expression);
         }
     }

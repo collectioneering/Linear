@@ -43,9 +43,9 @@ public class MethodCallExpression : ExpressionDefinition
 
     private record MethodCallExpressionInstance(List<ExpressionInstance> ArgsCompact, MethodCallDelegate Delegate) : ExpressionInstance
     {
-        public override object? Deserialize(StructureInstance structure, Stream stream)
+        public override object? Evaluate(StructureInstance structure, Stream stream)
         {
-            object?[] res = ArgsCompact.Select(arg => arg.Deserialize(structure, stream)).ToArray();
+            object?[] res = ArgsCompact.Select(arg => arg.Evaluate(structure, stream)).ToArray();
             return Delegate(res);
         }
     }

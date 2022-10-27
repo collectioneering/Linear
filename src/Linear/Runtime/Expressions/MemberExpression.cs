@@ -31,7 +31,7 @@ public class MemberExpression : ExpressionDefinition
 
     private record MemberExpressionInstance(string Name) : ExpressionInstance
     {
-        public override object Deserialize(StructureInstance structure, Stream stream)
+        public override object Evaluate(StructureInstance structure, Stream stream)
         {
             return structure[Name];
         }

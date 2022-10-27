@@ -71,13 +71,13 @@ public class DeserializeExpression : ExpressionDefinition
         Dictionary<LinearCommon.StandardProperty, ExpressionInstance> StandardPropertiesCompact,
         ExpressionInstance Source, ExpressionInstance LittleEndian, IDeserializer Deserializer) : ExpressionInstance
     {
-        public override object Deserialize(StructureInstance structure, Stream stream)
+        public override object Evaluate(StructureInstance structure, Stream stream)
         {
             Dictionary<string, object>? deserializerParamsGen =
                 DeserializerParamsCompact.Count != 0 ? new Dictionary<string, object>() : null;
             if (deserializerParamsGen != null)
                 foreach (var kvp in DeserializerParamsCompact)
-                    deserializerParamsGen[kvp.Key] = kvp.Value.Deserialize(structure, stream) ?? throw new NullReferenceException();
+                    deserializerParamsGen[kvp.Key] = kvp.Value.Evaluate(structure, stream) ?? throw new NullReferenceException();
 
             Dictionary<LinearCommon.StandardProperty, object>? standardPropertiesGen =
                 StandardPropertiesCompact.Count != 0
@@ -85,9 +85,9 @@ public class DeserializeExpression : ExpressionDefinition
                     : null;
             if (standardPropertiesGen != null)
                 foreach (var kvp in StandardPropertiesCompact)
-                    standardPropertiesGen[kvp.Key] = kvp.Value.Deserialize(structure, stream) ?? throw new NullReferenceException();
-            object? offset = Source.Deserialize(structure, stream);
-            object? littleEndian = LittleEndian.Deserialize(structure, stream);
+                    standardPropertiesGen[kvp.Key] = kvp.Value.Evaluate(structure, stream) ?? throw new NullReferenceException();
+            object? offset = Source.Evaluate(structure, stream);
+            object? littleEndian = LittleEndian.Evaluate(structure, stream);
             LongRange range;
             if (LinearCommon.TryCastLong(offset, out long offsetValue))
                 range = new LongRange(Offset: offsetValue, Length: 0);
