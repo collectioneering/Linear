@@ -3,7 +3,7 @@
   <PropertyGroup>
     <EnableLinearLambda>true</EnableLinearLambda>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework Condition="$(![MSBuild]::IsOSPlatform('Windows'))">net6.0</TargetFramework>
     <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('Windows'))">net6.0;net472</TargetFrameworks>
     <DefineConstants Condition="'$(EnableLinearLambda)'=='true'">EnableLinearLambda</DefineConstants>
     <Copyright>Copyright ©2020 Lucina</Copyright>
