@@ -42,7 +42,7 @@ public class MultiBufferStream : Stream
         _disposed = false;
     }
 
-    private ArraySegment<byte> GetOrRead(long position, int length)
+    private ReadOnlySpan<byte> GetOrRead(long position, int length)
     {
         long chunk = position / _bufferLength;
         int ofs = (int)(position % _bufferLength);
@@ -54,7 +54,7 @@ public class MultiBufferStream : Stream
             {
                 return ofs > target.length
                     ? new ArraySegment<byte>()
-                    : new ArraySegment<byte>(target.buffer,ofs, Math.Min(target.length - ofs, length));
+                    : new ArraySegment<byte>(target.buffer, ofs, Math.Min(target.length - ofs, length));
             }
         }
 
@@ -78,7 +78,7 @@ public class MultiBufferStream : Stream
 
         return ofs > target.length
             ? new ArraySegment<byte>()
-            : new ArraySegment<byte>(target.buffer,ofs, Math.Min(target.length - ofs, length));
+            : new ArraySegment<byte>(target.buffer, ofs, Math.Min(target.length - ofs, length));
     }
 
     private (long chunk, int length, byte[] buffer) ForceRead(long chunk, byte[] buffer)
@@ -126,14 +126,41 @@ public class MultiBufferStream : Stream
         int read = 0;
         while (count > 0)
         {
-            ArraySegment<byte> source = GetOrRead(_position, Math.Min(count, buffer.Length - offset));
-            int r = source.Count;
+            ReadOnlySpan<byte> source = GetOrRead(_position, Math.Min(count, buffer.Length - offset));
+            int r = source.Length;
             if (r == 0)
                 return read;
-            Array.Copy(source.Array, source.Offset, buffer, offset, r);
+            source.CopyTo(buffer.AsSpan(offset));
             count -= r;
             read += r;
             offset += r;
+            _position += r;
+        }
+
+        return read;
+    }
+
+    /// <inheritdoc />
+    public override int Read(Span<byte> buffer)
+    {
+        if (buffer.Length > _bufferLength && LargeReadOverride)
+        {
+            _sourceStream.Position = _position;
+            int srcRead = _sourceStream.Read(buffer);
+            _position = srcRead;
+            return srcRead;
+        }
+
+        int read = 0;
+        while (buffer.Length > 0)
+        {
+            ReadOnlySpan<byte> source = GetOrRead(_position, buffer.Length);
+            int r = source.Length;
+            if (r == 0)
+                return read;
+            source.CopyTo(buffer);
+            buffer = buffer[r..];
+            read += r;
             _position += r;
         }
 
@@ -157,6 +184,9 @@ public class MultiBufferStream : Stream
 
     /// <inheritdoc />
     public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
+
+    /// <inheritdoc />
+    public override void Write(ReadOnlySpan<byte> buffer) => throw new NotSupportedException();
 
     /// <inheritdoc />
     public override bool CanRead => true;

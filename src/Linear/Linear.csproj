@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <LangVersion>10</LangVersion>
     <NoWarn>3021;1584;1658</NoWarn>
     <Nullable>enable</Nullable>

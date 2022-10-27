@@ -77,8 +77,17 @@ public class SStream : Stream
     {
         if (Isolate && _offset + _position != _sourceStream.Position)
             _sourceStream.Seek(_offset + _position, SeekOrigin.Begin);
-        int read = _sourceStream.Read(buffer, offset,
-            (int)(Math.Min(_length, _position + count) - _position));
+        int read = _sourceStream.Read(buffer, offset, (int)(Math.Min(_length, _position + count) - _position));
+        _position += read;
+        return read;
+    }
+
+    /// <inheritdoc />
+    public override int Read(Span<byte> buffer)
+    {
+        if (Isolate && _offset + _position != _sourceStream.Position)
+            _sourceStream.Seek(_offset + _position, SeekOrigin.Begin);
+        int read = _sourceStream.Read(buffer[..(int)(Math.Min(_length, _position + buffer.Length) - _position)]);
         _position += read;
         return read;
     }
@@ -116,6 +125,16 @@ public class SStream : Stream
             _sourceStream.Seek(_offset + _position, SeekOrigin.Begin);
         int write = (int)(Math.Min(_length, _position + count) - _position);
         _sourceStream.Write(buffer, offset, write);
+        _position += write;
+    }
+
+    /// <inheritdoc />
+    public override void Write(ReadOnlySpan<byte> buffer)
+    {
+        if (Isolate && _offset + _position != _sourceStream.Position)
+            _sourceStream.Seek(_offset + _position, SeekOrigin.Begin);
+        int write = (int)(Math.Min(_length, _position + buffer.Length) - _position);
+        _sourceStream.Write(buffer[..write]);
         _position += write;
     }
 
