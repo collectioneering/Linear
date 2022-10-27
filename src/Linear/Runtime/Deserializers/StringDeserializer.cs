@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using Fp;
 
 namespace Linear.Runtime.Deserializers
 {
@@ -20,7 +21,6 @@ namespace Linear.Runtime.Deserializers
 
         private static Encoding[]? _gUtf16Encodings;
 
-        private readonly byte[] _tempBuffer = new byte[sizeof(long)];
         private MemoryStream TempMs => _tempMs ??= new MemoryStream();
         private MemoryStream? _tempMs;
 
@@ -78,36 +78,36 @@ namespace Linear.Runtime.Deserializers
             {
                 case Mode.Utf8Fixed:
                     {
-                        (string item1, int item2) = ReadUtf8String(stream, (int)length);
-                        if (length != item2)
+                        var result = ReadUtf8String(stream, (int)length);
+                        if (length != result.ByteLength)
                             throw new Exception(
-                                $"UTF-8 fixed length mismatch between specified length {length} and result length {item2}");
-                        return new DeserializeResult(item1, item2);
+                                $"UTF-8 fixed length mismatch between specified length {length} and result length {result.ByteLength}");
+                        return new DeserializeResult(result.Text, result.ByteLength);
                     }
                 case Mode.Utf8Null:
                     {
-                        (string item1, int item2) = ReadUtf8String(stream);
-                        return new DeserializeResult(item1, item2 + 1);
+                        var result = ReadUtf8String(stream);
+                        return new DeserializeResult(result.Text, result.ByteLength + 1);
                     }
                 case Mode.Utf16Fixed:
                     {
-                        (string item1, int item2) = ReadUtf16String(stream, (int)length);
-                        if (length != item2)
+                        var result = ReadUtf16String(stream, (int)length);
+                        if (length != result.ByteLength)
                             throw new Exception(
-                                $"UTF-16 fixed length mismatch between specified length {length} and result length {item2}");
-                        return new DeserializeResult(item1, item2);
+                                $"UTF-16 fixed length mismatch between specified length {length} and result length {result.ByteLength}");
+                        return new DeserializeResult(result.Text, result.ByteLength);
                     }
                 case Mode.Utf16Null:
                     {
-                        (string item1, int item2) = ReadUtf16String(stream);
-                        return new DeserializeResult(item1, item2 + 2);
+                        var result = ReadUtf16String(stream);
+                        return new DeserializeResult(result.Text, result.ByteLength + 2);
                     }
                 default:
                     throw new ArgumentOutOfRangeException();
             }
         }
 
-        private (string, int) ReadUtf8String(Stream stream, int maxLength = int.MaxValue)
+        private TextResult ReadUtf8String(Stream stream, int maxLength = int.MaxValue)
         {
             try
             {
@@ -129,7 +129,7 @@ namespace Linear.Runtime.Deserializers
                 TempMs.TryGetBuffer(out ArraySegment<byte> buffer);
                 string str = ReadUtf8String(buffer);
 
-                return (str, c);
+                return new TextResult(str, c);
             }
             finally
             {
@@ -140,42 +140,42 @@ namespace Linear.Runtime.Deserializers
             }
         }
 
-        private static string ReadUtf8String(ArraySegment<byte> segment, int maxLength = int.MaxValue)
+        private static string ReadUtf8String(ReadOnlySpan<byte> segment, int maxLength = int.MaxValue)
         {
-            // TODO switch to ROS impl
-            int lim = Math.Min(segment.Count, maxLength);
+            int lim = Math.Min(segment.Length, maxLength);
 
-            int end = Array.IndexOf(segment.Array, 0, segment.Offset, lim) - segment.Offset;
+            int end = segment[lim..].IndexOf((byte)0);
             if (end == -1)
             {
                 end = lim;
             }
 
-            return DecodeSegment(new ArraySegment<byte>(segment.Array, segment.Offset, end), Encoding.UTF8);
+            return DecodeSegment(segment[..end], Encoding.UTF8);
         }
 
-        private (string, int) ReadUtf16String(Stream stream, int maxLength = int.MaxValue / 2)
+        private TextResult ReadUtf16String(Stream stream, int maxLength = int.MaxValue >> 1)
         {
             try
             {
                 TempMs.Position = 0;
                 TempMs.SetLength(0);
                 int c = 0;
+                Span<byte> temp = stackalloc byte[2];
                 while (c < maxLength * 2)
                 {
-                    int cc = ReadBaseArray(stream, _tempBuffer, 0, 2);
+                    int cc = Processor.Read(stream, temp);
                     c += cc;
-                    if (cc != 2 || _tempBuffer[0] == 0 && _tempBuffer[1] == 0)
+                    if (cc != 2 || temp[0] == 0 && temp[1] == 0)
                     {
                         break;
                     }
 
-                    TempMs.Write(_tempBuffer, 0, 2);
+                    TempMs.Write(temp);
                 }
                 // WARNING: maxLength here is treated as # code units
 
                 TempMs.TryGetBuffer(out ArraySegment<byte> buffer);
-                return (ReadUtf16String(buffer), c);
+                return new TextResult(ReadUtf16String(buffer), c);
             }
             finally
             {
@@ -186,49 +186,54 @@ namespace Linear.Runtime.Deserializers
             }
         }
 
-        private static string DecodeSegment(ArraySegment<byte> segment, Encoding encoding)
+        private static string DecodeSegment(ReadOnlySpan<byte> segment, Encoding encoding)
         {
-            return segment.Count == 0 ? string.Empty : encoding.GetString(segment.Array, segment.Offset, segment.Count);
+            return segment.Length == 0 ? string.Empty : encoding.GetString(segment);
         }
 
-        private static unsafe string ReadUtf16String(ArraySegment<byte> segment, int maxLength = int.MaxValue)
+        private static unsafe string ReadUtf16String(ReadOnlySpan<byte> segment, int maxLengthChars = int.MaxValue)
         {
-            int lim = Math.Min(segment.Count, maxLength);
-            int end = -1;
-            byte[] array = segment.Array;
-            int offset = segment.Offset;
-            int count = segment.Count;
-            fixed (byte* p = array)
+            int limBytes = Math.Min(segment.Length, maxLengthChars * sizeof(char));
+            int endBytes = -1;
+            fixed (byte* p = segment)
             {
-                char* c = (char*)(p + offset);
-                for (int i = 0; i < lim; i++)
+                char* c = (char*)p;
+                int limChars = limBytes >> 1;
+                for (int i = 0; i < limChars; i++)
                     if (c[i] == '\0')
                     {
-                        end = i;
+                        endBytes = i * sizeof(char);
                         break;
                     }
             }
 
-            if (end == -1)
+            if (endBytes == -1)
             {
-                end = lim;
+                endBytes = limBytes;
+            }
+
+            bool big;
+            bool bom;
+            if (segment.Length >= 2)
+            {
+                byte b0 = segment[0], b1 = segment[1];
+                big = b0 == 0xFE && b1 == 0xFF;
+                bom = big || b0 == 0xFF && b1 == 0xFE;
             }
             else
             {
-                end *= sizeof(char);
+                big = false;
+                bom = false;
             }
 
-            bool big = count >= 2 && array[offset + 0] == 0xFE && array[offset + 1] == 0xFF;
-            bool bom = big || count >= 2 && array[offset + 0] == 0xFF && array[offset + 1] == 0xFE;
-
-            if (!bom && count > 1)
+            if (!bom && limBytes >= 2)
             {
                 const int numBytes = 16 * sizeof(char);
                 const float threshold = 0.75f;
                 int countAscii = 0, countTotal = 0;
-                for (int i = 0; i < numBytes && i + 1 < count; i += 2)
+                for (int i = 0; i < numBytes && i + 1 < limBytes; i += 2)
                 {
-                    if (array[offset + i] == 0 && array[offset + i + 1] < 0x80)
+                    if (segment[i] == 0 && segment[i + 1] < 0x80)
                     {
                         countAscii++;
                     }
@@ -239,20 +244,9 @@ namespace Linear.Runtime.Deserializers
                 big = (float)countAscii / countTotal >= threshold;
             }
 
-            return DecodeSegment(new ArraySegment<byte>(array, offset, end), GetUtf16Encoding(big, bom));
+            return DecodeSegment(segment[..endBytes], GetUtf16Encoding(big, bom));
         }
 
-        private static int ReadBaseArray(Stream stream, byte[] array, int offset, int length)
-        {
-            int left = length, read, tot = 0;
-            do
-            {
-                read = stream.Read(array, offset + tot, left);
-                left -= read;
-                tot += read;
-            } while (left > 0 && read != 0);
-
-            return tot;
-        }
+        private readonly record struct TextResult(string Text, int ByteLength);
     }
 }
