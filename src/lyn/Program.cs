@@ -69,22 +69,21 @@ namespace lyn
             using MultiBufferStream mbs = new MultiBufferStream(baseStream);
             StructureInstance si = structure.Parse(registry, mbs, 0, null, baseStream.Length);
             Dictionary<string, IExporter> exporterDictionary = LinearCommon.CreateDefaultExporterDictionary();
-            foreach ((StructureInstance instance, string name, string format, IReadOnlyDictionary<string, object>? parameters,
-                         LongRange range) in si.GetOutputs())
+            foreach (var output in si.GetOutputs())
             {
-                if (!exporterDictionary.TryGetValue(format, out IExporter? exporter))
+                if (!exporterDictionary.TryGetValue(output.Format, out IExporter? exporter))
                 {
-                    Console.WriteLine($"Failed to find exporter named {format}");
+                    Console.WriteLine($"Failed to find exporter named {output.Format}");
                     return 3;
                 }
 
-                string file = Path.Combine(outputDir, name);
+                string file = Path.Combine(outputDir, output.Name);
                 string dir = Path.GetDirectoryName(file) ??
                              throw new ApplicationException("Invalid output file, cannot be root");
                 if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
                 Console.WriteLine(file);
                 using FileStream ofs = File.Create(file);
-                exporter.Export(baseStream, instance, range, parameters, ofs);
+                exporter.Export(baseStream, si, output.Range, output.Parameters, ofs);
             }
 
             return 0;

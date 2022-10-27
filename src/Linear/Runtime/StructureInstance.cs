@@ -67,8 +67,7 @@ namespace Linear.Runtime
 
         internal void SetMember(string name, object value) => _members[name] = value;
 
-        internal void AddOutput(string name, string format, Dictionary<string, object>? parameters, LongRange range) =>
-            _outputs.Add(new StructureOutput(this, name, format, parameters, range));
+        internal void AddOutput(StructureOutput output) => _outputs.Add(output);
 
         /// <summary>
         /// Get outputs

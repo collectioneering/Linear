@@ -44,7 +44,9 @@ public class OutputElement : Element
         if (_exporterParams != null)
         {
             foreach (var kvp in _exporterParams)
+            {
                 exporterParamsCompact![kvp.Key] = kvp.Value.GetInstance();
+            }
         }
         return new OutputElementInitializer(_formatDefinition.GetInstance(), _rangeDefinition.GetInstance(), _nameDefinition.GetInstance(), exporterParamsCompact);
     }
@@ -57,18 +59,23 @@ public class OutputElement : Element
             object? format = Format.Evaluate(structure, stream);
             object? range = Range.Evaluate(structure, stream);
             object? name = Name.Evaluate(structure, stream);
-            Dictionary<string, object>? exporterParams =
-                ExporterParamsCompact == null ? null : new Dictionary<string, object>();
+            Dictionary<string, object>? exporterParams = ExporterParamsCompact == null ? null : new Dictionary<string, object>();
             if (ExporterParamsCompact != null)
+            {
                 foreach (var kvp in ExporterParamsCompact)
+                {
                     exporterParams![kvp.Key] = kvp.Value.Evaluate(structure, stream) ?? throw new NullReferenceException();
+                }
+            }
             if (!LinearCommon.TryCast(format, out string formatValue))
-                throw new InvalidCastException(
-                    $"Could not cast expression of type {format?.GetType().FullName} to type {nameof(String)}");
+            {
+                throw new InvalidCastException($"Could not cast expression of type {format?.GetType().FullName} to type {nameof(String)}");
+            }
             if (!LinearCommon.TryCast(range, out LongRange rangeValue))
-                throw new InvalidCastException(
-                    $"Could not cast expression of type {range?.GetType().FullName} to type {nameof(LongRange)}");
-            structure.AddOutput(name?.ToString() ?? structure.GetUniqueId().ToString(), formatValue, exporterParams, rangeValue);
+            {
+                throw new InvalidCastException($"Could not cast expression of type {range?.GetType().FullName} to type {nameof(LongRange)}");
+            }
+            structure.AddOutput(new StructureOutput(name?.ToString() ?? structure.GetUniqueId().ToString(), formatValue, exporterParams, rangeValue));
         }
     }
 }
