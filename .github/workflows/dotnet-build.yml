@@ -1,4 +1,4 @@
-name: .NET Core
+name: .NET
 
 on:
   push:
@@ -17,36 +17,36 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Setup .NET Core
+    - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.100
+        dotnet-version: 6.0.402
     - name: Install dependencies
       run: dotnet restore
     - name: Build
       run: dotnet build --configuration Release --no-restore
     - name: Test
-      run: dotnet test --framework net5.0 --no-restore --verbosity normal
-    - name: Publish netcoreapp3.1 osx-x64
-      run: dotnet publish lyn --framework net5.0 --configuration Release --runtime osx-x64 --self-contained false
-    - name: Publish netcoreapp3.1 linux-x64
-      run: dotnet publish lyn --framework net5.0 --configuration Release --runtime linux-x64 --self-contained false
-    - name: Publish netcoreapp3.1 win-x64
-      run: dotnet publish lyn --framework net5.0 --configuration Release --runtime win-x64 --self-contained false
+      run: dotnet test --framework net6.0 --no-restore --verbosity normal
+    - name: Publish net6.0 osx-x64
+      run: dotnet publish lyn --framework net6.0 --configuration Release --runtime osx-x64 --self-contained false
+    - name: Publish net6.0 linux-x64
+      run: dotnet publish lyn --framework net6.0 --configuration Release --runtime linux-x64 --self-contained false
+    - name: Publish net6.0 win-x64
+      run: dotnet publish lyn --framework net6.0 --configuration Release --runtime win-x64 --self-contained false
     - name: Publish net472
       run: dotnet publish lyn --framework net472 --configuration Release
     - uses: actions/upload-artifact@v2
       with:
-        name: lyn-net5.0-osx-64
-        path: src/lyn/bin/Release/net5.0/osx-x64/publish/
+        name: lyn-net6.0-osx-64
+        path: src/lyn/bin/Release/net6.0/osx-x64/publish/
     - uses: actions/upload-artifact@v2
       with:
-        name: lyn-net5.0-linux-64
-        path: src/lyn/bin/Release/net5.0/linux-x64/publish/
+        name: lyn-net6.0-linux-64
+        path: src/lyn/bin/Release/net6.0/linux-x64/publish/
     - uses: actions/upload-artifact@v2
       with:
-        name: lyn-net5.0-win-64
-        path: src/lyn/bin/Release/net5.0/win-x64/publish/
+        name: lyn-net6.0-win-64
+        path: src/lyn/bin/Release/net6.0/win-x64/publish/
     - uses: actions/upload-artifact@v2
       with:
         name: lyn-net472

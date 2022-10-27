@@ -1,29 +1,38 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <PackageVersion>0.4.0</PackageVersion>
+    <AssemblyVersion>1.0.0</AssemblyVersion>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>8</LangVersion>
-    <Authors>Lucina</Authors>
-    <Description>Linear file structure ingest library</Description>
-    <Copyright>Copyright ©2020 Lucina</Copyright>
-    <PackageProjectUrl>https://github.com/Lucina/Linear</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/Lucina/Linear</RepositoryUrl>
-    <Company>Lucina</Company>
-    <AssemblyVersion>1.0.0</AssemblyVersion>
-    <PackOnBuild>true</PackOnBuild>
-    <Owners>Lucina</Owners>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <PackageVersion>0.3.0</PackageVersion>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>3021;1584;1658</NoWarn>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <Authors>Lucina</Authors>
+    <Description>Linear file structure ingest library</Description>
+    <Copyright>Copyright ©2020 Lucina</Copyright>
+    <PackageProjectUrl>https://github.com/collectioneering/Linear</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/collectioneering/Linear</RepositoryUrl>
+    <Company>Lucina</Company>
+    <Owners>Lucina</Owners>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackOnBuild>true</PackOnBuild>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
-    <PackageReference Include="Antlr4.Runtime.Standard" Version="4.8.0" />
+    <PackageReference Include="Antlr4.Runtime.Standard" Version="4.11.1"/>
   </ItemGroup>
 
 </Project>
