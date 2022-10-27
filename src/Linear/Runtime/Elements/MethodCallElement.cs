@@ -20,8 +20,7 @@ public class MethodCallElement : Element
     }
 
     /// <inheritdoc />
-    public override IEnumerable<Element> GetDependencies(StructureDefinition definition) =>
-        _expression.GetDependencies(definition);
+    public override IEnumerable<Element> GetDependencies(StructureDefinition definition) => _expression.GetDependencies(definition);
 
     /// <inheritdoc />
     public override ElementInitializer GetInitializer()

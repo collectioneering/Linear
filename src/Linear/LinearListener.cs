@@ -35,7 +35,7 @@ internal class LinearListener : LinearBaseListener
     /// Get parsed structures
     /// </summary>
     /// <returns>Structures</returns>
-    public List<StructureDefinition> GetStructures() => new List<StructureDefinition>(_structures);
+    public List<StructureDefinition> GetStructures() => new(_structures);
 
     private StructureDefinition? _currentDefinition;
 
@@ -82,8 +82,7 @@ internal class LinearListener : LinearBaseListener
         string dataName = ids[1].GetText();
         (int _, bool littleEndian) = StringToPrimitiveInfo(typeName);
         ExpressionDefinition littleEndianExpression = new ConstantExpression<bool>(littleEndian);
-        Dictionary<LinearCommon.StandardProperty, ExpressionDefinition> standardProperties =
-            new Dictionary<LinearCommon.StandardProperty, ExpressionDefinition>();
+        Dictionary<LinearCommon.StandardProperty, ExpressionDefinition> standardProperties = new();
         standardProperties.Add(LinearCommon.StandardProperty.ArrayLengthProperty, countExpression);
         // "Should" add some other way for length instead of routing through a dictionary...
         // "Should" add efficient primitive array deserialization...
@@ -108,8 +107,7 @@ internal class LinearListener : LinearBaseListener
         string dataName = ids[2].GetText();
         (int _, bool littleEndian) = StringToPrimitiveInfo(typeName);
         ExpressionDefinition littleEndianExpression = new ConstantExpression<bool>(littleEndian);
-        Dictionary<LinearCommon.StandardProperty, ExpressionDefinition> standardProperties =
-            new Dictionary<LinearCommon.StandardProperty, ExpressionDefinition>();
+        Dictionary<LinearCommon.StandardProperty, ExpressionDefinition> standardProperties = new();
         bool lenFinder = context.PLUS() != null;
         standardProperties.Add(LinearCommon.StandardProperty.ArrayLengthProperty,
             lenFinder
@@ -122,7 +120,7 @@ internal class LinearListener : LinearBaseListener
         if (deserializer == null) return;
         IDeserializer? targetDeserializer = StringToDeserializer(targetTypeName);
         if (targetDeserializer == null) return;
-        ArrayDeserializer arrayDeserializer = new ArrayDeserializer(deserializer);
+        ArrayDeserializer arrayDeserializer = new(deserializer);
         Element dataElement = new ValueElement(dataName,
             new DeserializeExpression(offsetExpression, littleEndianExpression,
                 new PointerArrayDeserializer(arrayDeserializer, targetDeserializer, lenFinder),
@@ -170,7 +168,7 @@ internal class LinearListener : LinearBaseListener
     private Dictionary<string, ExpressionDefinition> GetPropertyGroup(
         LinearParser.Property_groupContext? context)
     {
-        Dictionary<string, ExpressionDefinition> res = new Dictionary<string, ExpressionDefinition>();
+        Dictionary<string, ExpressionDefinition> res = new();
         if (context == null) return res;
         foreach (LinearParser.Property_statementContext x in context.property_statement())
             res.Add(x.IDENTIFIER().GetText(), GetExpression(x.expr()));
@@ -274,29 +272,18 @@ internal class LinearListener : LinearBaseListener
     {
         return context switch
         {
-            LinearParser.TermCharContext termCharContext => new ConstantExpression<char>(termCharContext.GetText()
-                .Trim(' ', '\'')[0]),
-            LinearParser.TermHexContext termHexContext => new ConstantExpression<long>(
-                Convert.ToInt32(termHexContext.GetText(), 16)),
-            LinearParser.TermIdentifierContext termIdentifierContext => new MemberExpression(termIdentifierContext
-                .GetText()),
-            LinearParser.TermIntContext termIntContext => new ConstantExpression<long>(
-                long.Parse(termIntContext.GetText())),
-            LinearParser.TermRealContext termRealContext => new ConstantExpression<double>(
-                double.Parse(termRealContext.GetText())),
-            LinearParser.TermRepAContext _ => new StructureEvaluateExpression<long>(i => i.AbsoluteOffset),
-            LinearParser.TermRepIContext _ => new StructureEvaluateExpression<long>(i => i.Index),
-            LinearParser.TermRepLengthContext _ => new StructureEvaluateExpression<long>(i =>
-                i.Length),
-            LinearParser.TermRepPContext _ => new StructureEvaluateExpression<StructureInstance?>(i =>
-                i.Parent),
-            LinearParser.TermRepUContext _ => new StructureEvaluateExpression<int>(i =>
-                i.GetUniqueId()),
-            LinearParser.TermStringContext termStringContext => new ConstantExpression<string>(termStringContext
-                .GetText()
-                .Trim(' ', '"')),
-            LinearParser.TermStringVerbContext termStringVerbContext => new ConstantExpression<string>(
-                termStringVerbContext.GetText().Trim(' ', '"', '@')),
+            LinearParser.TermCharContext termCharContext => new ConstantExpression<char>(termCharContext.GetText().Trim(' ', '\'')[0]),
+            LinearParser.TermHexContext termHexContext => new ConstantExpression<long>(Convert.ToInt32(termHexContext.GetText(), 16)),
+            LinearParser.TermIdentifierContext termIdentifierContext => new MemberExpression(termIdentifierContext.GetText()),
+            LinearParser.TermIntContext termIntContext => new ConstantExpression<long>(long.Parse(termIntContext.GetText())),
+            LinearParser.TermRealContext termRealContext => new ConstantExpression<double>(double.Parse(termRealContext.GetText())),
+            LinearParser.TermRepAContext => new StructureEvaluateExpression<long>(i => i.AbsoluteOffset),
+            LinearParser.TermRepIContext => new StructureEvaluateExpression<long>(i => i.Index),
+            LinearParser.TermRepLengthContext => new StructureEvaluateExpression<long>(i => i.Length),
+            LinearParser.TermRepPContext => new StructureEvaluateExpression<StructureInstance?>(i => i.Parent),
+            LinearParser.TermRepUContext => new StructureEvaluateExpression<int>(i => i.GetUniqueId()),
+            LinearParser.TermStringContext termStringContext => new ConstantExpression<string>(termStringContext.GetText().Trim(' ', '"')),
+            LinearParser.TermStringVerbContext termStringVerbContext => new ConstantExpression<string>(termStringVerbContext.GetText().Trim(' ', '"', '@')),
             _ => throw new ArgumentOutOfRangeException(nameof(context))
         };
     }

@@ -46,9 +46,9 @@ namespace Linear.Runtime
         public StructureInstance Parse(StructureRegistry registry, Stream stream, long offset = 0, StructureInstance? parent = null, long length = 0, int index = 0)
         {
             StructureInstance instance = new(registry, parent, offset, length == 0 ? DefaultLength : length, index);
-            foreach ((string? _, ElementInitializer method) in _members)
+            foreach (var member in _members)
             {
-                method.Initialize(instance, stream);
+                member.Initializer.Initialize(instance, stream);
             }
 
             return instance;

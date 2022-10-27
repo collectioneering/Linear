@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using Fp;
 using Linear;
 using Linear.Runtime;
 using Linear.Runtime.Expressions;
@@ -46,13 +47,14 @@ namespace lyn
             }
 
             if (File.Exists(conf.Input))
+            {
                 return OperateFile(registry, structure, conf.Input!, conf.OutputDir!);
+            }
             if (Directory.Exists(conf.Input))
             {
                 foreach (string file in Directory.GetFiles(conf.Input!))
                 {
-                    int resCode = OperateFile(registry, structure, file,
-                        Path.Combine(conf.OutputDir!, Path.GetFileName(file)));
+                    int resCode = OperateFile(registry, structure, file, Path.Combine(conf.OutputDir!, Path.GetFileName(file)));
                     if (resCode != 0) return resCode;
                 }
             }
@@ -61,15 +63,14 @@ namespace lyn
             return 4;
         }
 
-        private static int OperateFile(StructureRegistry registry, Structure structure, string inputFile,
-            string outputDir)
+        private static int OperateFile(StructureRegistry registry, Structure structure, string inputFile, string outputDir)
         {
             using Stream baseStream = File.OpenRead(inputFile);
             using MultiBufferStream mbs = new MultiBufferStream(baseStream);
             StructureInstance si = structure.Parse(registry, mbs, 0, null, baseStream.Length);
             Dictionary<string, IExporter> exporterDictionary = LinearCommon.CreateDefaultExporterDictionary();
             foreach ((StructureInstance instance, string name, string format, IReadOnlyDictionary<string, object>? parameters,
-                LongRange range) in si.GetOutputs())
+                         LongRange range) in si.GetOutputs())
             {
                 if (!exporterDictionary.TryGetValue(format, out IExporter? exporter))
                 {

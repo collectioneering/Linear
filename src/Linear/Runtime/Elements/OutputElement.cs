@@ -34,8 +34,7 @@ public class OutputElement : Element
     /// <inheritdoc />
     public override IEnumerable<Element> GetDependencies(StructureDefinition definition)
     {
-        return _rangeDefinition.GetDependencies(definition)
-            .Union(_nameDefinition.GetDependencies(definition));
+        return _rangeDefinition.GetDependencies(definition).Union(_nameDefinition.GetDependencies(definition));
     }
 
     /// <inheritdoc />

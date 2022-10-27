@@ -21,8 +21,7 @@ public class ConstantExpression<T> : ExpressionDefinition
     }
 
     /// <inheritdoc />
-    public override IEnumerable<Element> GetDependencies(StructureDefinition definition) =>
-        Enumerable.Empty<Element>();
+    public override IEnumerable<Element> GetDependencies(StructureDefinition definition) => Enumerable.Empty<Element>();
 
     /// <inheritdoc />
     public override ExpressionInstance GetInstance() => new ConstantExpressionInstance(_value);

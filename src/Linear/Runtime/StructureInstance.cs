@@ -85,11 +85,9 @@ namespace Linear.Runtime
             IEnumerable<StructureOutput> outputs = _outputs;
             if (recurse)
             {
-                foreach (StructureInstance instance in _members.Values.Where(x => x is StructureInstance)
-                             .Cast<StructureInstance>())
+                foreach (StructureInstance instance in _members.Values.OfType<StructureInstance>())
                     outputs = outputs.Concat(instance.GetOutputsInternal(recurse));
-                foreach (StructureInstance instance in _members.Values.Where(x => x is IEnumerable<StructureInstance>)
-                             .Cast<IEnumerable<StructureInstance>>().SelectMany(x => x))
+                foreach (StructureInstance instance in _members.Values.OfType<IEnumerable<StructureInstance>>().SelectMany(x => x))
                     outputs = outputs.Concat(instance.GetOutputsInternal(recurse));
             }
 
