@@ -37,6 +37,6 @@ namespace Linear.Runtime
         /// <param name="name">Mae</param>
         /// <param name="structure">Structure</param>
         /// <returns>True if found</returns>
-        public bool TryGetValue(string name, out Structure structure) => _structures.TryGetValue(name, out structure);
+        public bool TryGetValue(string name, out Structure? structure) => _structures.TryGetValue(name, out structure);
     }
 }

@@ -91,13 +91,20 @@ public class DeserializeExpression : ExpressionDefinition
             LongRange range;
             if (LinearCommon.TryCastLong(offset, out long offsetValue))
                 range = new LongRange(Offset: offsetValue, Length: 0);
-            else if (!LinearCommon.TryCast(offset, out range))
+            else if (offset is LongRange r)
+            {
+                range = r;
+            }
+            else
+            {
                 throw new InvalidCastException("Cannot find offset or range type for source delegate");
+            }
 
-            if (!LinearCommon.TryCast(littleEndian, out bool littleEndianValue))
-                throw new InvalidCastException(
-                    $"Could not cast expression of type {littleEndian?.GetType().FullName} to type {nameof(Boolean)}");
-            return Deserializer.Deserialize(structure, stream, range.Offset, littleEndianValue, standardPropertiesGen, deserializerParamsGen, range.Length).Value;
+            if (littleEndian is bool littleEndianValue)
+            {
+                return Deserializer.Deserialize(structure, stream, range.Offset, littleEndianValue, standardPropertiesGen, deserializerParamsGen, range.Length).Value;
+            }
+            throw new InvalidCastException($"Could not cast expression of type {littleEndian?.GetType().FullName} to type {nameof(Boolean)}");
         }
     }
 }

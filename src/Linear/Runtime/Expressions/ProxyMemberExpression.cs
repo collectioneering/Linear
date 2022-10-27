@@ -40,10 +40,11 @@ public class ProxyMemberExpression : ExpressionDefinition
         public override object Evaluate(StructureInstance structure, Stream stream)
         {
             object? val = Delegate.Evaluate(structure, stream);
-            if (!LinearCommon.TryCast(val, out StructureInstance i2))
-                throw new InvalidCastException(
-                    $"Could not cast object of type {val?.GetType().FullName} to {nameof(StructureInstance)}");
-            return i2[Name];
+            if (val is StructureInstance i2)
+            {
+                return i2[Name];
+            }
+            throw new InvalidCastException($"Could not cast object of type {val?.GetType().FullName} to {nameof(StructureInstance)}");
         }
     }
 }

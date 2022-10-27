@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Antlr4.Runtime.Tree;
 using Linear.Runtime;
@@ -45,7 +46,7 @@ internal class LinearListener : LinearBaseListener
         {
             LinearParser.StrictSizeHexContext strictSizeHexContext => Convert.ToInt32(
                 strictSizeHexContext.GetText(), 16),
-            LinearParser.StructSizeIntContext structSizeIntContext => int.Parse(structSizeIntContext.GetText()),
+            LinearParser.StructSizeIntContext structSizeIntContext => int.Parse(structSizeIntContext.GetText(), CultureInfo.InvariantCulture),
             _ => 0
         };
         _currentDefinition = new StructureDefinition(context.IDENTIFIER().GetText(), defaultLength);
@@ -200,7 +201,7 @@ internal class LinearListener : LinearBaseListener
 
     private IDeserializer? StringToDeserializer(string identifier)
     {
-        if (_deserializers.TryGetValue(identifier, out IDeserializer deserializer))
+        if (_deserializers.TryGetValue(identifier, out IDeserializer? deserializer))
             return deserializer;
         _logTarget($"Failed to find deserializer for type {identifier}");
         return null;
@@ -275,8 +276,8 @@ internal class LinearListener : LinearBaseListener
             LinearParser.TermCharContext termCharContext => new ConstantExpression<char>(termCharContext.GetText().Trim(' ', '\'')[0]),
             LinearParser.TermHexContext termHexContext => new ConstantExpression<long>(Convert.ToInt32(termHexContext.GetText(), 16)),
             LinearParser.TermIdentifierContext termIdentifierContext => new MemberExpression(termIdentifierContext.GetText()),
-            LinearParser.TermIntContext termIntContext => new ConstantExpression<long>(long.Parse(termIntContext.GetText())),
-            LinearParser.TermRealContext termRealContext => new ConstantExpression<double>(double.Parse(termRealContext.GetText())),
+            LinearParser.TermIntContext termIntContext => new ConstantExpression<long>(long.Parse(termIntContext.GetText(), CultureInfo.InvariantCulture)),
+            LinearParser.TermRealContext termRealContext => new ConstantExpression<double>(double.Parse(termRealContext.GetText(), CultureInfo.InvariantCulture)),
             LinearParser.TermRepAContext => new StructureEvaluateExpression<long>(i => i.AbsoluteOffset),
             LinearParser.TermRepIContext => new StructureEvaluateExpression<long>(i => i.Index),
             LinearParser.TermRepLengthContext => new StructureEvaluateExpression<long>(i => i.Length),

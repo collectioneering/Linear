@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 using Fp;
@@ -128,7 +130,7 @@ public static class LinearCommon
 
     private static object Format(params object?[] args)
     {
-        return string.Format(args[0]?.ToString() ?? "", args.Skip(1).ToArray());
+        return string.Format(CultureInfo.InvariantCulture, args[0]?.ToString() ?? "", args.Skip(1).ToArray());
     }
 
     /// <summary>
@@ -184,18 +186,6 @@ public static class LinearCommon
     public static Dictionary<string, IDeserializer> CreateDefaultDeserializerRegistry()
     {
         return new Dictionary<string, IDeserializer>(s_defaultDeserializers);
-    }
-
-    internal static bool TryCast<T>(object? o, out T result)
-    {
-        if (o is T t)
-        {
-            result = t;
-            return true;
-        }
-
-        result = default!;
-        return false;
     }
 
     internal static byte CastByte(object? number)
@@ -495,4 +485,61 @@ public static class LinearCommon
         Processor.Read(stream, temp, false);
         return Processor.GetDouble(temp);
     }
+
+
+#if NET7_0_OR_GREATER
+    internal static T? CastNumber<T>(object? value) where T : INumber<T>
+    {
+        return value switch
+        {
+            byte v => T.CreateChecked(v),
+            sbyte v => T.CreateChecked(v),
+            ushort v => T.CreateChecked(v),
+            short v => T.CreateChecked(v),
+            uint v => T.CreateChecked(v),
+            int v => T.CreateChecked(v),
+            ulong v => T.CreateChecked(v),
+            long v => T.CreateChecked(v),
+            float v => T.CreateChecked(v),
+            double v => T.CreateChecked(v),
+            _ => default(T?)
+        };
+    }
+
+    internal static T? CastNumberSaturating<T>(object? value) where T : INumber<T>
+    {
+        return value switch
+        {
+            byte v => T.CreateSaturating(v),
+            sbyte v => T.CreateSaturating(v),
+            ushort v => T.CreateSaturating(v),
+            short v => T.CreateSaturating(v),
+            uint v => T.CreateSaturating(v),
+            int v => T.CreateSaturating(v),
+            ulong v => T.CreateSaturating(v),
+            long v => T.CreateSaturating(v),
+            float v => T.CreateSaturating(v),
+            double v => T.CreateSaturating(v),
+            _ => default(T?)
+        };
+    }
+
+    internal static T? CastNumberTruncating<T>(object? value) where T : INumber<T>
+    {
+        return value switch
+        {
+            byte v => T.CreateTruncating(v),
+            sbyte v => T.CreateTruncating(v),
+            ushort v => T.CreateTruncating(v),
+            short v => T.CreateTruncating(v),
+            uint v => T.CreateTruncating(v),
+            int v => T.CreateTruncating(v),
+            ulong v => T.CreateTruncating(v),
+            long v => T.CreateTruncating(v),
+            float v => T.CreateTruncating(v),
+            double v => T.CreateTruncating(v),
+            _ => default(T?)
+        };
+    }
+#endif
 }

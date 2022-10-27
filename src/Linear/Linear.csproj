@@ -6,8 +6,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
-    <LangVersion>10</LangVersion>
+    <TargetFrameworks>netstandard2.1;net7.0</TargetFrameworks>
+    <LangVersion>11</LangVersion>
     <NoWarn>3021;1584;1658</NoWarn>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>

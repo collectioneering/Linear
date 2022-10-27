@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 
 namespace Linear.Runtime
 {
@@ -107,7 +109,7 @@ namespace Linear.Runtime
         /// <typeparam name="T">Target type</typeparam>
         /// <returns>Value</returns>
         /// <exception cref="KeyNotFoundException">If key was not found in members</exception>
-        public T GetCasted<T>(string member) => (T)_members[member];
+        public T GetValue<T>(string member) => (T)_members[member];
 
         /// <summary>
         /// Try to get member cast to type
@@ -117,6 +119,56 @@ namespace Linear.Runtime
         /// <typeparam name="T">Target type</typeparam>
         /// <returns>True if cast succeeded</returns>
         /// <exception cref="KeyNotFoundException">If key was not found in members</exception>
-        public bool TryGetCasted<T>(string member, out T result) => LinearCommon.TryCast(_members[member], out result);
+        public bool TryGetValue<T>(string member, out T? result)
+        {
+            result = default!;
+            if (_members.TryGetValue(member, out object? v) && v is T v2)
+            {
+                result = v2;
+                return true;
+            }
+            return false;
+        }
+
+#if NET7_0_OR_GREATER
+
+        /// <summary>
+        /// Get member cast to type
+        /// </summary>
+        /// <param name="member">Member name</param>
+        /// <typeparam name="T">Target type</typeparam>
+        /// <returns>Value</returns>
+        /// <exception cref="KeyNotFoundException">If key was not found in members</exception>
+        public T GetNumber<T>(string member) where T : INumber<T>
+        {
+            return LinearCommon.CastNumber<T>(_members[member]) ?? throw new InvalidCastException();
+        }
+
+        /// <summary>
+        /// Try to get member cast to type
+        /// </summary>
+        /// <param name="member">Member name</param>
+        /// <param name="result">Value</param>
+        /// <typeparam name="T">Target type</typeparam>
+        /// <returns>True if cast succeeded</returns>
+        /// <exception cref="KeyNotFoundException">If key was not found in members</exception>
+        public bool TryGetNumber<T>(string member, out T result) where T : INumber<T>
+        {
+            result = default!;
+            try
+            {
+                if (_members.TryGetValue(member, out object? v) && LinearCommon.CastNumber<T>(v) is { } v2)
+                {
+                    result = v2;
+                    return true;
+                }
+            }
+            catch (OverflowException)
+            {
+                return false;
+            }
+            return false;
+        }
+#endif
     }
 }

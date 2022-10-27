@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 
@@ -67,15 +68,15 @@ public class OutputElement : Element
                     exporterParams![kvp.Key] = kvp.Value.Evaluate(structure, stream) ?? throw new NullReferenceException();
                 }
             }
-            if (!LinearCommon.TryCast(format, out string formatValue))
+            if (format is not string formatValue)
             {
                 throw new InvalidCastException($"Could not cast expression of type {format?.GetType().FullName} to type {nameof(String)}");
             }
-            if (!LinearCommon.TryCast(range, out LongRange rangeValue))
+            if (range is not LongRange rangeValue)
             {
                 throw new InvalidCastException($"Could not cast expression of type {range?.GetType().FullName} to type {nameof(LongRange)}");
             }
-            structure.AddOutput(new StructureOutput(name?.ToString() ?? structure.GetUniqueId().ToString(), formatValue, exporterParams, rangeValue));
+            structure.AddOutput(new StructureOutput(name?.ToString() ?? structure.GetUniqueId().ToString(CultureInfo.InvariantCulture), formatValue, exporterParams, rangeValue));
         }
     }
 }

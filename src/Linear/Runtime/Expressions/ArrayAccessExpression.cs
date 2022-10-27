@@ -37,10 +37,11 @@ public class ArrayAccessExpression : ExpressionDefinition
         {
             object? source = Source.Evaluate(structure, stream);
             object index = Index.Evaluate(structure, stream) ?? throw new NullReferenceException();
-            if (!LinearCommon.TryCast(source, out Array sourceValue))
-                throw new InvalidCastException(
-                    $"Could not cast object of type {source?.GetType().FullName} to {nameof(Array)}");
-            return sourceValue.GetValue(LinearCommon.CastInt(index));
+            if (source is Array sourceValue)
+            {
+                return sourceValue.GetValue(LinearCommon.CastInt(index));
+            }
+            throw new InvalidCastException($"Could not cast object of type {source?.GetType().FullName} to {nameof(Array)}");
         }
     }
 }
