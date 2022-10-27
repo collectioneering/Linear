@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 
 namespace Linear.Runtime.Elements
 {
@@ -29,13 +28,12 @@ namespace Linear.Runtime.Elements
             _expression.GetDependencies(definition);
 
         /// <inheritdoc />
-        public override Action<StructureInstance, Stream, byte[]> GetDelegate()
+        public override ElementInitDelegate GetDelegate()
         {
-            Func<StructureInstance, Stream, byte[], object?> expressionDelegate = _expression.GetDelegate();
+            DeserializerDelegate expressionDelegate = _expression.GetDelegate();
             return (instance, stream, tempBuffer) =>
             {
-                object? expression = expressionDelegate(instance, stream, tempBuffer) ??
-                                     throw new NullReferenceException();
+                object expression = expressionDelegate(instance, stream, tempBuffer) ?? throw new NullReferenceException();
                 instance.SetMember(_name, expression);
             };
         }

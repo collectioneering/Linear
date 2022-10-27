@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 namespace Linear.Runtime.Elements
@@ -39,15 +38,15 @@ namespace Linear.Runtime.Elements
         }
 
         /// <inheritdoc />
-        public override Action<StructureInstance, Stream, byte[]> GetDelegate()
+        public override ElementInitDelegate GetDelegate()
         {
-            Func<StructureInstance, Stream, byte[], object?> formatDelegate = _formatDefinition.GetDelegate();
-            Func<StructureInstance, Stream, byte[], object?> rangeDelegate = _rangeDefinition.GetDelegate();
-            Func<StructureInstance, Stream, byte[], object?> nameDelegate = _nameDefinition.GetDelegate();
-            Dictionary<string, Func<StructureInstance, Stream, byte[], object?>>? exporterParamsCompact =
+            DeserializerDelegate formatDelegate = _formatDefinition.GetDelegate();
+            DeserializerDelegate rangeDelegate = _rangeDefinition.GetDelegate();
+            DeserializerDelegate nameDelegate = _nameDefinition.GetDelegate();
+            Dictionary<string, DeserializerDelegate>? exporterParamsCompact =
                 _exporterParams == null
                     ? null
-                    : new Dictionary<string, Func<StructureInstance, Stream, byte[], object?>>();
+                    : new Dictionary<string, DeserializerDelegate>();
             if (_exporterParams != null)
             {
                 foreach (var kvp in _exporterParams)

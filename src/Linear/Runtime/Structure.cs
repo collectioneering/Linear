@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 
 namespace Linear.Runtime
@@ -19,7 +18,7 @@ namespace Linear.Runtime
         /// </summary>
         public int DefaultLength { get; }
 
-        private readonly List<(string? name, Action<StructureInstance, Stream, byte[]> method)> _members;
+        private readonly List<(string? name, ElementInitDelegate method)> _members;
 
         /// <summary>
         /// Create new instance of <see cref="Structure"/>
@@ -28,7 +27,7 @@ namespace Linear.Runtime
         /// <param name="defaultLength">Default length of structure</param>
         /// <param name="members"></param>
         public Structure(string name, int defaultLength,
-            List<(string? name, Action<StructureInstance, Stream, byte[]> method)> members)
+            List<(string? name, ElementInitDelegate method)> members)
         {
             Name = name;
             _members = members;
@@ -51,7 +50,7 @@ namespace Linear.Runtime
             byte[] tempBuf = new byte[sizeof(ulong)];
             StructureInstance instance =
                 new StructureInstance(registry, parent, offset, length == 0 ? DefaultLength : length, index);
-            foreach ((string? _, Action<StructureInstance, Stream, byte[]> method) in _members)
+            foreach ((string? _, ElementInitDelegate method) in _members)
             {
                 method(instance, stream, tempBuf);
             }

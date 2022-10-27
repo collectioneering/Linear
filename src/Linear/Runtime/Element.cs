@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 
 namespace Linear.Runtime
 {
@@ -21,6 +19,6 @@ namespace Linear.Runtime
         /// Get delegate to initialize structure
         /// </summary>
         /// <returns>Delegate</returns>
-        public abstract Action<StructureInstance, Stream, byte[]> GetDelegate();
+        public abstract ElementInitDelegate GetDelegate();
     }
 }

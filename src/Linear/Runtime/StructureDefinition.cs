@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 namespace Linear.Runtime
@@ -43,8 +42,8 @@ namespace Linear.Runtime
         /// <returns>Structure</returns>
         public Structure Build()
         {
-            List<(string? name, Action<StructureInstance, Stream, byte[]> method)> members =
-                new List<(string? name, Action<StructureInstance, Stream, byte[]> method)>();
+            List<(string? name, ElementInitDelegate method)> members =
+                new List<(string? name, ElementInitDelegate method)>();
             var sub = new List<(string?, Element)>(Members);
             // Build members after organizing by dependencies
             while (sub.Count > 0)

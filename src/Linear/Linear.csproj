@@ -7,7 +7,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <LangVersion>8</LangVersion>
+    <LangVersion>10</LangVersion>
     <NoWarn>3021;1584;1658</NoWarn>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -32,7 +32,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Antlr4.Runtime.Standard" Version="4.11.1"/>
+    <PackageReference Include="Antlr4.Runtime.Standard" Version="4.11.1" />
   </ItemGroup>
 
 </Project>

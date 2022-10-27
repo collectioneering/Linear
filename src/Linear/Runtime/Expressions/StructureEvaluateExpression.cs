@@ -1,39 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Linear.Runtime.Expressions
+namespace Linear.Runtime.Expressions;
+
+/// <summary>
+/// Structure evaluation expression
+/// </summary>
+public class StructureEvaluateExpression<T> : ExpressionDefinition
 {
     /// <summary>
-    /// Structure evaluation expression
+    /// Delegate type for evaluation expression
     /// </summary>
-    public class StructureEvaluateExpression<T> : ExpressionDefinition
+    /// <param name="instance">Structure instance</param>
+    public delegate T StructureEvaluateDelegate(StructureInstance instance);
+
+    private readonly StructureEvaluateDelegate _delegate;
+
+    /// <summary>
+    /// Create new instance of <see cref="StructureEvaluateExpression{T}"/>
+    /// </summary>
+    /// <param name="evaluateDelegate">Delegate</param>
+    public StructureEvaluateExpression(StructureEvaluateDelegate evaluateDelegate)
     {
-        /// <summary>
-        /// Delegate type for evaluation expression
-        /// </summary>
-        /// <param name="instance">Structure instance</param>
-        public delegate T StructureEvaluateDelegate(StructureInstance instance);
-
-        private readonly StructureEvaluateDelegate _delegate;
-
-        /// <summary>
-        /// Create new instance of <see cref="StructureEvaluateExpression{T}"/>
-        /// </summary>
-        /// <param name="evaluateDelegate">Delegate</param>
-        public StructureEvaluateExpression(StructureEvaluateDelegate evaluateDelegate)
-        {
-            _delegate = evaluateDelegate;
-        }
-
-
-        /// <inheritdoc />
-        public override IEnumerable<Element> GetDependencies(StructureDefinition definition) =>
-            Enumerable.Empty<Element>();
-
-        /// <inheritdoc />
-        public override Func<StructureInstance, Stream, byte[], object?> GetDelegate() =>
-            (instance, stream, tempBuffer) => _delegate(instance);
+        _delegate = evaluateDelegate;
     }
+
+
+    /// <inheritdoc />
+    public override IEnumerable<Element> GetDependencies(StructureDefinition definition) =>
+        Enumerable.Empty<Element>();
+
+    /// <inheritdoc />
+    public override DeserializerDelegate GetDelegate() =>
+        (instance, _, _) => _delegate(instance);
 }

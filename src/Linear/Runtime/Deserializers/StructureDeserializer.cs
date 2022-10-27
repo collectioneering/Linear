@@ -21,7 +21,7 @@ namespace Linear.Runtime.Deserializers
         }
 
         /// <inheritdoc />
-        public string? GetTargetTypeName() => _name;
+        public string GetTargetTypeName() => _name;
 
         /// <inheritdoc />
         public Type GetTargetType() => typeof(StructureInstance);
