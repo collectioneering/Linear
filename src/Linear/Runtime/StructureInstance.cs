@@ -1,7 +1,11 @@
-﻿using System;
+﻿#if NET7_0_OR_GREATER
+using System;
+#endif
 using System.Collections.Generic;
 using System.Linq;
+#if NET7_0_OR_GREATER
 using System.Numerics;
+#endif
 
 namespace Linear.Runtime
 {
@@ -131,7 +135,6 @@ namespace Linear.Runtime
         }
 
 #if NET7_0_OR_GREATER
-
         /// <summary>
         /// Get member cast to type
         /// </summary>

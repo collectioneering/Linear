@@ -83,7 +83,7 @@ namespace lyn
                 if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
                 Console.WriteLine(file);
                 using FileStream ofs = File.Create(file);
-                exporter.Export(baseStream, si, output.Range, output.Parameters, ofs);
+                exporter.Export(baseStream, output.Structure, output.Range, output.Parameters, ofs);
             }
 
             return 0;

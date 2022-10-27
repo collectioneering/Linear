@@ -76,7 +76,7 @@ public class OutputElement : Element
             {
                 throw new InvalidCastException($"Could not cast expression of type {range?.GetType().FullName} to type {nameof(LongRange)}");
             }
-            structure.AddOutput(new StructureOutput(name?.ToString() ?? structure.GetUniqueId().ToString(CultureInfo.InvariantCulture), formatValue, exporterParams, rangeValue));
+            structure.AddOutput(new StructureOutput(structure, name?.ToString() ?? structure.GetUniqueId().ToString(CultureInfo.InvariantCulture), formatValue, exporterParams, rangeValue));
         }
     }
 }

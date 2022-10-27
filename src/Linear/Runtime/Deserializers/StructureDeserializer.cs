@@ -31,8 +31,7 @@ namespace Linear.Runtime.Deserializers
             long offset, bool littleEndian, Dictionary<LinearCommon.StandardProperty, object>? standardProperties,
             Dictionary<string, object>? parameters, long length = 0, int index = 0)
         {
-            StructureInstance i = instance.Registry[_name]
-                .Parse(instance.Registry, stream, offset, instance, length, index);
+            StructureInstance i = instance.Registry[_name].Parse(instance.Registry, stream, offset, instance, length, index);
             return new DeserializeResult(i, i.Length);
         }
     }
