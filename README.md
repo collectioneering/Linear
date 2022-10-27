@@ -1,5 +1,5 @@
 # Linear
-[![NuGet](https://badgen.net/nuget/v/Linear)](https://www.nuget.org/packages/Linear/) ![.NET Core](https://github.com/collectioneering/Linear/workflows/.NET/badge.svg)
+[![NuGet](https://badgen.net/nuget/v/Linear)](https://www.nuget.org/packages/Linear/) [![.NET Core](https://github.com/collectioneering/Linear/workflows/.NET/badge.svg)](https://github.com/collectioneering/Linear/actions/workflows/dotnet-build.yml)
 
  Linear file structure ingest library
 
