@@ -13,7 +13,7 @@ defaults:
 jobs:
   build:
 
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v3
@@ -28,13 +28,13 @@ jobs:
     - name: Test
       run: dotnet test --framework net7.0 --no-restore --verbosity normal
     - name: Publish net7.0 osx-x64
-      run: dotnet publish lyn --framework net7.0 --no-restore --configuration Release --runtime osx-x64 --self-contained false
+      run: dotnet publish lyn --framework net7.0 --configuration Release --runtime osx-x64 --self-contained false
     - name: Publish net7.0 osx-arm64
-      run: dotnet publish lyn --framework net7.0 --no-restore --configuration Release --runtime osx-arm64 --self-contained false
+      run: dotnet publish lyn --framework net7.0 --configuration Release --runtime osx-arm64 --self-contained false
     - name: Publish net7.0 linux-x64
-      run: dotnet publish lyn --framework net7.0 --no-restore --configuration Release --runtime linux-x64 --self-contained false
+      run: dotnet publish lyn --framework net7.0 --configuration Release --runtime linux-x64 --self-contained false
     - name: Publish net7.0 win-x64
-      run: dotnet publish lyn --framework net7.0 --no-restore --configuration Release --runtime win-x64 --self-contained false
+      run: dotnet publish lyn --framework net7.0 --configuration Release --runtime win-x64 --self-contained false
     - uses: actions/upload-artifact@v2
       with:
         name: lyn-net7.0-osx-64
