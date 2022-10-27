@@ -16,9 +16,9 @@ namespace Linear.Runtime
         public abstract IEnumerable<Element> GetDependencies(StructureDefinition definition);
 
         /// <summary>
-        /// Get delegate to initialize structure
+        /// Get initializer
         /// </summary>
-        /// <returns>Delegate</returns>
-        public abstract ElementInitDelegate GetDelegate();
+        /// <returns>Initializer</returns>
+        public abstract ElementInitializer GetInitializer();
     }
 }

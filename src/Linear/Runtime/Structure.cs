@@ -18,7 +18,7 @@ namespace Linear.Runtime
         /// </summary>
         public int DefaultLength { get; }
 
-        private readonly List<(string? name, ElementInitDelegate method)> _members;
+        private readonly List<StructureMember> _members;
 
         /// <summary>
         /// Create new instance of <see cref="Structure"/>
@@ -26,8 +26,7 @@ namespace Linear.Runtime
         /// <param name="name">Name of structure</param>
         /// <param name="defaultLength">Default length of structure</param>
         /// <param name="members"></param>
-        public Structure(string name, int defaultLength,
-            List<(string? name, ElementInitDelegate method)> members)
+        public Structure(string name, int defaultLength, List<StructureMember> members)
         {
             Name = name;
             _members = members;
@@ -47,12 +46,19 @@ namespace Linear.Runtime
         public StructureInstance Parse(StructureRegistry registry, Stream stream, long offset = 0, StructureInstance? parent = null, long length = 0, int index = 0)
         {
             StructureInstance instance = new(registry, parent, offset, length == 0 ? DefaultLength : length, index);
-            foreach ((string? _, ElementInitDelegate method) in _members)
+            foreach ((string? _, ElementInitializer method) in _members)
             {
-                method(instance, stream);
+                method.Initialize(instance, stream);
             }
 
             return instance;
         }
     }
+
+    /// <summary>
+    /// Represents a structure member.
+    /// </summary>
+    /// <param name="Name">Member name.</param>
+    /// <param name="Initializer">Initializer.</param>
+    public readonly record struct StructureMember(string? Name, ElementInitializer Initializer);
 }

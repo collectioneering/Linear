@@ -1,75 +1,75 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
-namespace Linear.Runtime.Elements
+namespace Linear.Runtime.Elements;
+
+/// <summary>
+/// Expression from offset
+/// </summary>
+public class OutputElement : Element
 {
+    private readonly ExpressionDefinition _formatDefinition;
+    private readonly ExpressionDefinition _rangeDefinition;
+    private readonly ExpressionDefinition _nameDefinition;
+    private readonly Dictionary<string, ExpressionDefinition>? _exporterParams;
+
     /// <summary>
-    /// Expression from offset
+    /// Create new instance of <see cref="OutputElement"/>
     /// </summary>
-    public class OutputElement : Element
+    /// <param name="formatDefinition">Format value definition</param>
+    /// <param name="rangeDefinition">Range value definition</param>
+    /// <param name="nameDefinition">Name value definition</param>
+    /// <param name="exporterParams">Exporter parameters</param>
+    public OutputElement(ExpressionDefinition formatDefinition, ExpressionDefinition rangeDefinition,
+        ExpressionDefinition nameDefinition, Dictionary<string, ExpressionDefinition>? exporterParams)
     {
-        private readonly ExpressionDefinition _formatDefinition;
-        private readonly ExpressionDefinition _rangeDefinition;
-        private readonly ExpressionDefinition _nameDefinition;
-        private readonly Dictionary<string, ExpressionDefinition>? _exporterParams;
+        _formatDefinition = formatDefinition;
+        _rangeDefinition = rangeDefinition;
+        _nameDefinition = nameDefinition;
+        _exporterParams = exporterParams;
+    }
 
-        /// <summary>
-        /// Create new instance of <see cref="OutputElement"/>
-        /// </summary>
-        /// <param name="formatDefinition">Format value definition</param>
-        /// <param name="rangeDefinition">Range value definition</param>
-        /// <param name="nameDefinition">Name value definition</param>
-        /// <param name="exporterParams">Exporter parameters</param>
-        public OutputElement(ExpressionDefinition formatDefinition, ExpressionDefinition rangeDefinition,
-            ExpressionDefinition nameDefinition, Dictionary<string, ExpressionDefinition>? exporterParams)
+    /// <inheritdoc />
+    public override IEnumerable<Element> GetDependencies(StructureDefinition definition)
+    {
+        return _rangeDefinition.GetDependencies(definition)
+            .Union(_nameDefinition.GetDependencies(definition));
+    }
+
+    /// <inheritdoc />
+    public override ElementInitializer GetInitializer()
+    {
+        Dictionary<string, ExpressionInstance>? exporterParamsCompact = _exporterParams == null ? null : new Dictionary<string, ExpressionInstance>();
+        if (_exporterParams != null)
         {
-            _formatDefinition = formatDefinition;
-            _rangeDefinition = rangeDefinition;
-            _nameDefinition = nameDefinition;
-            _exporterParams = exporterParams;
+            foreach (var kvp in _exporterParams)
+                exporterParamsCompact![kvp.Key] = kvp.Value.GetInstance();
         }
+        return new OutputElementInitializer(_formatDefinition.GetInstance(), _rangeDefinition.GetInstance(), _nameDefinition.GetInstance(), exporterParamsCompact);
+    }
 
-        /// <inheritdoc />
-        public override IEnumerable<Element> GetDependencies(StructureDefinition definition)
+    private record OutputElementInitializer(ExpressionInstance Format, ExpressionInstance Range, ExpressionInstance Name,
+        Dictionary<string, ExpressionInstance>? ExporterParamsCompact) : ElementInitializer
+    {
+        public override void Initialize(StructureInstance structure, Stream stream)
         {
-            return _rangeDefinition.GetDependencies(definition)
-                .Union(_nameDefinition.GetDependencies(definition));
-        }
-
-        /// <inheritdoc />
-        public override ElementInitDelegate GetDelegate()
-        {
-            ExpressionInstance formatDelegate = _formatDefinition.GetInstance();
-            ExpressionInstance rangeDelegate = _rangeDefinition.GetInstance();
-            ExpressionInstance nameDelegate = _nameDefinition.GetInstance();
-            Dictionary<string, ExpressionInstance>? exporterParamsCompact = _exporterParams == null ? null : new Dictionary<string, ExpressionInstance>();
-            if (_exporterParams != null)
-            {
-                foreach (var kvp in _exporterParams)
-                    exporterParamsCompact![kvp.Key] = kvp.Value.GetInstance();
-            }
-
-            return (instance, stream) =>
-            {
-                object? format = formatDelegate.Deserialize(instance, stream);
-                object? range = rangeDelegate.Deserialize(instance, stream);
-                object? name = nameDelegate.Deserialize(instance, stream);
-                Dictionary<string, object>? exporterParams =
-                    exporterParamsCompact == null ? null : new Dictionary<string, object>();
-                if (exporterParamsCompact != null)
-                    foreach (var kvp in exporterParamsCompact)
-                        exporterParams![kvp.Key] =
-                            kvp.Value.Deserialize(instance, stream) ?? throw new NullReferenceException();
-                if (!LinearCommon.TryCast(format, out string formatValue))
-                    throw new InvalidCastException(
-                        $"Could not cast expression of type {format?.GetType().FullName} to type {nameof(String)}");
-                if (!LinearCommon.TryCast(range, out LongRange rangeValue))
-                    throw new InvalidCastException(
-                        $"Could not cast expression of type {range?.GetType().FullName} to type {nameof(LongRange)}");
-                instance.AddOutput((name?.ToString() ?? instance.GetUniqueId().ToString(), formatValue, exporterParams,
-                    rangeValue));
-            };
+            object? format = Format.Deserialize(structure, stream);
+            object? range = Range.Deserialize(structure, stream);
+            object? name = Name.Deserialize(structure, stream);
+            Dictionary<string, object>? exporterParams =
+                ExporterParamsCompact == null ? null : new Dictionary<string, object>();
+            if (ExporterParamsCompact != null)
+                foreach (var kvp in ExporterParamsCompact)
+                    exporterParams![kvp.Key] = kvp.Value.Deserialize(structure, stream) ?? throw new NullReferenceException();
+            if (!LinearCommon.TryCast(format, out string formatValue))
+                throw new InvalidCastException(
+                    $"Could not cast expression of type {format?.GetType().FullName} to type {nameof(String)}");
+            if (!LinearCommon.TryCast(range, out LongRange rangeValue))
+                throw new InvalidCastException(
+                    $"Could not cast expression of type {range?.GetType().FullName} to type {nameof(LongRange)}");
+            structure.AddOutput((name?.ToString() ?? structure.GetUniqueId().ToString(), formatValue, exporterParams, rangeValue));
         }
     }
 }

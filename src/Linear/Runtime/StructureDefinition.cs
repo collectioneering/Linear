@@ -42,7 +42,7 @@ namespace Linear.Runtime
         /// <returns>Structure</returns>
         public Structure Build()
         {
-            List<(string? name, ElementInitDelegate method)> members = new();
+            List<StructureMember> members = new();
             var sub = new List<(string?, Element)>(Members);
             // Build members after organizing by dependencies
             while (sub.Count > 0)
@@ -50,7 +50,7 @@ namespace Linear.Runtime
                 int removed = sub.RemoveAll(e =>
                 {
                     bool noDeps = !e.Item2.GetDependencies(this).Intersect(sub.Select(x => x.Item2)).Any();
-                    if (noDeps) members.Add((e.Item1, e.Item2.GetDelegate()));
+                    if (noDeps) members.Add(new StructureMember(e.Item1, e.Item2.GetInitializer()));
                     return noDeps;
                 });
                 if (removed == 0) throw new Exception("Failed to reduce dependencies");

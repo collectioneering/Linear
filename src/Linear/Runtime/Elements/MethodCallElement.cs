@@ -1,32 +1,39 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 
-namespace Linear.Runtime.Elements
+namespace Linear.Runtime.Elements;
+
+/// <summary>
+/// Element calling method
+/// </summary>
+public class MethodCallElement : Element
 {
+    private readonly ExpressionDefinition _expression;
+
     /// <summary>
-    /// Element calling method
+    /// Create new instance of <see cref="MethodCallElement"/>
     /// </summary>
-    public class MethodCallElement : Element
+    /// <param name="expression">Value definition</param>
+    public MethodCallElement(ExpressionDefinition expression)
     {
-        private readonly ExpressionDefinition _expression;
+        _expression = expression;
+    }
 
-        /// <summary>
-        /// Create new instance of <see cref="MethodCallElement"/>
-        /// </summary>
-        /// <param name="expression">Value definition</param>
-        public MethodCallElement(ExpressionDefinition expression)
+    /// <inheritdoc />
+    public override IEnumerable<Element> GetDependencies(StructureDefinition definition) =>
+        _expression.GetDependencies(definition);
+
+    /// <inheritdoc />
+    public override ElementInitializer GetInitializer()
+    {
+        return new MethodCallElementInitializer(_expression.GetInstance());
+    }
+
+    private record MethodCallElementInitializer(ExpressionInstance Expression) : ElementInitializer
+    {
+        public override void Initialize(StructureInstance structure, Stream stream)
         {
-            _expression = expression;
-        }
-
-        /// <inheritdoc />
-        public override IEnumerable<Element> GetDependencies(StructureDefinition definition) =>
-            _expression.GetDependencies(definition);
-
-        /// <inheritdoc />
-        public override ElementInitDelegate GetDelegate()
-        {
-            ExpressionInstance expressionDelegate = _expression.GetInstance();
-            return (instance, stream) => { expressionDelegate.Deserialize(instance, stream); };
+            Expression.Deserialize(structure, stream);
         }
     }
 }
