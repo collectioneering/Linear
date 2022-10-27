@@ -40,30 +40,27 @@ namespace Linear.Runtime.Elements
         /// <inheritdoc />
         public override ElementInitDelegate GetDelegate()
         {
-            DeserializerDelegate formatDelegate = _formatDefinition.GetDelegate();
-            DeserializerDelegate rangeDelegate = _rangeDefinition.GetDelegate();
-            DeserializerDelegate nameDelegate = _nameDefinition.GetDelegate();
-            Dictionary<string, DeserializerDelegate>? exporterParamsCompact =
-                _exporterParams == null
-                    ? null
-                    : new Dictionary<string, DeserializerDelegate>();
+            ExpressionInstance formatDelegate = _formatDefinition.GetInstance();
+            ExpressionInstance rangeDelegate = _rangeDefinition.GetInstance();
+            ExpressionInstance nameDelegate = _nameDefinition.GetInstance();
+            Dictionary<string, ExpressionInstance>? exporterParamsCompact = _exporterParams == null ? null : new Dictionary<string, ExpressionInstance>();
             if (_exporterParams != null)
             {
                 foreach (var kvp in _exporterParams)
-                    exporterParamsCompact![kvp.Key] = kvp.Value.GetDelegate();
+                    exporterParamsCompact![kvp.Key] = kvp.Value.GetInstance();
             }
 
             return (instance, stream) =>
             {
-                object? format = formatDelegate(instance, stream);
-                object? range = rangeDelegate(instance, stream);
-                object? name = nameDelegate(instance, stream);
+                object? format = formatDelegate.Deserialize(instance, stream);
+                object? range = rangeDelegate.Deserialize(instance, stream);
+                object? name = nameDelegate.Deserialize(instance, stream);
                 Dictionary<string, object>? exporterParams =
                     exporterParamsCompact == null ? null : new Dictionary<string, object>();
                 if (exporterParamsCompact != null)
                     foreach (var kvp in exporterParamsCompact)
                         exporterParams![kvp.Key] =
-                            kvp.Value(instance, stream) ?? throw new NullReferenceException();
+                            kvp.Value.Deserialize(instance, stream) ?? throw new NullReferenceException();
                 if (!LinearCommon.TryCast(format, out string formatValue))
                     throw new InvalidCastException(
                         $"Could not cast expression of type {format?.GetType().FullName} to type {nameof(String)}");

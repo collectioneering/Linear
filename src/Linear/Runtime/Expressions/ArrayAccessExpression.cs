@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace Linear.Runtime.Expressions;
@@ -28,18 +29,18 @@ public class ArrayAccessExpression : ExpressionDefinition
         _source.GetDependencies(definition).Union(_index.GetDependencies(definition));
 
     /// <inheritdoc />
-    public override DeserializerDelegate GetDelegate()
+    public override ExpressionInstance GetInstance() => new ArrayAccessExpressionInstance(_source.GetInstance(), _index.GetInstance());
+
+    private record ArrayAccessExpressionInstance(ExpressionInstance Source, ExpressionInstance Index) : ExpressionInstance
     {
-        DeserializerDelegate delSource = _source.GetDelegate();
-        DeserializerDelegate delIndex = _index.GetDelegate();
-        return (instance, stream) =>
+        public override object? Deserialize(StructureInstance structure, Stream stream)
         {
-            object? source = delSource(instance, stream);
-            object index = delIndex(instance, stream) ?? throw new NullReferenceException();
+            object? source = Source.Deserialize(structure, stream);
+            object index = Index.Deserialize(structure, stream) ?? throw new NullReferenceException();
             if (!LinearCommon.TryCast(source, out Array sourceValue))
                 throw new InvalidCastException(
                     $"Could not cast object of type {source?.GetType().FullName} to {nameof(Array)}");
             return sourceValue.GetValue(LinearCommon.CastInt(index));
-        };
+        }
     }
 }

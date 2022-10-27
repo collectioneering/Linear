@@ -25,8 +25,8 @@ namespace Linear.Runtime.Elements
         /// <inheritdoc />
         public override ElementInitDelegate GetDelegate()
         {
-            DeserializerDelegate expressionDelegate = _expression.GetDelegate();
-            return (instance, stream) => { expressionDelegate(instance, stream); };
+            ExpressionInstance expressionDelegate = _expression.GetInstance();
+            return (instance, stream) => { expressionDelegate.Deserialize(instance, stream); };
         }
     }
 }

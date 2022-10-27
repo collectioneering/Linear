@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Linear.Runtime.Expressions;
 
@@ -29,16 +30,20 @@ public class ProxyMemberExpression : ExpressionDefinition
     }
 
     /// <inheritdoc />
-    public override DeserializerDelegate GetDelegate()
+    public override ExpressionInstance GetInstance()
     {
-        DeserializerDelegate del = _source.GetDelegate();
-        return (instance, stream) =>
+        return new ProxyMemberExpressionInstance(_source.GetInstance(), _name);
+    }
+
+    private record ProxyMemberExpressionInstance(ExpressionInstance Delegate, string Name) : ExpressionInstance
+    {
+        public override object Deserialize(StructureInstance structure, Stream stream)
         {
-            object? val = del(instance, stream);
+            object? val = Delegate.Deserialize(structure, stream);
             if (!LinearCommon.TryCast(val, out StructureInstance i2))
                 throw new InvalidCastException(
                     $"Could not cast object of type {val?.GetType().FullName} to {nameof(StructureInstance)}");
-            return i2[_name];
-        };
+            return i2[Name];
+        }
     }
 }

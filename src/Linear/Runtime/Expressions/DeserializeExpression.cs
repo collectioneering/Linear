@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace Linear.Runtime.Expressions;
@@ -44,44 +45,49 @@ public class DeserializeExpression : ExpressionDefinition
     }
 
     /// <inheritdoc />
-    public override DeserializerDelegate GetDelegate() => CreateDelegate(
-        _offsetDefinition, _littleEndianDefinition, _deserializer, _deserializerParams, _standardProperties);
+    public override ExpressionInstance GetInstance() =>
+        CreateDelegate(_offsetDefinition, _littleEndianDefinition, _deserializer, _deserializerParams, _standardProperties);
 
-    internal static DeserializerDelegate CreateDelegate(
+    internal static ExpressionInstance CreateDelegate(
         ExpressionDefinition offsetDefinition,
         ExpressionDefinition littleEndianDefinition, IDeserializer deserializer,
         Dictionary<string, ExpressionDefinition> deserializerParams,
         Dictionary<LinearCommon.StandardProperty, ExpressionDefinition> standardProperties)
     {
-        DeserializerDelegate srcDelegate = offsetDefinition.GetDelegate();
-        DeserializerDelegate
-            littleEndianDelegate = littleEndianDefinition.GetDelegate();
-        Dictionary<string, DeserializerDelegate> deserializerParamsCompact = new();
+        ExpressionInstance srcDelegate = offsetDefinition.GetInstance();
+        ExpressionInstance littleEndianDelegate = littleEndianDefinition.GetInstance();
+        Dictionary<string, ExpressionInstance> deserializerParamsCompact = new();
         foreach (var kvp in deserializerParams)
-            deserializerParamsCompact[kvp.Key] = kvp.Value.GetDelegate();
-        Dictionary<LinearCommon.StandardProperty, DeserializerDelegate>
+            deserializerParamsCompact[kvp.Key] = kvp.Value.GetInstance();
+        Dictionary<LinearCommon.StandardProperty, ExpressionInstance>
             standardPropertiesCompact = new();
         foreach (var kvp in standardProperties)
-            standardPropertiesCompact[kvp.Key] = kvp.Value.GetDelegate();
-        return (instance, stream) =>
+            standardPropertiesCompact[kvp.Key] = kvp.Value.GetInstance();
+        return new DeserializeExpressionInstance(deserializerParamsCompact, standardPropertiesCompact, srcDelegate, littleEndianDelegate, deserializer);
+    }
+
+    private record DeserializeExpressionInstance(
+        Dictionary<string, ExpressionInstance> DeserializerParamsCompact,
+        Dictionary<LinearCommon.StandardProperty, ExpressionInstance> StandardPropertiesCompact,
+        ExpressionInstance Source, ExpressionInstance LittleEndian, IDeserializer Deserializer) : ExpressionInstance
+    {
+        public override object Deserialize(StructureInstance structure, Stream stream)
         {
             Dictionary<string, object>? deserializerParamsGen =
-                deserializerParamsCompact.Count != 0 ? new Dictionary<string, object>() : null;
+                DeserializerParamsCompact.Count != 0 ? new Dictionary<string, object>() : null;
             if (deserializerParamsGen != null)
-                foreach (var kvp in deserializerParamsCompact)
-                    deserializerParamsGen[kvp.Key] =
-                        kvp.Value(instance, stream) ?? throw new NullReferenceException();
+                foreach (var kvp in DeserializerParamsCompact)
+                    deserializerParamsGen[kvp.Key] = kvp.Value.Deserialize(structure, stream) ?? throw new NullReferenceException();
 
             Dictionary<LinearCommon.StandardProperty, object>? standardPropertiesGen =
-                standardPropertiesCompact.Count != 0
+                StandardPropertiesCompact.Count != 0
                     ? new Dictionary<LinearCommon.StandardProperty, object>()
                     : null;
             if (standardPropertiesGen != null)
-                foreach (var kvp in standardPropertiesCompact)
-                    standardPropertiesGen[kvp.Key] =
-                        kvp.Value(instance, stream) ?? throw new NullReferenceException();
-            object? offset = srcDelegate(instance, stream);
-            object? littleEndian = littleEndianDelegate(instance, stream);
+                foreach (var kvp in StandardPropertiesCompact)
+                    standardPropertiesGen[kvp.Key] = kvp.Value.Deserialize(structure, stream) ?? throw new NullReferenceException();
+            object? offset = Source.Deserialize(structure, stream);
+            object? littleEndian = LittleEndian.Deserialize(structure, stream);
             LongRange range;
             if (LinearCommon.TryCastLong(offset, out long offsetValue))
                 range = new LongRange(Offset: offsetValue, Length: 0);
@@ -91,7 +97,7 @@ public class DeserializeExpression : ExpressionDefinition
             if (!LinearCommon.TryCast(littleEndian, out bool littleEndianValue))
                 throw new InvalidCastException(
                     $"Could not cast expression of type {littleEndian?.GetType().FullName} to type {nameof(Boolean)}");
-            return deserializer.Deserialize(instance, stream, range.Offset, littleEndianValue, standardPropertiesGen, deserializerParamsGen, range.Length).Value;
-        };
+            return Deserializer.Deserialize(structure, stream, range.Offset, littleEndianValue, standardPropertiesGen, deserializerParamsGen, range.Length).Value;
+        }
     }
 }

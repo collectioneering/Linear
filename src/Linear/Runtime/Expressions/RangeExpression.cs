@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace Linear.Runtime.Expressions;
@@ -36,26 +38,39 @@ public class RangeExpression : ExpressionDefinition
     }
 
     /// <inheritdoc />
-    public override DeserializerDelegate GetDelegate()
+    public override ExpressionInstance GetInstance()
     {
-        DeserializerDelegate startDelegate = _startExpression.GetDelegate();
+        ExpressionInstance startDelegate = _startExpression.GetInstance();
         if (_endExpression != null)
         {
-            DeserializerDelegate endDelegate = _endExpression.GetDelegate();
-            return (instance, stream) =>
-            {
-                long start = LinearCommon.CastLong(startDelegate(instance, stream));
-                long end = LinearCommon.CastLong(endDelegate(instance, stream));
-                return new LongRange(start, end - start);
-            };
+            ExpressionInstance endDelegate = _endExpression.GetInstance();
+            return new RangeExpressionInstanceStartEnd(startDelegate, endDelegate);
         }
-
-        DeserializerDelegate lengthDelegate = _lengthExpression!.GetDelegate();
-        return (instance, stream) =>
+        if (_lengthExpression != null)
         {
-            long start = LinearCommon.CastLong(startDelegate(instance, stream));
-            long length = LinearCommon.CastLong(lengthDelegate(instance, stream));
+            ExpressionInstance lengthDelegate = _lengthExpression!.GetInstance();
+            return new RangeExpressionInstanceStartLength(startDelegate, lengthDelegate);
+        }
+        throw new InvalidOperationException();
+    }
+
+    private record RangeExpressionInstanceStartEnd(ExpressionInstance Start, ExpressionInstance End) : ExpressionInstance
+    {
+        public override object Deserialize(StructureInstance structure, Stream stream)
+        {
+            long start = LinearCommon.CastLong(Start.Deserialize(structure, stream));
+            long end = LinearCommon.CastLong(End.Deserialize(structure, stream));
+            return new LongRange(start, end - start);
+        }
+    }
+
+    private record RangeExpressionInstanceStartLength(ExpressionInstance Start, ExpressionInstance Length) : ExpressionInstance
+    {
+        public override object Deserialize(StructureInstance structure, Stream stream)
+        {
+            long start = LinearCommon.CastLong(Start.Deserialize(structure, stream));
+            long length = LinearCommon.CastLong(Length.Deserialize(structure, stream));
             return new LongRange(start, length);
-        };
+        }
     }
 }

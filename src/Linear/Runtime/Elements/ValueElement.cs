@@ -30,10 +30,10 @@ namespace Linear.Runtime.Elements
         /// <inheritdoc />
         public override ElementInitDelegate GetDelegate()
         {
-            DeserializerDelegate expressionDelegate = _expression.GetDelegate();
+            ExpressionInstance expressionDelegate = _expression.GetInstance();
             return (instance, stream) =>
             {
-                object expression = expressionDelegate(instance, stream) ?? throw new NullReferenceException();
+                object expression = expressionDelegate.Deserialize(instance, stream) ?? throw new NullReferenceException();
                 instance.SetMember(_name, expression);
             };
         }

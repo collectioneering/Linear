@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace Linear.Runtime.Expressions;
@@ -26,6 +27,13 @@ public class MemberExpression : ExpressionDefinition
     }
 
     /// <inheritdoc />
-    public override DeserializerDelegate GetDelegate() =>
-        (instance, _) => instance[_name];
+    public override ExpressionInstance GetInstance() => new MemberExpressionInstance(_name);
+
+    private record MemberExpressionInstance(string Name) : ExpressionInstance
+    {
+        public override object Deserialize(StructureInstance structure, Stream stream)
+        {
+            return structure[Name];
+        }
+    }
 }

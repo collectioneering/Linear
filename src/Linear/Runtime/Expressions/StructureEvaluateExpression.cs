@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace Linear.Runtime.Expressions;
@@ -31,6 +32,10 @@ public class StructureEvaluateExpression<T> : ExpressionDefinition
         Enumerable.Empty<Element>();
 
     /// <inheritdoc />
-    public override DeserializerDelegate GetDelegate() =>
-        (instance, _) => _delegate(instance);
+    public override ExpressionInstance GetInstance() => new StructureEvaluateExpressionInstance(_delegate);
+
+    private record StructureEvaluateExpressionInstance(StructureEvaluateDelegate Delegate) : ExpressionInstance
+    {
+        public override object? Deserialize(StructureInstance structure, Stream stream) => Delegate(structure);
+    }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace Linear.Runtime.Expressions;
@@ -34,14 +35,18 @@ public class MethodCallExpression : ExpressionDefinition
         _args.SelectMany(a => a.GetDependencies(definition));
 
     /// <inheritdoc />
-    public override DeserializerDelegate GetDelegate()
+    public override ExpressionInstance GetInstance()
     {
-        List<DeserializerDelegate> argsCompact =
-            _args.Select(arg => arg.GetDelegate()).ToList();
-        return (instance, stream) =>
+        List<ExpressionInstance> argsCompact = _args.Select(arg => arg.GetInstance()).ToList();
+        return new MethodCallExpressionInstance(argsCompact, _delegate);
+    }
+
+    private record MethodCallExpressionInstance(List<ExpressionInstance> ArgsCompact, MethodCallDelegate Delegate) : ExpressionInstance
+    {
+        public override object? Deserialize(StructureInstance structure, Stream stream)
         {
-            object?[] res = argsCompact.Select(arg => arg(instance, stream)).ToArray();
-            return _delegate(res);
-        };
+            object?[] res = ArgsCompact.Select(arg => arg.Deserialize(structure, stream)).ToArray();
+            return Delegate(res);
+        }
     }
 }

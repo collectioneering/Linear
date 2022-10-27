@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace Linear.Runtime.Expressions;
@@ -24,5 +25,13 @@ public class ConstantExpression<T> : ExpressionDefinition
         Enumerable.Empty<Element>();
 
     /// <inheritdoc />
-    public override DeserializerDelegate GetDelegate() => (_, _) => _value!;
+    public override ExpressionInstance GetInstance() => new ConstantExpressionInstance(_value);
+
+    private record ConstantExpressionInstance(T Value) : ExpressionInstance
+    {
+        public override object? Deserialize(StructureInstance structure, Stream stream)
+        {
+            return Value;
+        }
+    }
 }

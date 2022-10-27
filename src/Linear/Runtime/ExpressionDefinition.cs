@@ -16,8 +16,8 @@ public abstract class ExpressionDefinition
     public abstract IEnumerable<Element> GetDependencies(StructureDefinition definition);
 
     /// <summary>
-    /// Get delegate to parse expression
+    /// Get instance
     /// </summary>
-    /// <returns>Delegate</returns>
-    public abstract DeserializerDelegate GetDelegate();
+    /// <returns>Instance</returns>
+    public abstract ExpressionInstance GetInstance();
 }
