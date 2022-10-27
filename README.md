@@ -4,7 +4,7 @@
  Linear file structure ingest library
 
 This library uses structure specification files to read
-structured data from files. It is built for .NET Standard 2.0.
+structured data from files. It is built for .NET Standard 2.1.
 
 The command-line program [lyn](src/lyn) provides a simple means for using
 a structure file to lay out an input file and dump its outputs.
@@ -59,7 +59,7 @@ file 0x8 {
 
 Some deserializers like string and string16 need a range instead of an offset.
 
-These ranges are expressed as `[<sourceIdx>, end: <endIdxNonInclusive>]` and `[<sourceIdx>, length: <length>]`
+These ranges are expressed as `[<sourceIdx>, end: <endIdxExclusive>]` and `[<sourceIdx>, length: <length>]`
 
 #### Standard deserializers
 
