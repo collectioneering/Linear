@@ -5,7 +5,7 @@ namespace Linear.Runtime;
 /// <summary>
 /// Initializer for element.
 /// </summary>
-public abstract record ElementInitializer()
+public abstract record ElementInitializer
 {
     /// <summary>
     /// Initializes element.

@@ -22,7 +22,7 @@ namespace Linear.Runtime
         /// <summary>
         /// Members not sorted for dependency
         /// </summary>
-        public List<(string?, Element)> Members { get; }
+        public List<StructureDefinitionMember> Members { get; }
 
         /// <summary>
         /// Create new instance of <see cref="StructureDefinition"/>
@@ -33,7 +33,7 @@ namespace Linear.Runtime
         {
             Name = name;
             DefaultLength = defaultLength;
-            Members = new List<(string?, Element)>();
+            Members = new List<StructureDefinitionMember>();
         }
 
         /// <summary>
@@ -43,14 +43,14 @@ namespace Linear.Runtime
         public Structure Build()
         {
             List<StructureMember> members = new();
-            var sub = new List<(string?, Element)>(Members);
+            var sub = new List<StructureDefinitionMember>(Members);
             // Build members after organizing by dependencies
             while (sub.Count > 0)
             {
                 int removed = sub.RemoveAll(e =>
                 {
-                    bool noDeps = !e.Item2.GetDependencies(this).Intersect(sub.Select(x => x.Item2)).Any();
-                    if (noDeps) members.Add(new StructureMember(e.Item1, e.Item2.GetInitializer()));
+                    bool noDeps = !e.Element.GetDependencies(this).Intersect(sub.Select(x => x.Element)).Any();
+                    if (noDeps) members.Add(new StructureMember(e.Name, e.Element.GetInitializer()));
                     return noDeps;
                 });
                 if (removed == 0) throw new Exception("Failed to reduce dependencies");
@@ -59,4 +59,11 @@ namespace Linear.Runtime
             return new Structure(Name, DefaultLength, members);
         }
     }
+
+    /// <summary>
+    /// Represents an entry in a structure definition.
+    /// </summary>
+    /// <param name="Name">Entry name.</param>
+    /// <param name="Element">Element.</param>
+    public readonly record struct StructureDefinitionMember(string? Name, Element Element);
 }

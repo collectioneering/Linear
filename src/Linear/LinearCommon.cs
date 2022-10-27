@@ -59,7 +59,7 @@ public static class LinearCommon
     /// <returns>True if succeeded</returns>
     public static bool TryGenerateRegistry(TextReader input, out StructureRegistry? registry, Action<string> logDelegate,
         IReadOnlyCollection<IDeserializer>? deserializers = null,
-        IReadOnlyCollection<(string, MethodCallExpression.MethodCallDelegate)>? methods = null,
+        IReadOnlyCollection<MethodCallExpression.NamedDelegate>? methods = null,
         IAntlrErrorStrategy? errorHandler = null)
     {
         var inputStream = new AntlrInputStream(input);
@@ -77,7 +77,7 @@ public static class LinearCommon
             return false;
         }
 
-        Dictionary<string, IDeserializer> r_deserializers = CreateDefaultDeserializerRegistry();
+        Dictionary<string, IDeserializer> rDeserializers = CreateDefaultDeserializerRegistry();
         if (deserializers != null)
         {
             foreach (var deserializer in deserializers)
@@ -89,22 +89,22 @@ public static class LinearCommon
                     registry = null;
                     return false;
                 }
-                r_deserializers[dname] = deserializer;
+                rDeserializers[dname] = deserializer;
             }
         }
 
-        Dictionary<string, MethodCallExpression.MethodCallDelegate> r_methods = CreateDefaultMethodDictionary();
+        Dictionary<string, MethodCallExpression.MethodCallDelegate> rMethods = CreateDefaultMethodDictionary();
         if (methods != null)
         {
             foreach (var method in methods)
             {
-                r_methods[method.Item1] = method.Item2;
+                rMethods[method.Name] = method.Delegate;
             }
         }
 
         foreach (string name in listenerPre.GetStructureNames())
-            r_deserializers[name] = new StructureDeserializer(name);
-        var listener = new LinearListener(r_deserializers, r_methods, logDelegate);
+            rDeserializers[name] = new StructureDeserializer(name);
+        var listener = new LinearListener(rDeserializers, rMethods, logDelegate);
         parser.Reset();
         ParseTreeWalker.Default.Walk(listener, parser.compilation_unit());
         List<StructureDefinition> structures = listener.GetStructures();
@@ -117,19 +117,19 @@ public static class LinearCommon
         return true;
     }
 
-    private static readonly Dictionary<string, MethodCallExpression.MethodCallDelegate> _defaultMethods =
-        new Dictionary<string, MethodCallExpression.MethodCallDelegate>
-        {
-            {
-                "log", args =>
-                {
-                    string? value = args[0]?.ToString();
-                    Console.WriteLine(value);
-                    return args[0];
-                }
-            },
-            { "format", args => string.Format(args[0]?.ToString() ?? "", args.Skip(1).ToArray()) }
-        };
+    private static readonly Dictionary<string, MethodCallExpression.MethodCallDelegate> s_defaultMethods = new() { { "log", Log }, { "format", Format } };
+
+    private static object? Log(params object?[] args)
+    {
+        string? value = args[0]?.ToString();
+        Console.WriteLine(value);
+        return args[0];
+    }
+
+    private static object Format(params object?[] args)
+    {
+        return string.Format(args[0]?.ToString() ?? "", args.Skip(1).ToArray());
+    }
 
     /// <summary>
     /// Create default method dictionary with standard exporters
@@ -137,10 +137,10 @@ public static class LinearCommon
     /// <returns>Default registry</returns>
     public static Dictionary<string, MethodCallExpression.MethodCallDelegate> CreateDefaultMethodDictionary()
     {
-        return new Dictionary<string, MethodCallExpression.MethodCallDelegate>(_defaultMethods);
+        return new Dictionary<string, MethodCallExpression.MethodCallDelegate>(s_defaultMethods);
     }
 
-    private static readonly Dictionary<string, IExporter> _defaultExporters = new Dictionary<string, IExporter> { { DataExporter.ExporterName, new DataExporter() }, { DecompressExporter.ExporterName, new DecompressExporter() } };
+    private static readonly Dictionary<string, IExporter> s_defaultExporters = new Dictionary<string, IExporter> { { DataExporter.ExporterName, new DataExporter() }, { DecompressExporter.ExporterName, new DecompressExporter() } };
 
     /// <summary>
     /// Create default exporter dictionary with standard exporters
@@ -148,10 +148,10 @@ public static class LinearCommon
     /// <returns>Default registry</returns>
     public static Dictionary<string, IExporter> CreateDefaultExporterDictionary()
     {
-        return new Dictionary<string, IExporter>(_defaultExporters);
+        return new Dictionary<string, IExporter>(s_defaultExporters);
     }
 
-    private static readonly Dictionary<string, IDeserializer> _defaultDeserializers =
+    private static readonly Dictionary<string, IDeserializer> s_defaultDeserializers =
         new Dictionary<string, IDeserializer>
         {
             { "byte", new PrimitiveDeserializer(typeof(byte)) },
@@ -184,7 +184,7 @@ public static class LinearCommon
     /// <returns>Default registry</returns>
     public static Dictionary<string, IDeserializer> CreateDefaultDeserializerRegistry()
     {
-        return new Dictionary<string, IDeserializer>(_defaultDeserializers);
+        return new Dictionary<string, IDeserializer>(s_defaultDeserializers);
     }
 
     internal static bool TryCast<T>(object? o, out T result)

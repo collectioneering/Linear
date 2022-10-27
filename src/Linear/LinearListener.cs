@@ -68,7 +68,7 @@ internal class LinearListener : LinearBaseListener
         string typeName = ids[0].GetText();
         string dataName = ids[1].GetText();
         Element dataElement = new ValueElement(dataName, GetExpression(context.expr(), typeName));
-        _currentDefinition!.Members.Add((dataName, dataElement));
+        _currentDefinition!.Members.Add(new StructureDefinitionMember(dataName, dataElement));
     }
 
     public override void EnterStruct_statement_define_array(
@@ -92,7 +92,7 @@ internal class LinearListener : LinearBaseListener
         Element dataElement = new ValueElement(dataName, new DeserializeExpression(offsetExpression,
             littleEndianExpression, new ArrayDeserializer(deserializer), GetPropertyGroup(context.property_group()),
             standardProperties));
-        _currentDefinition!.Members.Add((dataName, dataElement));
+        _currentDefinition!.Members.Add(new StructureDefinitionMember(dataName, dataElement));
     }
 
     public override void EnterStruct_statement_define_array_indirect(
@@ -127,7 +127,7 @@ internal class LinearListener : LinearBaseListener
             new DeserializeExpression(offsetExpression, littleEndianExpression,
                 new PointerArrayDeserializer(arrayDeserializer, targetDeserializer, lenFinder),
                 GetPropertyGroup(context.property_group()), standardProperties));
-        _currentDefinition!.Members.Add((dataName, dataElement));
+        _currentDefinition!.Members.Add(new StructureDefinitionMember(dataName, dataElement));
     }
 
     /*public override void EnterStruct_statement_define_value(
@@ -146,14 +146,14 @@ internal class LinearListener : LinearBaseListener
     {
         ExpressionDefinition expr = GetExpression(context.expr());
         Element dataElement = new MethodCallElement(expr);
-        _currentDefinition!.Members.Add((null, dataElement));
+        _currentDefinition!.Members.Add(new StructureDefinitionMember(null, dataElement));
     }
 
     public override void EnterStruct_statement_length(LinearParser.Struct_statement_lengthContext context)
     {
         ExpressionDefinition expr = GetExpression(context.expr());
         Element dataElement = new LengthElement(expr);
-        _currentDefinition!.Members.Add((null, dataElement));
+        _currentDefinition!.Members.Add(new StructureDefinitionMember(null, dataElement));
     }
 
     public override void EnterStruct_statement_output(LinearParser.Struct_statement_outputContext context)
@@ -164,7 +164,7 @@ internal class LinearListener : LinearBaseListener
         Element outputElement = new OutputElement(formatExpression, rangeExpression, nameExpression,
             GetPropertyGroup(context.property_group()));
 
-        _currentDefinition!.Members.Add((null, outputElement));
+        _currentDefinition!.Members.Add(new StructureDefinitionMember(null, outputElement));
     }
 
     private Dictionary<string, ExpressionDefinition> GetPropertyGroup(

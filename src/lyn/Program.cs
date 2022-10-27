@@ -26,9 +26,9 @@ namespace lyn
         private static int Run(Configuration conf)
         {
             StructureRegistry? registry;
-            List<(string, MethodCallExpression.MethodCallDelegate)> methods;
+            List<MethodCallExpression.NamedDelegate> methods;
 #if EnableLinearLambda
-            methods = new List<(string, MethodCallExpression.MethodCallDelegate)>();
+            methods = new List<MethodCallExpression.NamedDelegate>();
 #else
             methods = null;
 #endif
@@ -68,7 +68,7 @@ namespace lyn
             using MultiBufferStream mbs = new MultiBufferStream(baseStream);
             StructureInstance si = structure.Parse(registry, mbs, 0, null, baseStream.Length);
             Dictionary<string, IExporter> exporterDictionary = LinearCommon.CreateDefaultExporterDictionary();
-            foreach ((StructureInstance instance, string name, string format, Dictionary<string, object>? parameters,
+            foreach ((StructureInstance instance, string name, string format, IReadOnlyDictionary<string, object>? parameters,
                 LongRange range) in si.GetOutputs())
             {
                 if (!exporterDictionary.TryGetValue(format, out IExporter? exporter))

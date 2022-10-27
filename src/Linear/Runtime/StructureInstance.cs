@@ -46,8 +46,7 @@ namespace Linear.Runtime
 
         private readonly Dictionary<string, object> _members = new();
 
-        private readonly List<(string name, string format, Dictionary<string, object>? parameters,
-            LongRange range)> _outputs = new();
+        private readonly List<StructureOutput> _outputs = new();
 
         /// <summary>
         /// Create new instance of <see cref="StructureInstance"/>
@@ -57,8 +56,7 @@ namespace Linear.Runtime
         /// <param name="absoluteOffset">Absolute offset of structure</param>
         /// <param name="length">Length of structure</param>
         /// <param name="i">Structure index</param>
-        public StructureInstance(StructureRegistry registry, StructureInstance? parent, long absoluteOffset,
-            long length = 0, int i = 0)
+        public StructureInstance(StructureRegistry registry, StructureInstance? parent, long absoluteOffset, long length = 0, int i = 0)
         {
             Registry = registry;
             Parent = parent;
@@ -69,26 +67,22 @@ namespace Linear.Runtime
 
         internal void SetMember(string name, object value) => _members[name] = value;
 
-        internal void AddOutput(
-            (string name, string format, Dictionary<string, object>? parameters, LongRange range)
-                value) =>
-            _outputs.Add(value);
+        internal void AddOutput(string name, string format, Dictionary<string, object>? parameters, LongRange range) =>
+            _outputs.Add(new StructureOutput(this, name, format, parameters, range));
 
         /// <summary>
         /// Get outputs
         /// </summary>
         /// <returns>Outputs</returns>
         /// <param name="recurse">Recurse into children</param>
-        public List<(StructureInstance instance, string name, string format, Dictionary<string, object>? parameters,
-            LongRange range)> GetOutputs(bool recurse = true)
+        public List<StructureOutput> GetOutputs(bool recurse = true)
         {
             return GetOutputsInternal(recurse).ToList();
         }
 
-        private IEnumerable<(StructureInstance instance, string name, string format, Dictionary<string, object>?
-            parameters, LongRange range)> GetOutputsInternal(bool recurse = true)
+        private IEnumerable<StructureOutput> GetOutputsInternal(bool recurse = true)
         {
-            var outputs = _outputs.Select(x => (this, x.name, x.format, x.parameters, x.range));
+            IEnumerable<StructureOutput> outputs = _outputs;
             if (recurse)
             {
                 foreach (StructureInstance instance in _members.Values.Where(x => x is StructureInstance)

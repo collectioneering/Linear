@@ -23,7 +23,7 @@ public class MemberExpression : ExpressionDefinition
     /// <inheritdoc />
     public override IEnumerable<Element> GetDependencies(StructureDefinition definition)
     {
-        return definition.Members.Where(x => x.Item1 == _name).Select(x => x.Item2);
+        return definition.Members.Where(x => x.Name == _name).Select(x => x.Element);
     }
 
     /// <inheritdoc />

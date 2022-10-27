@@ -69,7 +69,7 @@ public class OutputElement : Element
             if (!LinearCommon.TryCast(range, out LongRange rangeValue))
                 throw new InvalidCastException(
                     $"Could not cast expression of type {range?.GetType().FullName} to type {nameof(LongRange)}");
-            structure.AddOutput((name?.ToString() ?? structure.GetUniqueId().ToString(), formatValue, exporterParams, rangeValue));
+            structure.AddOutput(name?.ToString() ?? structure.GetUniqueId().ToString(), formatValue, exporterParams, rangeValue);
         }
     }
 }

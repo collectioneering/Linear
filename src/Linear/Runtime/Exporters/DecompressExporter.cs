@@ -38,15 +38,14 @@ public class DecompressExporter : IExporter
 
     /// <inheritdoc />
     public void Export(Stream stream, StructureInstance instance, LongRange range,
-        Dictionary<string, object>? parameters, Stream outputStream)
+        IReadOnlyDictionary<string, object>? parameters, Stream outputStream)
     {
         stream.Position = instance.AbsoluteOffset + range.Offset;
         using SStream sStream = new(stream, range.Length);
         if (parameters == null) throw new Exception("Parameters cannot be null");
         if (!parameters.TryGetValue(Key_Format, out object format) || !(format is string formatString))
             throw new Exception($"Required key {ExporterName} missing");
-        if (!SupportedDecompressors.TryGetValue(formatString,
-                out DecompressionProxyDelegate fn))
+        if (!SupportedDecompressors.TryGetValue(formatString, out DecompressionProxyDelegate fn))
             throw new Exception($"Unknown format {format}");
         Stream proxyStream = fn(sStream, parameters);
         proxyStream.CopyTo(outputStream);

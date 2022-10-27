@@ -15,6 +15,13 @@ public class MethodCallExpression : ExpressionDefinition
     /// <param name="args">Arguments</param>
     public delegate object? MethodCallDelegate(params object?[] args);
 
+    /// <summary>
+    /// Represents a named delegate.
+    /// </summary>
+    /// <param name="Name">Name.</param>
+    /// <param name="Delegate">Delegate.</param>
+    public readonly record struct NamedDelegate(string Name, MethodCallDelegate Delegate);
+
     private readonly MethodCallDelegate _delegate;
     private readonly List<ExpressionDefinition> _args;
 
@@ -45,8 +52,7 @@ public class MethodCallExpression : ExpressionDefinition
     {
         public override object? Evaluate(StructureInstance structure, Stream stream)
         {
-            object?[] res = ArgsCompact.Select(arg => arg.Evaluate(structure, stream)).ToArray();
-            return Delegate(res);
+            return Delegate(ArgsCompact.Select(arg => arg.Evaluate(structure, stream)).ToArray());
         }
     }
 }

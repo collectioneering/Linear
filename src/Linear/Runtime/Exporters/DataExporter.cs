@@ -18,7 +18,7 @@ namespace Linear.Runtime.Exporters
 
         /// <inheritdoc />
         public void Export(Stream stream, StructureInstance instance, LongRange range,
-            Dictionary<string, object>? parameters, Stream outputStream)
+            IReadOnlyDictionary<string, object>? parameters, Stream outputStream)
         {
             stream.Position = instance.AbsoluteOffset + range.Offset;
             using SStream sStream = new(stream, range.Length);
