@@ -67,9 +67,9 @@ namespace Linear.Runtime.Elements
                 if (!LinearCommon.TryCast(format, out string formatValue))
                     throw new InvalidCastException(
                         $"Could not cast expression of type {format?.GetType().FullName} to type {nameof(String)}");
-                if (!LinearCommon.TryCast(range, out (long, long) rangeValue))
+                if (!LinearCommon.TryCast(range, out LongRange rangeValue))
                     throw new InvalidCastException(
-                        $"Could not cast expression of type {range?.GetType().FullName} to type {nameof(ValueTuple<long, long>)}");
+                        $"Could not cast expression of type {range?.GetType().FullName} to type {nameof(LongRange)}");
                 instance.AddOutput((name?.ToString() ?? instance.GetUniqueId().ToString(), formatValue, exporterParams,
                     rangeValue));
             };

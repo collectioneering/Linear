@@ -46,7 +46,7 @@ public class RangeExpression : ExpressionDefinition
             {
                 long start = LinearCommon.CastLong(startDelegate(instance, stream));
                 long end = LinearCommon.CastLong(endDelegate(instance, stream));
-                return (start, end - start);
+                return new LongRange(start, end - start);
             };
         }
 
@@ -55,7 +55,7 @@ public class RangeExpression : ExpressionDefinition
         {
             long start = LinearCommon.CastLong(startDelegate(instance, stream));
             long length = LinearCommon.CastLong(lengthDelegate(instance, stream));
-            return (start, length);
+            return new LongRange(start, length);
         };
     }
 }

@@ -22,7 +22,6 @@ namespace Linear.Runtime
         /// <param name="range">Target range</param>
         /// <param name="parameters">Exporter parameters</param>
         /// <param name="outputStream">Output stream</param>
-        void Export(Stream stream, StructureInstance instance, (long offset, long length) range,
-            Dictionary<string, object>? parameters, Stream outputStream);
+        void Export(Stream stream, StructureInstance instance, LongRange range, Dictionary<string, object>? parameters, Stream outputStream);
     }
 }

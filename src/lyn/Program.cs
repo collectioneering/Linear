@@ -69,7 +69,7 @@ namespace lyn
             StructureInstance si = structure.Parse(registry, mbs, 0, null, baseStream.Length);
             Dictionary<string, IExporter> exporterDictionary = LinearCommon.CreateDefaultExporterDictionary();
             foreach ((StructureInstance instance, string name, string format, Dictionary<string, object>? parameters,
-                (long offset, long length) range) in si.GetOutputs())
+                LongRange range) in si.GetOutputs())
             {
                 if (!exporterDictionary.TryGetValue(format, out IExporter? exporter))
                 {

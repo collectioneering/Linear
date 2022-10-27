@@ -42,8 +42,7 @@ namespace Linear.Runtime
         /// <returns>Structure</returns>
         public Structure Build()
         {
-            List<(string? name, ElementInitDelegate method)> members =
-                new List<(string? name, ElementInitDelegate method)>();
+            List<(string? name, ElementInitDelegate method)> members = new();
             var sub = new List<(string?, Element)>(Members);
             // Build members after organizing by dependencies
             while (sub.Count > 0)

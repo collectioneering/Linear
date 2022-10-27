@@ -44,12 +44,10 @@ namespace Linear.Runtime
         /// <returns>Unique identifier</returns>
         public int GetUniqueId() => Parent?.GetUniqueId() ?? _u++;
 
-        private readonly Dictionary<string, object> _members = new Dictionary<string, object>();
+        private readonly Dictionary<string, object> _members = new();
 
         private readonly List<(string name, string format, Dictionary<string, object>? parameters,
-            (long offset, long length) range)> _outputs =
-            new List<(string name, string format, Dictionary<string, object>? parameters,
-                (long offset, long length) range)>();
+            LongRange range)> _outputs = new();
 
         /// <summary>
         /// Create new instance of <see cref="StructureInstance"/>
@@ -72,7 +70,7 @@ namespace Linear.Runtime
         internal void SetMember(string name, object value) => _members[name] = value;
 
         internal void AddOutput(
-            (string name, string format, Dictionary<string, object>? parameters, (long offset, long length) range)
+            (string name, string format, Dictionary<string, object>? parameters, LongRange range)
                 value) =>
             _outputs.Add(value);
 
@@ -82,13 +80,13 @@ namespace Linear.Runtime
         /// <returns>Outputs</returns>
         /// <param name="recurse">Recurse into children</param>
         public List<(StructureInstance instance, string name, string format, Dictionary<string, object>? parameters,
-            (long offset, long length) range)> GetOutputs(bool recurse = true)
+            LongRange range)> GetOutputs(bool recurse = true)
         {
             return GetOutputsInternal(recurse).ToList();
         }
 
         private IEnumerable<(StructureInstance instance, string name, string format, Dictionary<string, object>?
-            parameters, (long offset, long length) range)> GetOutputsInternal(bool recurse = true)
+            parameters, LongRange range)> GetOutputsInternal(bool recurse = true)
         {
             var outputs = _outputs.Select(x => (this, x.name, x.format, x.parameters, x.range));
             if (recurse)

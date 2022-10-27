@@ -17,11 +17,11 @@ namespace Linear.Runtime.Exporters
         public string GetName() => ExporterName;
 
         /// <inheritdoc />
-        public void Export(Stream stream, StructureInstance instance, (long offset, long length) range,
+        public void Export(Stream stream, StructureInstance instance, LongRange range,
             Dictionary<string, object>? parameters, Stream outputStream)
         {
-            stream.Position = instance.AbsoluteOffset + range.offset;
-            using SStream sStream = new SStream(stream, range.length);
+            stream.Position = instance.AbsoluteOffset + range.Offset;
+            using SStream sStream = new(stream, range.Length);
             sStream.CopyTo(outputStream);
         }
     }

@@ -56,13 +56,11 @@ public class DeserializeExpression : ExpressionDefinition
         DeserializerDelegate srcDelegate = offsetDefinition.GetDelegate();
         DeserializerDelegate
             littleEndianDelegate = littleEndianDefinition.GetDelegate();
-        Dictionary<string, DeserializerDelegate> deserializerParamsCompact =
-            new Dictionary<string, DeserializerDelegate>();
+        Dictionary<string, DeserializerDelegate> deserializerParamsCompact = new();
         foreach (var kvp in deserializerParams)
             deserializerParamsCompact[kvp.Key] = kvp.Value.GetDelegate();
         Dictionary<LinearCommon.StandardProperty, DeserializerDelegate>
-            standardPropertiesCompact =
-                new Dictionary<LinearCommon.StandardProperty, DeserializerDelegate>();
+            standardPropertiesCompact = new();
         foreach (var kvp in standardProperties)
             standardPropertiesCompact[kvp.Key] = kvp.Value.GetDelegate();
         return (instance, stream) =>
@@ -84,17 +82,16 @@ public class DeserializeExpression : ExpressionDefinition
                         kvp.Value(instance, stream) ?? throw new NullReferenceException();
             object? offset = srcDelegate(instance, stream);
             object? littleEndian = littleEndianDelegate(instance, stream);
-            (long offset, long length) range = default;
+            LongRange range;
             if (LinearCommon.TryCastLong(offset, out long offsetValue))
-                range.offset = offsetValue;
+                range = new LongRange(Offset: offsetValue, Length: 0);
             else if (!LinearCommon.TryCast(offset, out range))
                 throw new InvalidCastException("Cannot find offset or range type for source delegate");
 
             if (!LinearCommon.TryCast(littleEndian, out bool littleEndianValue))
                 throw new InvalidCastException(
                     $"Could not cast expression of type {littleEndian?.GetType().FullName} to type {nameof(Boolean)}");
-            return deserializer.Deserialize(instance, stream, range.offset,
-                littleEndianValue, standardPropertiesGen, deserializerParamsGen, range.length).Value;
+            return deserializer.Deserialize(instance, stream, range.Offset, littleEndianValue, standardPropertiesGen, deserializerParamsGen, range.Length).Value;
         };
     }
 }
