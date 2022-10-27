@@ -38,13 +38,12 @@ namespace Linear.Runtime.Deserializers
         public Type GetTargetType() => _type;
 
         /// <inheritdoc />
-        public (object value, long length) Deserialize(StructureInstance instance, Stream stream, byte[] tempBuffer,
+        public DeserializeResult Deserialize(StructureInstance instance, Stream stream,
             long offset, bool littleEndian, Dictionary<LinearCommon.StandardProperty, object>? standardProperties,
             Dictionary<string, object>? parameters, long length = 0, int index = 0)
         {
             if (standardProperties == null) throw new NullReferenceException();
-            (object src, _) = _mainDeserializer.Deserialize(instance, stream, tempBuffer, offset, littleEndian,
-                standardProperties, parameters);
+            (object src, _) = _mainDeserializer.Deserialize(instance, stream, offset, littleEndian, standardProperties, parameters);
             Array baseArray = (Array)src;
             int pointerArrayLength =
                 LinearCommon.CastInt(standardProperties[LinearCommon.StandardProperty.PointerArrayLengthProperty]);
@@ -57,14 +56,14 @@ namespace Linear.Runtime.Deserializers
                 long preElemLength = _lenFinder
                     ? LinearCommon.CastLong(baseArray.GetValue(i + 1)) - LinearCommon.CastLong(baseArray.GetValue(i))
                     : 0;
-                (object value, long elemLength) = _elementDeserializer.Deserialize(instance, stream, tempBuffer,
+                (object value, long elemLength) = _elementDeserializer.Deserialize(instance, stream,
                     pointerOffset + LinearCommon.CastLong(baseArray.GetValue(i)), littleEndian,
                     standardProperties, parameters, preElemLength, i);
                 tarArray.SetValue(value, i);
                 curOffset += elemLength;
             }
 
-            return (tarArray, curOffset - offset);
+            return new DeserializeResult(tarArray, curOffset - offset);
         }
     }
 }

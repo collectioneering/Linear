@@ -38,9 +38,9 @@ public class MethodCallExpression : ExpressionDefinition
     {
         List<DeserializerDelegate> argsCompact =
             _args.Select(arg => arg.GetDelegate()).ToList();
-        return (instance, stream, tempBuffer) =>
+        return (instance, stream) =>
         {
-            object?[] res = argsCompact.Select(arg => arg(instance, stream, tempBuffer)).ToArray();
+            object?[] res = argsCompact.Select(arg => arg(instance, stream)).ToArray();
             return _delegate(res);
         };
     }

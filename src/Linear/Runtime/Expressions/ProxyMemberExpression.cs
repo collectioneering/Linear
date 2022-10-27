@@ -32,9 +32,9 @@ public class ProxyMemberExpression : ExpressionDefinition
     public override DeserializerDelegate GetDelegate()
     {
         DeserializerDelegate del = _source.GetDelegate();
-        return (instance, stream, tempBuffer) =>
+        return (instance, stream) =>
         {
-            object? val = del(instance, stream, tempBuffer);
+            object? val = del(instance, stream);
             if (!LinearCommon.TryCast(val, out StructureInstance i2))
                 throw new InvalidCastException(
                     $"Could not cast object of type {val?.GetType().FullName} to {nameof(StructureInstance)}");

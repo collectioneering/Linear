@@ -24,5 +24,5 @@ public class ConstantExpression<T> : ExpressionDefinition
         Enumerable.Empty<Element>();
 
     /// <inheritdoc />
-    public override DeserializerDelegate GetDelegate() => (_, _, _) => _value!;
+    public override DeserializerDelegate GetDelegate() => (_, _) => _value!;
 }

@@ -31,9 +31,9 @@ namespace Linear.Runtime.Elements
         public override ElementInitDelegate GetDelegate()
         {
             DeserializerDelegate expressionDelegate = _expression.GetDelegate();
-            return (instance, stream, tempBuffer) =>
+            return (instance, stream) =>
             {
-                object expression = expressionDelegate(instance, stream, tempBuffer) ?? throw new NullReferenceException();
+                object expression = expressionDelegate(instance, stream) ?? throw new NullReferenceException();
                 instance.SetMember(_name, expression);
             };
         }

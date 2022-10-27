@@ -32,10 +32,10 @@ public class ArrayAccessExpression : ExpressionDefinition
     {
         DeserializerDelegate delSource = _source.GetDelegate();
         DeserializerDelegate delIndex = _index.GetDelegate();
-        return (instance, stream, tempBuffer) =>
+        return (instance, stream) =>
         {
-            object? source = delSource(instance, stream, tempBuffer);
-            object index = delIndex(instance, stream, tempBuffer) ?? throw new NullReferenceException();
+            object? source = delSource(instance, stream);
+            object index = delIndex(instance, stream) ?? throw new NullReferenceException();
             if (!LinearCommon.TryCast(source, out Array sourceValue))
                 throw new InvalidCastException(
                     $"Could not cast object of type {source?.GetType().FullName} to {nameof(Array)}");

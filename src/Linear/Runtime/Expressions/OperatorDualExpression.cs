@@ -55,10 +55,10 @@ public class OperatorDualExpression : ExpressionDefinition
 
         return _operator switch
         {
-            Operator.Add => (instance, stream, tempBuffer) =>
+            Operator.Add => (instance, stream) =>
             {
-                object? left = delLeft(instance, stream, tempBuffer);
-                object? right = delRight(instance, stream, tempBuffer);
+                object? left = delLeft(instance, stream);
+                object? right = delRight(instance, stream);
 
                 if (left is string strLeft) return strLeft + right;
                 if (right is string strRight) return left + strRight;
@@ -97,11 +97,11 @@ public class OperatorDualExpression : ExpressionDefinition
                 if (right is byte byteRight) return LinearCommon.CastByte(left) + byteRight;
                 return new Exception("No suitable types found for operator");
             },
-            Operator.Sub => (instance, stream, tempBuffer) =>
+            Operator.Sub => (instance, stream) =>
             {
-                object left = delLeft(instance, stream, tempBuffer) ??
+                object left = delLeft(instance, stream) ??
                               throw new NullReferenceException("LHS null");
-                object right = delRight(instance, stream, tempBuffer) ??
+                object right = delRight(instance, stream) ??
                                throw new NullReferenceException("RHS null");
 
                 if (left is double doubleLeft) return doubleLeft - LinearCommon.CastDouble(right);
@@ -135,11 +135,11 @@ public class OperatorDualExpression : ExpressionDefinition
                 if (right is byte byteRight) return LinearCommon.CastByte(left) - byteRight;
                 return new Exception("No suitable types found for operator");
             },
-            Operator.Div => (instance, stream, tempBuffer) =>
+            Operator.Div => (instance, stream) =>
             {
-                object left = delLeft(instance, stream, tempBuffer) ??
+                object left = delLeft(instance, stream) ??
                               throw new NullReferenceException("LHS null");
-                object right = delRight(instance, stream, tempBuffer) ??
+                object right = delRight(instance, stream) ??
                                throw new NullReferenceException("RHS null");
 
                 if (left is double doubleLeft) return doubleLeft / LinearCommon.CastDouble(right);
@@ -173,11 +173,11 @@ public class OperatorDualExpression : ExpressionDefinition
                 if (right is byte byteRight) return LinearCommon.CastByte(left) / byteRight;
                 return new Exception("No suitable types found for operator");
             },
-            Operator.Mult => (instance, stream, tempBuffer) =>
+            Operator.Mult => (instance, stream) =>
             {
-                object left = delLeft(instance, stream, tempBuffer) ??
+                object left = delLeft(instance, stream) ??
                               throw new NullReferenceException("LHS null");
-                object right = delRight(instance, stream, tempBuffer) ??
+                object right = delRight(instance, stream) ??
                                throw new NullReferenceException("RHS null");
 
                 if (left is double doubleLeft) return doubleLeft * LinearCommon.CastDouble(right);
@@ -211,11 +211,11 @@ public class OperatorDualExpression : ExpressionDefinition
                 if (right is byte byteRight) return LinearCommon.CastByte(left) * byteRight;
                 return new Exception("No suitable types found for operator");
             },
-            Operator.Mod => (instance, stream, tempBuffer) =>
+            Operator.Mod => (instance, stream) =>
             {
-                object left = delLeft(instance, stream, tempBuffer) ??
+                object left = delLeft(instance, stream) ??
                               throw new NullReferenceException("LHS null");
-                object right = delRight(instance, stream, tempBuffer) ??
+                object right = delRight(instance, stream) ??
                                throw new NullReferenceException("RHS null");
 
                 if (left is double doubleLeft) return doubleLeft % LinearCommon.CastDouble(right);
@@ -249,11 +249,11 @@ public class OperatorDualExpression : ExpressionDefinition
                 if (right is byte byteRight) return LinearCommon.CastByte(left) % byteRight;
                 return new Exception("No suitable types found for operator");
             },
-            Operator.And => (instance, stream, tempBuffer) =>
+            Operator.And => (instance, stream) =>
             {
-                object left = delLeft(instance, stream, tempBuffer) ??
+                object left = delLeft(instance, stream) ??
                               throw new NullReferenceException("LHS null");
-                object right = delRight(instance, stream, tempBuffer) ??
+                object right = delRight(instance, stream) ??
                                throw new NullReferenceException("RHS null");
 
                 if (left is long longLeft) return longLeft & LinearCommon.CastLong(right);
@@ -281,11 +281,11 @@ public class OperatorDualExpression : ExpressionDefinition
                 if (right is byte byteRight) return LinearCommon.CastByte(left) & byteRight;
                 return new Exception("No suitable types found for operator");
             },
-            Operator.Or => (instance, stream, tempBuffer) =>
+            Operator.Or => (instance, stream) =>
             {
-                object left = delLeft(instance, stream, tempBuffer) ??
+                object left = delLeft(instance, stream) ??
                               throw new NullReferenceException("LHS null");
-                object right = delRight(instance, stream, tempBuffer) ??
+                object right = delRight(instance, stream) ??
                                throw new NullReferenceException("RHS null");
 
                 if (left is long longLeft) return longLeft | LinearCommon.CastLong(right);
@@ -313,11 +313,11 @@ public class OperatorDualExpression : ExpressionDefinition
                 if (right is byte byteRight) return LinearCommon.CastByte(left) | byteRight;
                 return new Exception("No suitable types found for operator");
             },
-            Operator.Xor => (instance, stream, tempBuffer) =>
+            Operator.Xor => (instance, stream) =>
             {
-                object left = delLeft(instance, stream, tempBuffer) ??
+                object left = delLeft(instance, stream) ??
                               throw new NullReferenceException("LHS null");
-                object right = delRight(instance, stream, tempBuffer) ??
+                object right = delRight(instance, stream) ??
                                throw new NullReferenceException("RHS null");
 
                 if (left is long longLeft) return longLeft ^ LinearCommon.CastLong(right);

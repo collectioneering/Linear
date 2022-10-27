@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
+using Fp;
 using Linear.Runtime;
 using Linear.Runtime.Deserializers;
 using Linear.Runtime.Exporters;
@@ -21,8 +21,6 @@ public static class LinearCommon
     /// Preferred name for primary structure
     /// </summary>
     public const string MainLayout = "main";
-
-    private static readonly bool _little = BitConverter.IsLittleEndian;
 
     /*internal const string ArrayLengthProperty = "array_length";
     internal const string PointerArrayLengthProperty = "pointer_array_length";
@@ -87,7 +85,7 @@ public static class LinearCommon
                 string? dname = deserializer.GetTargetTypeName();
                 if (dname == null)
                 {
-                    logDelegate( "Target name is required for all user-defined deserializers");
+                    logDelegate("Target name is required for all user-defined deserializers");
                     registry = null;
                     return false;
                 }
@@ -130,7 +128,7 @@ public static class LinearCommon
                     return args[0];
                 }
             },
-            {"format", args => string.Format(args[0]?.ToString() ?? "", args.Skip(1).ToArray())}
+            { "format", args => string.Format(args[0]?.ToString() ?? "", args.Skip(1).ToArray()) }
         };
 
     /// <summary>
@@ -142,11 +140,7 @@ public static class LinearCommon
         return new Dictionary<string, MethodCallExpression.MethodCallDelegate>(_defaultMethods);
     }
 
-    private static readonly Dictionary<string, IExporter> _defaultExporters = new Dictionary<string, IExporter>
-    {
-        {DataExporter.ExporterName, new DataExporter()},
-        {DecompressExporter.ExporterName, new DecompressExporter()}
-    };
+    private static readonly Dictionary<string, IExporter> _defaultExporters = new Dictionary<string, IExporter> { { DataExporter.ExporterName, new DataExporter() }, { DecompressExporter.ExporterName, new DecompressExporter() } };
 
     /// <summary>
     /// Create default exporter dictionary with standard exporters
@@ -160,28 +154,28 @@ public static class LinearCommon
     private static readonly Dictionary<string, IDeserializer> _defaultDeserializers =
         new Dictionary<string, IDeserializer>
         {
-            {"byte", new PrimitiveDeserializer(typeof(byte))},
-            {"sbyte", new PrimitiveDeserializer(typeof(sbyte))},
-            {"ushort", new PrimitiveDeserializer(typeof(ushort))},
-            {"short", new PrimitiveDeserializer(typeof(short))},
-            {"uint", new PrimitiveDeserializer(typeof(uint))},
-            {"int", new PrimitiveDeserializer(typeof(int))},
-            {"ulong", new PrimitiveDeserializer(typeof(ulong))},
-            {"long", new PrimitiveDeserializer(typeof(long))},
-            {"byteb", new PrimitiveDeserializer(typeof(byte))},
-            {"sbyteb", new PrimitiveDeserializer(typeof(sbyte))},
-            {"ushortb", new PrimitiveDeserializer(typeof(ushort))},
-            {"shortb", new PrimitiveDeserializer(typeof(short))},
-            {"uintb", new PrimitiveDeserializer(typeof(uint))},
-            {"intb", new PrimitiveDeserializer(typeof(int))},
-            {"ulongb", new PrimitiveDeserializer(typeof(ulong))},
-            {"longb", new PrimitiveDeserializer(typeof(long))},
-            {"float", new PrimitiveDeserializer(typeof(float))},
-            {"double", new PrimitiveDeserializer(typeof(double))},
-            {"string", new StringDeserializer(StringDeserializer.Mode.Utf8Fixed)},
-            {"cstring", new StringDeserializer(StringDeserializer.Mode.Utf8Null)},
-            {"string16", new StringDeserializer(StringDeserializer.Mode.Utf16Fixed)},
-            {"cstring16", new StringDeserializer(StringDeserializer.Mode.Utf16Null)},
+            { "byte", new PrimitiveDeserializer(typeof(byte)) },
+            { "sbyte", new PrimitiveDeserializer(typeof(sbyte)) },
+            { "ushort", new PrimitiveDeserializer(typeof(ushort)) },
+            { "short", new PrimitiveDeserializer(typeof(short)) },
+            { "uint", new PrimitiveDeserializer(typeof(uint)) },
+            { "int", new PrimitiveDeserializer(typeof(int)) },
+            { "ulong", new PrimitiveDeserializer(typeof(ulong)) },
+            { "long", new PrimitiveDeserializer(typeof(long)) },
+            { "byteb", new PrimitiveDeserializer(typeof(byte)) },
+            { "sbyteb", new PrimitiveDeserializer(typeof(sbyte)) },
+            { "ushortb", new PrimitiveDeserializer(typeof(ushort)) },
+            { "shortb", new PrimitiveDeserializer(typeof(short)) },
+            { "uintb", new PrimitiveDeserializer(typeof(uint)) },
+            { "intb", new PrimitiveDeserializer(typeof(int)) },
+            { "ulongb", new PrimitiveDeserializer(typeof(ulong)) },
+            { "longb", new PrimitiveDeserializer(typeof(long)) },
+            { "float", new PrimitiveDeserializer(typeof(float)) },
+            { "double", new PrimitiveDeserializer(typeof(double)) },
+            { "string", new StringDeserializer(StringDeserializer.Mode.Utf8Fixed) },
+            { "cstring", new StringDeserializer(StringDeserializer.Mode.Utf8Null) },
+            { "string16", new StringDeserializer(StringDeserializer.Mode.Utf16Fixed) },
+            { "cstring16", new StringDeserializer(StringDeserializer.Mode.Utf16Null) },
         };
 
     /// <summary>
@@ -415,151 +409,91 @@ public static class LinearCommon
         return item2;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static short Reverse(short value)
-    {
-        return (short)((value & 0x00FF) << 8 | (value & 0xFF00) >> 8);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static int Reverse(int value) => (int)Reverse((uint)value);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static long Reverse(long value) => (long)Reverse((ulong)value);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static ushort Reverse(ushort value)
-    {
-        return (ushort)((value << 8) + (value >> 8));
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static uint Reverse(uint value)
-    {
-        uint mask_xx_zz = value & 0x00FF00FFU;
-        uint mask_ww_yy = value & 0xFF00FF00U;
-        return ((mask_xx_zz >> 8) | (mask_xx_zz << 24))
-               + ((mask_ww_yy << 8) | (mask_ww_yy >> 24));
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static ulong Reverse(ulong value)
-    {
-        return ((ulong)Reverse((uint)value) << 32)
-               + Reverse((uint)(value >> 32));
-    }
-
-    internal static unsafe bool ReadBool(Stream stream, long offset, byte[]? tempBuffer)
+    internal static unsafe bool ReadBool(Stream stream, long offset)
     {
         stream.Seek(offset, SeekOrigin.Begin);
-        tempBuffer ??= new byte[1];
-        ReadBase(stream, tempBuffer, 0, 1);
-        fixed (void* p = tempBuffer)
-            return *(bool*)p;
+        Span<byte> temp = stackalloc byte[1];
+        Processor.Read(stream, temp, false);
+        return temp[0] != 0;
     }
 
-    internal static unsafe byte ReadU8(Stream stream, long offset, byte[]? tempBuffer)
+    internal static unsafe byte ReadU8(Stream stream, long offset)
     {
         stream.Seek(offset, SeekOrigin.Begin);
-        tempBuffer ??= new byte[1];
-        ReadBase(stream, tempBuffer, 0, 1);
-        fixed (void* p = tempBuffer)
-            return *(byte*)p;
+        Span<byte> temp = stackalloc byte[1];
+        Processor.Read(stream, temp, false);
+        return temp[0];
     }
 
-    internal static unsafe sbyte ReadS8(Stream stream, long offset, byte[]? tempBuffer)
+    internal static unsafe sbyte ReadS8(Stream stream, long offset)
     {
         stream.Seek(offset, SeekOrigin.Begin);
-        tempBuffer ??= new byte[1];
-        ReadBase(stream, tempBuffer, 0, 1);
-        fixed (void* p = tempBuffer)
-            return *(sbyte*)p;
+        Span<byte> temp = stackalloc byte[1];
+        Processor.Read(stream, temp, false);
+        return (sbyte)temp[0];
     }
 
-    internal static unsafe ushort ReadU16(Stream stream, long offset, byte[]? tempBuffer, bool littleEndian)
+    internal static unsafe ushort ReadU16(Stream stream, long offset, bool littleEndian)
     {
         stream.Seek(offset, SeekOrigin.Begin);
-        tempBuffer ??= new byte[2];
-        ReadBase(stream, tempBuffer, 0, 2);
-        fixed (void* p = tempBuffer)
-            return littleEndian ^ _little ? Reverse(*(ushort*)p) : *(ushort*)p;
+        Span<byte> temp = stackalloc byte[2];
+        Processor.Read(stream, temp, false);
+        return Processor.GetU16(temp, littleEndian);
     }
 
-    internal static unsafe short ReadS16(Stream stream, long offset, byte[]? tempBuffer, bool littleEndian)
+    internal static unsafe short ReadS16(Stream stream, long offset, bool littleEndian)
     {
         stream.Seek(offset, SeekOrigin.Begin);
-        tempBuffer ??= new byte[2];
-        ReadBase(stream, tempBuffer, 0, 2);
-        fixed (void* p = tempBuffer)
-            return littleEndian ^ _little ? Reverse(*(short*)p) : *(short*)p;
+        Span<byte> temp = stackalloc byte[2];
+        Processor.Read(stream, temp, false);
+        return Processor.GetS16(temp, littleEndian);
     }
 
-    internal static unsafe uint ReadU32(Stream stream, long offset, byte[]? tempBuffer, bool littleEndian)
+    internal static unsafe uint ReadU32(Stream stream, long offset, bool littleEndian)
     {
         stream.Seek(offset, SeekOrigin.Begin);
-        tempBuffer ??= new byte[4];
-        ReadBase(stream, tempBuffer, 0, 4);
-        fixed (void* p = tempBuffer)
-            return littleEndian ^ _little ? Reverse(*(uint*)p) : *(uint*)p;
+        Span<byte> temp = stackalloc byte[4];
+        Processor.Read(stream, temp, false);
+        return Processor.GetU32(temp, littleEndian);
     }
 
-    internal static unsafe int ReadS32(Stream stream, long offset, byte[]? tempBuffer, bool littleEndian)
+    internal static unsafe int ReadS32(Stream stream, long offset, bool littleEndian)
     {
         stream.Seek(offset, SeekOrigin.Begin);
-        tempBuffer ??= new byte[4];
-        ReadBase(stream, tempBuffer, 0, 4);
-        fixed (void* p = tempBuffer)
-            return littleEndian ^ _little ? Reverse(*(int*)p) : *(int*)p;
+        Span<byte> temp = stackalloc byte[4];
+        Processor.Read(stream, temp, false);
+        return Processor.GetS32(temp, littleEndian);
     }
 
-    internal static unsafe ulong ReadU64(Stream stream, long offset, byte[]? tempBuffer, bool littleEndian)
+    internal static unsafe ulong ReadU64(Stream stream, long offset, bool littleEndian)
     {
         stream.Seek(offset, SeekOrigin.Begin);
-        tempBuffer ??= new byte[8];
-        ReadBase(stream, tempBuffer, 0, 8);
-        fixed (void* p = tempBuffer)
-            return littleEndian ^ _little ? Reverse(*(ulong*)p) : *(ulong*)p;
+        Span<byte> temp = stackalloc byte[8];
+        Processor.Read(stream, temp, false);
+        return Processor.GetU64(temp, littleEndian);
     }
 
-    internal static unsafe long ReadS64(Stream stream, long offset, byte[]? tempBuffer, bool littleEndian)
+    internal static unsafe long ReadS64(Stream stream, long offset, bool littleEndian)
     {
         stream.Seek(offset, SeekOrigin.Begin);
-        tempBuffer ??= new byte[8];
-        ReadBase(stream, tempBuffer, 0, 8);
-        fixed (void* p = tempBuffer)
-            return littleEndian ^ _little ? Reverse(*(long*)p) : *(long*)p;
+        Span<byte> temp = stackalloc byte[8];
+        Processor.Read(stream, temp, false);
+        return Processor.GetS64(temp, littleEndian);
     }
 
-    internal static unsafe float ReadSingle(Stream stream, long offset, byte[]? tempBuffer)
+    internal static unsafe float ReadSingle(Stream stream, long offset)
     {
         stream.Seek(offset, SeekOrigin.Begin);
-        tempBuffer ??= new byte[4];
-        ReadBase(stream, tempBuffer, 0, 4);
-        fixed (void* p = tempBuffer)
-            return *(float*)p;
+        Span<byte> temp = stackalloc byte[4];
+        Processor.Read(stream, temp, false);
+        return Processor.GetSingle(temp);
     }
 
-    internal static unsafe double ReadDouble(Stream stream, long offset, byte[]? tempBuffer)
+    internal static unsafe double ReadDouble(Stream stream, long offset)
     {
         stream.Seek(offset, SeekOrigin.Begin);
-        tempBuffer ??= new byte[8];
-        ReadBase(stream, tempBuffer, 0, 8);
-        fixed (void* p = tempBuffer)
-            return *(double*)p;
-    }
-
-    private static void ReadBase(Stream stream, byte[] buffer, int offset, int length)
-    {
-        int left = length, read, tot = 0;
-        do
-        {
-            read = stream.Read(buffer, offset + tot, left);
-            left -= read;
-            tot += read;
-        } while (left > 0 && read != 0);
-
-        if (left > 0)
-            throw new EndOfStreamException(
-                $"Failed to read required number of bytes! 0x{read:X} read, 0x{left:X} left, 0x{stream.Position:X} end position");
+        Span<byte> temp = stackalloc byte[8];
+        Processor.Read(stream, temp, false);
+        return Processor.GetDouble(temp);
     }
 }

@@ -31,7 +31,7 @@ namespace Linear.Runtime.Deserializers
         public Type GetTargetType() => _type;
 
         /// <inheritdoc />
-        public (object value, long length) Deserialize(StructureInstance instance, Stream stream, byte[] tempBuffer,
+        public DeserializeResult Deserialize(StructureInstance instance, Stream stream,
             long offset, bool littleEndian, Dictionary<LinearCommon.StandardProperty, object>? standardProperties,
             Dictionary<string, object>? parameters, long length = 0, int index = 0)
         {
@@ -42,13 +42,13 @@ namespace Linear.Runtime.Deserializers
             long curOffset = offset;
             for (int i = 0; i < arrayLength; i++)
             {
-                (object value, long elemLength) = _elementDeserializer.Deserialize(instance, stream, tempBuffer,
+                (object value, long elemLength) = _elementDeserializer.Deserialize(instance, stream,
                     curOffset, littleEndian, standardProperties, parameters, 0, i);
                 res.SetValue(value, i);
                 curOffset += elemLength;
             }
 
-            return (res, curOffset - offset);
+            return new DeserializeResult(res, curOffset - offset);
         }
     }
 }

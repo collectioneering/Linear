@@ -42,19 +42,19 @@ public class RangeExpression : ExpressionDefinition
         if (_endExpression != null)
         {
             DeserializerDelegate endDelegate = _endExpression.GetDelegate();
-            return (instance, stream, tempBuffer) =>
+            return (instance, stream) =>
             {
-                long start = LinearCommon.CastLong(startDelegate(instance, stream, tempBuffer));
-                long end = LinearCommon.CastLong(endDelegate(instance, stream, tempBuffer));
+                long start = LinearCommon.CastLong(startDelegate(instance, stream));
+                long end = LinearCommon.CastLong(endDelegate(instance, stream));
                 return (start, end - start);
             };
         }
 
         DeserializerDelegate lengthDelegate = _lengthExpression!.GetDelegate();
-        return (instance, stream, tempBuffer) =>
+        return (instance, stream) =>
         {
-            long start = LinearCommon.CastLong(startDelegate(instance, stream, tempBuffer));
-            long length = LinearCommon.CastLong(lengthDelegate(instance, stream, tempBuffer));
+            long start = LinearCommon.CastLong(startDelegate(instance, stream));
+            long length = LinearCommon.CastLong(lengthDelegate(instance, stream));
             return (start, length);
         };
     }

@@ -53,17 +53,17 @@ namespace Linear.Runtime.Elements
                     exporterParamsCompact![kvp.Key] = kvp.Value.GetDelegate();
             }
 
-            return (instance, stream, tempBuffer) =>
+            return (instance, stream) =>
             {
-                object? format = formatDelegate(instance, stream, tempBuffer);
-                object? range = rangeDelegate(instance, stream, tempBuffer);
-                object? name = nameDelegate(instance, stream, tempBuffer);
+                object? format = formatDelegate(instance, stream);
+                object? range = rangeDelegate(instance, stream);
+                object? name = nameDelegate(instance, stream);
                 Dictionary<string, object>? exporterParams =
                     exporterParamsCompact == null ? null : new Dictionary<string, object>();
                 if (exporterParamsCompact != null)
                     foreach (var kvp in exporterParamsCompact)
                         exporterParams![kvp.Key] =
-                            kvp.Value(instance, stream, tempBuffer) ?? throw new NullReferenceException();
+                            kvp.Value(instance, stream) ?? throw new NullReferenceException();
                 if (!LinearCommon.TryCast(format, out string formatValue))
                     throw new InvalidCastException(
                         $"Could not cast expression of type {format?.GetType().FullName} to type {nameof(String)}");

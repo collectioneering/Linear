@@ -26,10 +26,7 @@ namespace Linear.Runtime.Elements
         public override ElementInitDelegate GetDelegate()
         {
             DeserializerDelegate expressionDelegate = _expression.GetDelegate();
-            return (instance, stream, tempBuffer) =>
-            {
-                instance.Length = LinearCommon.CastLong(expressionDelegate(instance, stream, tempBuffer));
-            };
+            return (instance, stream) => { instance.Length = LinearCommon.CastLong(expressionDelegate(instance, stream)); };
         }
     }
 }

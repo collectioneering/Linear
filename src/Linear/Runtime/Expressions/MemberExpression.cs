@@ -27,5 +27,5 @@ public class MemberExpression : ExpressionDefinition
 
     /// <inheritdoc />
     public override DeserializerDelegate GetDelegate() =>
-        (instance, _, _) => instance[_name];
+        (instance, _) => instance[_name];
 }

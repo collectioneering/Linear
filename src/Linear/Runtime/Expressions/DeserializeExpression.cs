@@ -65,14 +65,14 @@ public class DeserializeExpression : ExpressionDefinition
                 new Dictionary<LinearCommon.StandardProperty, DeserializerDelegate>();
         foreach (var kvp in standardProperties)
             standardPropertiesCompact[kvp.Key] = kvp.Value.GetDelegate();
-        return (instance, stream, tempBuffer) =>
+        return (instance, stream) =>
         {
             Dictionary<string, object>? deserializerParamsGen =
                 deserializerParamsCompact.Count != 0 ? new Dictionary<string, object>() : null;
             if (deserializerParamsGen != null)
                 foreach (var kvp in deserializerParamsCompact)
                     deserializerParamsGen[kvp.Key] =
-                        kvp.Value(instance, stream, tempBuffer) ?? throw new NullReferenceException();
+                        kvp.Value(instance, stream) ?? throw new NullReferenceException();
 
             Dictionary<LinearCommon.StandardProperty, object>? standardPropertiesGen =
                 standardPropertiesCompact.Count != 0
@@ -81,9 +81,9 @@ public class DeserializeExpression : ExpressionDefinition
             if (standardPropertiesGen != null)
                 foreach (var kvp in standardPropertiesCompact)
                     standardPropertiesGen[kvp.Key] =
-                        kvp.Value(instance, stream, tempBuffer) ?? throw new NullReferenceException();
-            object? offset = srcDelegate(instance, stream, tempBuffer);
-            object? littleEndian = littleEndianDelegate(instance, stream, tempBuffer);
+                        kvp.Value(instance, stream) ?? throw new NullReferenceException();
+            object? offset = srcDelegate(instance, stream);
+            object? littleEndian = littleEndianDelegate(instance, stream);
             (long offset, long length) range = default;
             if (LinearCommon.TryCastLong(offset, out long offsetValue))
                 range.offset = offsetValue;
@@ -93,8 +93,8 @@ public class DeserializeExpression : ExpressionDefinition
             if (!LinearCommon.TryCast(littleEndian, out bool littleEndianValue))
                 throw new InvalidCastException(
                     $"Could not cast expression of type {littleEndian?.GetType().FullName} to type {nameof(Boolean)}");
-            return deserializer.Deserialize(instance, stream, tempBuffer, range.offset,
-                littleEndianValue, standardPropertiesGen, deserializerParamsGen, range.length).value;
+            return deserializer.Deserialize(instance, stream, range.offset,
+                littleEndianValue, standardPropertiesGen, deserializerParamsGen, range.length).Value;
         };
     }
 }

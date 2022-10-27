@@ -47,9 +47,9 @@ public class OperatorUnaryExpression : ExpressionDefinition
 
         return _operator switch
         {
-            Operator.Plus => (instance, stream, tempBuffer) =>
+            Operator.Plus => (instance, stream) =>
             {
-                object value = delExpr(instance, stream, tempBuffer) ??
+                object value = delExpr(instance, stream) ??
                                throw new NullReferenceException("Expr value null");
 
                 return value switch
@@ -67,9 +67,9 @@ public class OperatorUnaryExpression : ExpressionDefinition
                     _ => new Exception($"No suitable types found for operator, was type {value.GetType().FullName}")
                 };
             },
-            Operator.Minus => (instance, stream, tempBuffer) =>
+            Operator.Minus => (instance, stream) =>
             {
-                object value = delExpr(instance, stream, tempBuffer) ??
+                object value = delExpr(instance, stream) ??
                                throw new NullReferenceException("Expr value null");
 
                 return value switch
@@ -86,9 +86,9 @@ public class OperatorUnaryExpression : ExpressionDefinition
                     _ => new Exception($"No suitable types found for operator, was type {value.GetType().FullName}")
                 };
             },
-            Operator.Tilde => (instance, stream, tempBuffer) =>
+            Operator.Tilde => (instance, stream) =>
             {
-                object value = delExpr(instance, stream, tempBuffer) ??
+                object value = delExpr(instance, stream) ??
                                throw new NullReferenceException("Expr value null");
 
                 return value switch

@@ -16,11 +16,7 @@ namespace Linear.Runtime.Deserializers
         private static Encoding GetUtf16Encoding(bool bigEndian, bool bom) =>
             GUtf16Encodings[(bigEndian ? 1 : 0) + (bom ? 2 : 0)];
 
-        private static Encoding[] GUtf16Encodings => _gUtf16Encodings ??= new Encoding[]
-        {
-            new UnicodeEncoding(false, false), new UnicodeEncoding(true, false), new UnicodeEncoding(false, true),
-            new UnicodeEncoding(true, true)
-        };
+        private static Encoding[] GUtf16Encodings => _gUtf16Encodings ??= new Encoding[] { new UnicodeEncoding(false, false), new UnicodeEncoding(true, false), new UnicodeEncoding(false, true), new UnicodeEncoding(true, true) };
 
         private static Encoding[]? _gUtf16Encodings;
 
@@ -73,7 +69,7 @@ namespace Linear.Runtime.Deserializers
         public Type GetTargetType() => typeof(string);
 
         /// <inheritdoc />
-        public (object value, long length) Deserialize(StructureInstance instance, Stream stream, byte[] tempBuffer,
+        public DeserializeResult Deserialize(StructureInstance instance, Stream stream,
             long offset, bool littleEndian, Dictionary<LinearCommon.StandardProperty, object>? standardProperties,
             Dictionary<string, object>? parameters, long length = 0, int index = 0)
         {
@@ -81,31 +77,31 @@ namespace Linear.Runtime.Deserializers
             switch (_mode)
             {
                 case Mode.Utf8Fixed:
-                {
-                    (string item1, int item2) = ReadUtf8String(stream, (int)length);
-                    if (length != item2)
-                        throw new Exception(
-                            $"UTF-8 fixed length mismatch between specified length {length} and result length {item2}");
-                    return (item1, item2);
-                }
+                    {
+                        (string item1, int item2) = ReadUtf8String(stream, (int)length);
+                        if (length != item2)
+                            throw new Exception(
+                                $"UTF-8 fixed length mismatch between specified length {length} and result length {item2}");
+                        return new DeserializeResult(item1, item2);
+                    }
                 case Mode.Utf8Null:
-                {
-                    (string item1, int item2) = ReadUtf8String(stream);
-                    return (item1, item2 + 1);
-                }
+                    {
+                        (string item1, int item2) = ReadUtf8String(stream);
+                        return new DeserializeResult(item1, item2 + 1);
+                    }
                 case Mode.Utf16Fixed:
-                {
-                    (string item1, int item2) = ReadUtf16String(stream, (int)length);
-                    if (length != item2)
-                        throw new Exception(
-                            $"UTF-16 fixed length mismatch between specified length {length} and result length {item2}");
-                    return (item1, item2);
-                }
+                    {
+                        (string item1, int item2) = ReadUtf16String(stream, (int)length);
+                        if (length != item2)
+                            throw new Exception(
+                                $"UTF-16 fixed length mismatch between specified length {length} and result length {item2}");
+                        return new DeserializeResult(item1, item2);
+                    }
                 case Mode.Utf16Null:
-                {
-                    (string item1, int item2) = ReadUtf16String(stream);
-                    return (item1, item2 + 2);
-                }
+                    {
+                        (string item1, int item2) = ReadUtf16String(stream);
+                        return new DeserializeResult(item1, item2 + 2);
+                    }
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -146,6 +142,7 @@ namespace Linear.Runtime.Deserializers
 
         private static string ReadUtf8String(ArraySegment<byte> segment, int maxLength = int.MaxValue)
         {
+            // TODO switch to ROS impl
             int lim = Math.Min(segment.Count, maxLength);
 
             int end = Array.IndexOf(segment.Array, 0, segment.Offset, lim) - segment.Offset;

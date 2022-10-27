@@ -32,5 +32,5 @@ public class StructureEvaluateExpression<T> : ExpressionDefinition
 
     /// <inheritdoc />
     public override DeserializerDelegate GetDelegate() =>
-        (instance, _, _) => _delegate(instance);
+        (instance, _) => _delegate(instance);
 }
