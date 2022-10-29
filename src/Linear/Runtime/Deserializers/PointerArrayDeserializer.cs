@@ -39,14 +39,14 @@ namespace Linear.Runtime.Deserializers
 
         /// <inheritdoc />
         public DeserializeResult Deserialize(StructureInstance instance, Stream stream,
-            long offset, bool littleEndian, Dictionary<LinearCommon.StandardProperty, object>? standardProperties,
+            long offset, bool littleEndian, Dictionary<StandardProperty, object>? standardProperties,
             Dictionary<string, object>? parameters, long length = 0, int index = 0)
         {
             if (standardProperties == null) throw new NullReferenceException();
             (object src, _) = _mainDeserializer.Deserialize(instance, stream, offset, littleEndian, standardProperties, parameters);
             Array baseArray = (Array)src;
-            int pointerArrayLength = CastInt(standardProperties[LinearCommon.StandardProperty.PointerArrayLengthProperty]);
-            long pointerOffset = CastLong(standardProperties[LinearCommon.StandardProperty.PointerOffsetProperty]);
+            int pointerArrayLength = CastInt(standardProperties[StandardProperty.PointerArrayLengthProperty]);
+            long pointerOffset = CastLong(standardProperties[StandardProperty.PointerOffsetProperty]);
             Array tarArray = Array.CreateInstance(_elementType, pointerArrayLength);
             long curOffset = offset;
             for (int i = 0; i < pointerArrayLength; i++)

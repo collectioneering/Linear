@@ -30,7 +30,7 @@ namespace Linear.Runtime.Deserializers
 
         /// <inheritdoc />
         public DeserializeResult Deserialize(StructureInstance instance, Stream stream,
-            long offset, bool littleEndian, Dictionary<LinearCommon.StandardProperty, object>? standardProperties,
+            long offset, bool littleEndian, Dictionary<StandardProperty, object>? standardProperties,
             Dictionary<string, object>? parameters, long length = 0, int index = 0)
         {
             // Possible addition: property group support little endian (requires boolean expressions)

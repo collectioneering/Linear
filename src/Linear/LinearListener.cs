@@ -83,8 +83,8 @@ internal class LinearListener : LinearBaseListener
         string dataName = ids[1].GetText();
         (int _, bool littleEndian) = StringToPrimitiveInfo(typeName);
         ExpressionDefinition littleEndianExpression = new ConstantExpression<bool>(littleEndian);
-        Dictionary<LinearCommon.StandardProperty, ExpressionDefinition> standardProperties = new();
-        standardProperties.Add(LinearCommon.StandardProperty.ArrayLengthProperty, countExpression);
+        Dictionary<StandardProperty, ExpressionDefinition> standardProperties = new();
+        standardProperties.Add(StandardProperty.ArrayLengthProperty, countExpression);
         // "Should" add some other way for length instead of routing through a dictionary...
         // "Should" add efficient primitive array deserialization...
         IDeserializer? deserializer = StringToDeserializer(typeName);
@@ -108,15 +108,15 @@ internal class LinearListener : LinearBaseListener
         string dataName = ids[2].GetText();
         (int _, bool littleEndian) = StringToPrimitiveInfo(typeName);
         ExpressionDefinition littleEndianExpression = new ConstantExpression<bool>(littleEndian);
-        Dictionary<LinearCommon.StandardProperty, ExpressionDefinition> standardProperties = new();
+        Dictionary<StandardProperty, ExpressionDefinition> standardProperties = new();
         bool lenFinder = context.PLUS() != null;
-        standardProperties.Add(LinearCommon.StandardProperty.ArrayLengthProperty,
+        standardProperties.Add(StandardProperty.ArrayLengthProperty,
             lenFinder
                 ? new OperatorDualExpression(countExpression, new ConstantExpression<int>(1),
                     OperatorDualExpression.Operator.Add)
                 : countExpression);
-        standardProperties.Add(LinearCommon.StandardProperty.PointerOffsetProperty, pointerOffsetExpression);
-        standardProperties.Add(LinearCommon.StandardProperty.PointerArrayLengthProperty, countExpression);
+        standardProperties.Add(StandardProperty.PointerOffsetProperty, pointerOffsetExpression);
+        standardProperties.Add(StandardProperty.PointerArrayLengthProperty, countExpression);
         IDeserializer? deserializer = StringToDeserializer(typeName);
         if (deserializer == null) return;
         IDeserializer? targetDeserializer = StringToDeserializer(targetTypeName);
@@ -242,14 +242,14 @@ internal class LinearListener : LinearBaseListener
             LinearParser.ExprDeserializeContext exprDeserializeContext => GetDeserializeExpression(
                 exprDeserializeContext.IDENTIFIER().GetText(),
                 GetExpression(exprDeserializeContext.expr()), GetPropertyGroup(exprDeserializeContext.property_group()),
-                new Dictionary<LinearCommon.StandardProperty, ExpressionDefinition>()),
+                new Dictionary<StandardProperty, ExpressionDefinition>()),
             LinearParser.ExprUnboundDeserializeContext exprUnboundDeserializeContext => GetDeserializeExpression(
                 activeType ??
                 throw new ApplicationException(
                     $"{nameof(DeserializeExpression)} cannot be used without type name"),
                 GetExpression(exprUnboundDeserializeContext.expr()),
                 GetPropertyGroup(exprUnboundDeserializeContext.property_group()),
-                new Dictionary<LinearCommon.StandardProperty, ExpressionDefinition>()),
+                new Dictionary<StandardProperty, ExpressionDefinition>()),
             LinearParser.ExprUnOpContext exprUnOpContext => new OperatorUnaryExpression(
                 GetExpression(exprUnOpContext.expr()),
                 OperatorUnaryExpression.GetOperator(exprUnOpContext.un_op().GetText())),
@@ -260,7 +260,7 @@ internal class LinearListener : LinearBaseListener
 
     private ExpressionDefinition GetDeserializeExpression(string typeName, ExpressionDefinition offsetDefinition,
         Dictionary<string, ExpressionDefinition> deserializerParams,
-        Dictionary<LinearCommon.StandardProperty, ExpressionDefinition> standardProperties)
+        Dictionary<StandardProperty, ExpressionDefinition> standardProperties)
     {
         (int _, bool littleEndian) = StringToPrimitiveInfo(typeName);
         IDeserializer? deserializer = StringToDeserializer(typeName);

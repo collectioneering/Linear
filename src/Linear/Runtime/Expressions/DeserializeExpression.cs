@@ -15,7 +15,7 @@ public class DeserializeExpression : ExpressionDefinition
     private readonly ExpressionDefinition _littleEndianDefinition;
     private readonly IDeserializer _deserializer;
     private readonly Dictionary<string, ExpressionDefinition> _deserializerParams;
-    private readonly Dictionary<LinearCommon.StandardProperty, ExpressionDefinition> _standardProperties;
+    private readonly Dictionary<StandardProperty, ExpressionDefinition> _standardProperties;
 
     /// <summary>
     /// Create new instance of <see cref="DeserializeExpression"/>
@@ -27,7 +27,7 @@ public class DeserializeExpression : ExpressionDefinition
     /// <param name="standardProperties">Standard property expressions</param>
     public DeserializeExpression(ExpressionDefinition offsetDefinition, ExpressionDefinition littleEndianDefinition,
         IDeserializer deserializer, Dictionary<string, ExpressionDefinition> deserializerParams,
-        Dictionary<LinearCommon.StandardProperty, ExpressionDefinition> standardProperties)
+        Dictionary<StandardProperty, ExpressionDefinition> standardProperties)
     {
         _offsetDefinition = offsetDefinition;
         _littleEndianDefinition = littleEndianDefinition;
@@ -53,14 +53,14 @@ public class DeserializeExpression : ExpressionDefinition
         ExpressionDefinition offsetDefinition,
         ExpressionDefinition littleEndianDefinition, IDeserializer deserializer,
         Dictionary<string, ExpressionDefinition> deserializerParams,
-        Dictionary<LinearCommon.StandardProperty, ExpressionDefinition> standardProperties)
+        Dictionary<StandardProperty, ExpressionDefinition> standardProperties)
     {
         ExpressionInstance srcDelegate = offsetDefinition.GetInstance();
         ExpressionInstance littleEndianDelegate = littleEndianDefinition.GetInstance();
         Dictionary<string, ExpressionInstance> deserializerParamsCompact = new();
         foreach (var kvp in deserializerParams)
             deserializerParamsCompact[kvp.Key] = kvp.Value.GetInstance();
-        Dictionary<LinearCommon.StandardProperty, ExpressionInstance>
+        Dictionary<StandardProperty, ExpressionInstance>
             standardPropertiesCompact = new();
         foreach (var kvp in standardProperties)
             standardPropertiesCompact[kvp.Key] = kvp.Value.GetInstance();
@@ -69,7 +69,7 @@ public class DeserializeExpression : ExpressionDefinition
 
     private record DeserializeExpressionInstance(
         Dictionary<string, ExpressionInstance> DeserializerParamsCompact,
-        Dictionary<LinearCommon.StandardProperty, ExpressionInstance> StandardPropertiesCompact,
+        Dictionary<StandardProperty, ExpressionInstance> StandardPropertiesCompact,
         ExpressionInstance Source, ExpressionInstance LittleEndian, IDeserializer Deserializer) : ExpressionInstance
     {
         public override object Evaluate(StructureInstance structure, Stream stream)
@@ -80,9 +80,9 @@ public class DeserializeExpression : ExpressionDefinition
                 foreach (var kvp in DeserializerParamsCompact)
                     deserializerParamsGen[kvp.Key] = kvp.Value.Evaluate(structure, stream) ?? throw new NullReferenceException();
 
-            Dictionary<LinearCommon.StandardProperty, object>? standardPropertiesGen =
+            Dictionary<StandardProperty, object>? standardPropertiesGen =
                 StandardPropertiesCompact.Count != 0
-                    ? new Dictionary<LinearCommon.StandardProperty, object>()
+                    ? new Dictionary<StandardProperty, object>()
                     : null;
             if (standardPropertiesGen != null)
                 foreach (var kvp in StandardPropertiesCompact)

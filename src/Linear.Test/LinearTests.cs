@@ -27,10 +27,10 @@ main {
         [Test]
         public void Test1()
         {
-            Assert.IsTrue(LinearCommon.TryGenerateRegistry(new StringReader(_test1), out StructureRegistry res, Console.WriteLine));
+            Assert.IsTrue(StructureRegistry.TryLoad(new StringReader(_test1), out StructureRegistry res, Console.WriteLine));
             Assert.IsNotNull(res);
-            Assert.IsTrue(res.TryGetValue(LinearCommon.MainLayout, out Structure structure));
-            MemoryStream ms = new(new byte[]{0, 1, 2, 3, 4, 5});
+            Assert.IsTrue(res.TryGetValue("main", out Structure structure));
+            MemoryStream ms = new(new byte[] { 0, 1, 2, 3, 4, 5 });
             StructureInstance si = structure.Parse(res, ms);
             Assert.AreEqual(4 * 2 + 5, si["a"]);
             Assert.AreEqual(5 + 8 * 9, si["b"]);

@@ -12,6 +12,8 @@ namespace lyn
     [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Local")]
     internal static class Program
     {
+        private const string MainLayout = "main";
+
         private static int Main(string[] args)
         {
             //return Parser.Default.ParseArguments<Configuration>(args).MapResult(Run, errors => 1);
@@ -34,15 +36,15 @@ namespace lyn
             methods = null;
 #endif
             using (StreamReader sr = File.OpenText(conf.LayoutFile!))
-                if (!LinearCommon.TryGenerateRegistry(sr, out registry, Console.WriteLine, null, methods))
+                if (!StructureRegistry.TryLoad(sr, out registry, Console.WriteLine, null, methods))
                 {
                     Console.WriteLine("Errors occurred while parsing structure file, aborting.");
                     return 5;
                 }
 
-            if (!registry!.TryGetValue(LinearCommon.MainLayout, out Structure structure))
+            if (!registry!.TryGetValue(MainLayout, out Structure structure))
             {
-                Console.WriteLine($"Failed to find structure named {LinearCommon.MainLayout}");
+                Console.WriteLine($"Failed to find structure named {MainLayout}");
                 return 2;
             }
 
@@ -68,7 +70,7 @@ namespace lyn
             using Stream baseStream = File.OpenRead(inputFile);
             using MultiBufferStream mbs = new MultiBufferStream(baseStream);
             StructureInstance si = structure.Parse(registry, mbs, 0, null, baseStream.Length);
-            Dictionary<string, IExporter> exporterDictionary = LinearCommon.CreateDefaultExporterDictionary();
+            Dictionary<string, IExporter> exporterDictionary = LinearUtil.CreateDefaultExporterDictionary();
             foreach (var output in si.GetOutputs())
             {
                 if (!exporterDictionary.TryGetValue(output.Format, out IExporter? exporter))
