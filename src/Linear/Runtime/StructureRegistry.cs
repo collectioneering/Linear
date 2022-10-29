@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Text;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 using Linear.Runtime.Deserializers;
@@ -18,13 +19,16 @@ public class StructureRegistry
     /// <summary>
     /// Deserializers.
     /// </summary>
-    public readonly Dictionary<string, IDeserializer> Deserializers;
+    public IReadOnlyDictionary<string, IDeserializer> Deserializers => _deserializers;
+
     /// <summary>
     /// Methods.
     /// </summary>
-    public readonly Dictionary<string, MethodCallDelegate> Methods;
+    public IReadOnlyDictionary<string, MethodCallDelegate> Methods => _methods;
 
     private readonly Dictionary<string, Structure> _structures;
+    private readonly Dictionary<string, IDeserializer> _deserializers;
+    private readonly Dictionary<string, MethodCallDelegate> _methods;
 
     /// <summary>
     /// Initializes an instance of <see cref="StructureRegistry"/>.
@@ -36,7 +40,7 @@ public class StructureRegistry
     {
         _structures = new Dictionary<string, Structure>();
 
-        Deserializers = LinearUtil.CreateDefaultDeserializerRegistry();
+        _deserializers = LinearUtil.CreateDefaultDeserializerRegistry();
         if (deserializers != null)
         {
             foreach (var deserializer in deserializers)
@@ -46,24 +50,65 @@ public class StructureRegistry
                 {
                     throw new ArgumentException("Target name is required for all deserializers");
                 }
-                Deserializers[dname] = deserializer;
+                _deserializers[dname] = deserializer;
             }
         }
-        Methods = LinearUtil.CreateDefaultMethodDictionary();
+        _methods = LinearUtil.CreateDefaultMethodDictionary();
         if (methods != null)
         {
             foreach (var method in methods)
             {
-                Methods[method.Name] = method.Delegate;
+                _methods[method.Name] = method.Delegate;
             }
         }
     }
 
     /// <summary>
-    /// Add structure to registry
+    /// Adds a structure to this registry.
     /// </summary>
-    /// <param name="structure">Structure</param>
-    public void Add(Structure structure) => _structures.Add(structure.Name, structure);
+    /// <param name="structure">Structure to add.</param>
+    public void AddStructure(Structure structure)
+    {
+        string name = structure.Name;
+        if (_structures.ContainsKey(name))
+        {
+            throw new InvalidOperationException($"Cannot add a structure with the name \"{name}\" - one already exists");
+        }
+        if (Deserializers.ContainsKey(name))
+        {
+            throw new InvalidOperationException($"Cannot add a structure with the name \"{name}\" - a deserializer using that name already exists");
+        }
+        _structures.Add(name, structure);
+        _deserializers.Add(name, new StructureDeserializer(name));
+    }
+
+    /// <summary>
+    /// Adds a deserializer to this registry.
+    /// </summary>
+    /// <param name="name">Target name.</param>
+    /// <param name="deserializer">Deserializer to add.</param>
+    public void AddDeserializer(string name, IDeserializer deserializer)
+    {
+        if (Deserializers.ContainsKey(name))
+        {
+            throw new InvalidOperationException($"Cannot add a deserializer with the name \"{name}\" - one already exists");
+        }
+        _deserializers.Add(name, deserializer);
+    }
+
+    /// <summary>
+    /// Adds a method to this registry.
+    /// </summary>
+    /// <param name="name">Target name.</param>
+    /// <param name="method">Method to add.</param>
+    public void AddMethod(string name, MethodCallDelegate method)
+    {
+        if (Methods.ContainsKey(name))
+        {
+            throw new InvalidOperationException($"Cannot add a method with the name \"{name}\" - one already exists");
+        }
+        _methods.Add(name, method);
+    }
 
     /// <summary>
     /// Get structure by name
@@ -94,28 +139,63 @@ public class StructureRegistry
         var lexer = new LinearLexer(inputStream);
         var tokens = new CommonTokenStream(lexer);
         var parser = new LinearParser(tokens);
+        if (TryLoad(parser, logDelegate, errorHandler, Deserializers, Methods, out var createdDeserializers, out var structures))
+        {
+            List<string> existingDeserializers = Deserializers.Keys.Intersect(createdDeserializers.Select(v => v.Key)).ToList();
+            if (existingDeserializers.Count != 0)
+            {
+                StringBuilder messageBuilder = new("Existing deserializers ");
+                messageBuilder.AppendJoin(", ", existingDeserializers);
+                messageBuilder.Append("with the same name cannot be replaced");
+                logDelegate(messageBuilder.ToString());
+                return false;
+            }
+            List<string> existingStructures = _structures.Keys.Intersect(structures.Select(v => v.Name)).ToList();
+            if (existingStructures.Count != 0)
+            {
+                StringBuilder messageBuilder = new("Existing structures ");
+                messageBuilder.AppendJoin(", ", existingStructures);
+                messageBuilder.Append("with the same name cannot be replaced");
+                logDelegate(messageBuilder.ToString());
+                return false;
+            }
+            foreach (var structure in structures)
+            {
+                _structures.Add(structure.Name, structure);
+            }
+            foreach (var pair in createdDeserializers)
+            {
+                _deserializers.Add(pair.Key, pair.Value);
+            }
+            return true;
+        }
+        return false;
+    }
 
+    private static bool TryLoad(LinearParser parser, Action<string> logDelegate, IAntlrErrorStrategy? errorHandler,
+        IReadOnlyDictionary<string, IDeserializer> deserializers, IReadOnlyDictionary<string, MethodCallDelegate> methods,
+        [NotNullWhen(true)] out List<KeyValuePair<string, IDeserializer>>? createdDeserializers,
+        [NotNullWhen(true)] out List<Structure>? structures)
+    {
         var listenerPre = new LinearPreListener();
         if (errorHandler != null)
             parser.ErrorHandler = errorHandler;
         ParseTreeWalker.Default.Walk(listenerPre, parser.compilation_unit());
         if (listenerPre.Fail)
         {
+            createdDeserializers = null;
+            structures = null;
             return false;
         }
-
-        var pairs = listenerPre.GetStructureNames().Select(v => new KeyValuePair<string, IDeserializer>(v, new StructureDeserializer(v))).ToList();
-        Dictionary<string, IDeserializer> deserializersTmp = new(Deserializers.Concat(pairs));
-        var listener = new LinearListener(deserializersTmp, Methods, logDelegate);
+        createdDeserializers = listenerPre.GetStructureNames().Select(v => new KeyValuePair<string, IDeserializer>(v, new StructureDeserializer(v))).ToList();
+        Dictionary<string, IDeserializer> deserializersTmp = new(deserializers.Concat(createdDeserializers));
+        var listener = new LinearListener(deserializersTmp, methods, logDelegate);
         parser.Reset();
         ParseTreeWalker.Default.Walk(listener, parser.compilation_unit());
+        structures = new List<Structure>();
         foreach (StructureDefinition structure in listener.GetStructures())
         {
-            Add(structure.Build());
-        }
-        foreach (var pair in pairs)
-        {
-            Deserializers[pair.Key] = pair.Value;
+            structures.Add(structure.Build());
         }
         return true;
     }
