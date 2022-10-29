@@ -27,7 +27,8 @@ main {
         [Test]
         public void Test1()
         {
-            Assert.IsTrue(StructureRegistry.TryLoad(new StringReader(_test1), out StructureRegistry res, Console.WriteLine));
+            var res = new StructureRegistry();
+            Assert.IsTrue(res.TryLoad(new StringReader(_test1), Console.WriteLine));
             Assert.IsNotNull(res);
             Assert.IsTrue(res.TryGetValue("main", out Structure structure));
             MemoryStream ms = new(new byte[] { 0, 1, 2, 3, 4, 5 });

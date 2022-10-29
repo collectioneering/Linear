@@ -28,15 +28,15 @@ namespace lyn
 
         private static int Run(Configuration conf)
         {
-            StructureRegistry? registry;
             List<MethodCallExpression.NamedDelegate> methods;
 #if EnableLinearLambda
             methods = new List<MethodCallExpression.NamedDelegate>();
 #else
             methods = null;
 #endif
+            var registry = new StructureRegistry(null,methods);
             using (StreamReader sr = File.OpenText(conf.LayoutFile!))
-                if (!StructureRegistry.TryLoad(sr, out registry, Console.WriteLine, null, methods))
+                if (!registry.TryLoad(sr, Console.WriteLine))
                 {
                     Console.WriteLine("Errors occurred while parsing structure file, aborting.");
                     return 5;
