@@ -16,7 +16,7 @@ namespace Linear;
 internal class LinearListener : LinearBaseListener
 {
     private readonly Dictionary<string, IDeserializer> _deserializers;
-    private readonly Dictionary<string, MethodCallExpression.MethodCallDelegate> _methods;
+    private readonly Dictionary<string, MethodCallDelegate> _methods;
     private readonly List<StructureDefinition> _structures;
     private readonly Action<string> _logTarget;
 
@@ -24,7 +24,7 @@ internal class LinearListener : LinearBaseListener
     /// Create new instance of <see cref="LinearListener"/>
     /// </summary>
     public LinearListener(Dictionary<string, IDeserializer> deserializers,
-        Dictionary<string, MethodCallExpression.MethodCallDelegate> methods, Action<string> logTarget)
+        Dictionary<string, MethodCallDelegate> methods, Action<string> logTarget)
     {
         _deserializers = deserializers;
         _methods = methods;

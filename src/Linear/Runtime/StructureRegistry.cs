@@ -93,7 +93,7 @@ public class StructureRegistry
             }
         }
 
-        Dictionary<string, MethodCallExpression.MethodCallDelegate> rMethods = LinearUtil.CreateDefaultMethodDictionary();
+        Dictionary<string, MethodCallDelegate> rMethods = LinearUtil.CreateDefaultMethodDictionary();
         if (methods != null)
         {
             foreach (var method in methods)

@@ -14,7 +14,7 @@ namespace Linear;
 /// </summary>
 public static class LinearUtil
 {
-    private static readonly Dictionary<string, MethodCallExpression.MethodCallDelegate> s_defaultMethods = new() { { "log", Log }, { "format", Format } };
+    private static readonly Dictionary<string, MethodCallDelegate> s_defaultMethods = new() { { "log", Log }, { "format", Format } };
 
     private static object? Log(params object?[] args)
     {
@@ -32,9 +32,9 @@ public static class LinearUtil
     /// Create default method dictionary with standard exporters
     /// </summary>
     /// <returns>Default registry</returns>
-    public static Dictionary<string, MethodCallExpression.MethodCallDelegate> CreateDefaultMethodDictionary()
+    public static Dictionary<string, MethodCallDelegate> CreateDefaultMethodDictionary()
     {
-        return new Dictionary<string, MethodCallExpression.MethodCallDelegate>(s_defaultMethods);
+        return new Dictionary<string, MethodCallDelegate>(s_defaultMethods);
     }
 
     private static readonly Dictionary<string, IDeserializer> s_defaultDeserializers = new()

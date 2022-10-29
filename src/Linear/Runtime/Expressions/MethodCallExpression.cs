@@ -10,12 +10,6 @@ namespace Linear.Runtime.Expressions;
 public class MethodCallExpression : ExpressionDefinition
 {
     /// <summary>
-    /// Delegate type for evaluation expression
-    /// </summary>
-    /// <param name="args">Arguments</param>
-    public delegate object? MethodCallDelegate(params object?[] args);
-
-    /// <summary>
     /// Represents a named delegate.
     /// </summary>
     /// <param name="Name">Name.</param>
