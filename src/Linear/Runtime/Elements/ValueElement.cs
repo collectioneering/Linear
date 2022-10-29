@@ -23,7 +23,6 @@ public class ValueElement : Element
         _expression = expression;
     }
 
-
     /// <inheritdoc />
     public override IEnumerable<Element> GetDependencies(StructureDefinition definition) => _expression.GetDependencies(definition);
 

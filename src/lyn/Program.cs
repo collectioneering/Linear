@@ -34,7 +34,7 @@ namespace lyn
 #else
             methods = null;
 #endif
-            var registry = new StructureRegistry(null,methods);
+            var registry = new StructureRegistry(null, methods);
             using (StreamReader sr = File.OpenText(conf.LayoutFile!))
                 if (!registry.TryLoad(sr, Console.WriteLine))
                 {
@@ -42,7 +42,7 @@ namespace lyn
                     return 5;
                 }
 
-            if (!registry!.TryGetValue(MainLayout, out Structure structure))
+            if (!registry.TryGetValue(MainLayout, out Structure? structure))
             {
                 Console.WriteLine($"Failed to find structure named {MainLayout}");
                 return 2;
