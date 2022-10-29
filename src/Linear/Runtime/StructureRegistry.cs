@@ -66,10 +66,10 @@ public class StructureRegistry
     /// <summary>
     /// Adds a structure to this registry.
     /// </summary>
+    /// <param name="name">Target name.</param>
     /// <param name="structure">Structure to add.</param>
-    public void AddStructure(Structure structure)
+    public void AddStructure(string name, Structure structure)
     {
-        string name = structure.Name;
         if (_structures.ContainsKey(name))
         {
             throw new InvalidOperationException($"Cannot add a structure with the name \"{name}\" - one already exists");
@@ -150,7 +150,7 @@ public class StructureRegistry
                 logDelegate(messageBuilder.ToString());
                 return false;
             }
-            List<string> existingStructures = _structures.Keys.Intersect(structures.Select(v => v.Name)).ToList();
+            List<string> existingStructures = _structures.Keys.Intersect(structures.Select(v => v.Key)).ToList();
             if (existingStructures.Count != 0)
             {
                 StringBuilder messageBuilder = new("Existing structures ");
@@ -161,7 +161,7 @@ public class StructureRegistry
             }
             foreach (var structure in structures)
             {
-                _structures.Add(structure.Name, structure);
+                _structures.Add(structure.Key, structure.Value);
             }
             foreach (var pair in createdDeserializers)
             {
@@ -175,7 +175,7 @@ public class StructureRegistry
     private static bool TryLoad(LinearParser parser, Action<string> logDelegate, IAntlrErrorStrategy? errorHandler,
         IReadOnlyDictionary<string, IDeserializer> deserializers, IReadOnlyDictionary<string, MethodCallDelegate> methods,
         [NotNullWhen(true)] out List<KeyValuePair<string, IDeserializer>>? createdDeserializers,
-        [NotNullWhen(true)] out List<Structure>? structures)
+        [NotNullWhen(true)] out List<KeyValuePair<string, Structure>>? structures)
     {
         var listenerPre = new LinearPreListener();
         if (errorHandler != null)
@@ -192,10 +192,11 @@ public class StructureRegistry
         var listener = new LinearListener(deserializersTmp, methods, logDelegate);
         parser.Reset();
         ParseTreeWalker.Default.Walk(listener, parser.compilation_unit());
-        structures = new List<Structure>();
+        structures = new List<KeyValuePair<string, Structure>>();
         foreach (StructureDefinition structure in listener.GetStructures())
         {
-            structures.Add(structure.Build());
+            var built = structure.Build();
+            structures.Add(new KeyValuePair<string, Structure>(structure.Name, built));
         }
         return true;
     }

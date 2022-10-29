@@ -56,7 +56,7 @@ public class StructureDefinition
             if (removed == 0) throw new Exception("Failed to reduce dependencies");
         }
 
-        return new Structure(Name, DefaultLength, members);
+        return new Structure(DefaultLength, members);
     }
 }
 

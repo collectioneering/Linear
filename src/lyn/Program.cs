@@ -42,7 +42,7 @@ namespace lyn
                     return 5;
                 }
 
-            if (!registry.TryGetValue(MainLayout, out Structure? structure))
+            if (!registry.TryGetValue(MainLayout, out Structure? mainStructure))
             {
                 Console.WriteLine($"Failed to find structure named {MainLayout}");
                 return 2;
@@ -50,13 +50,13 @@ namespace lyn
 
             if (File.Exists(conf.Input))
             {
-                return OperateFile(registry, structure, conf.Input!, conf.OutputDir!);
+                return OperateFile(registry, mainStructure, conf.Input!, conf.OutputDir!);
             }
             if (Directory.Exists(conf.Input))
             {
                 foreach (string file in Directory.GetFiles(conf.Input!))
                 {
-                    int resCode = OperateFile(registry, structure, file, Path.Combine(conf.OutputDir!, Path.GetFileName(file)));
+                    int resCode = OperateFile(registry, mainStructure, file, Path.Combine(conf.OutputDir!, Path.GetFileName(file)));
                     if (resCode != 0) return resCode;
                 }
             }
@@ -65,11 +65,11 @@ namespace lyn
             return 4;
         }
 
-        private static int OperateFile(StructureRegistry registry, Structure structure, string inputFile, string outputDir)
+        private static int OperateFile(StructureRegistry registry, Structure mainStructure, string inputFile, string outputDir)
         {
             using Stream baseStream = File.OpenRead(inputFile);
             using MultiBufferStream mbs = new MultiBufferStream(baseStream);
-            StructureInstance si = structure.Parse(registry, mbs, 0, null, baseStream.Length);
+            StructureInstance si = mainStructure.Parse(registry, mbs, new ParseState(MainLayout, 0, null, baseStream.Length));
             Dictionary<string, IExporter> exporterDictionary = LinearUtil.CreateDefaultExporterDictionary();
             foreach (var output in si.GetOutputs())
             {

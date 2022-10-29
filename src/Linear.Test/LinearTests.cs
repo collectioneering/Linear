@@ -32,7 +32,7 @@ main {
             Assert.IsNotNull(res);
             Assert.IsTrue(res.TryGetValue("main", out Structure structure));
             MemoryStream ms = new(new byte[] { 0, 1, 2, 3, 4, 5 });
-            StructureInstance si = structure.Parse(res, ms);
+            StructureInstance si = structure.Parse(res, ms, new ParseState("main"));
             Assert.AreEqual(4 * 2 + 5, si["a"]);
             Assert.AreEqual(5 + 8 * 9, si["b"]);
             Assert.AreEqual(4 / 2 * 8, si["c"]);
