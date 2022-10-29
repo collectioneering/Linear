@@ -2,6 +2,7 @@
 using System;
 #endif
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 #if NET7_0_OR_GREATER
 using System.Numerics;
@@ -123,7 +124,7 @@ namespace Linear.Runtime
         /// <typeparam name="T">Target type</typeparam>
         /// <returns>True if cast succeeded</returns>
         /// <exception cref="KeyNotFoundException">If key was not found in members</exception>
-        public bool TryGetValue<T>(string member, out T? result)
+        public bool TryGetValue<T>(string member, [NotNullWhen(true)] out T? result)
         {
             result = default!;
             if (_members.TryGetValue(member, out object? v) && v is T v2)

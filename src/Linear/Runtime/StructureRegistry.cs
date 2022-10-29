@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
@@ -43,7 +44,7 @@ public class StructureRegistry
     /// <param name="name">Mae</param>
     /// <param name="structure">Structure</param>
     /// <returns>True if found</returns>
-    public bool TryGetValue(string name, out Structure? structure) => _structures.TryGetValue(name, out structure);
+    public bool TryGetValue(string name, [NotNullWhen(true)] out Structure? structure) => _structures.TryGetValue(name, out structure);
 
     /// <summary>
     /// Generate processor
@@ -55,7 +56,8 @@ public class StructureRegistry
     /// <param name="methods">Custom expression methods to use</param>
     /// <param name="errorHandler">Parser error handler</param>
     /// <returns>True if succeeded</returns>
-    public static bool TryLoad(TextReader input, out StructureRegistry? registry, Action<string> logDelegate,
+    public static bool TryLoad(TextReader input, [NotNullWhen(true)] out StructureRegistry? registry,
+        Action<string> logDelegate,
         IReadOnlyCollection<IDeserializer>? deserializers = null,
         IReadOnlyCollection<MethodCallExpression.NamedDelegate>? methods = null,
         IAntlrErrorStrategy? errorHandler = null)
