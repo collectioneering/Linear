@@ -17,6 +17,11 @@ namespace Linear.Runtime;
 public class StructureRegistry
 {
     /// <summary>
+    /// Structures.
+    /// </summary>
+    public IReadOnlyDictionary<string, Structure> Structures => _structures;
+
+    /// <summary>
     /// Deserializers.
     /// </summary>
     public IReadOnlyDictionary<string, IDeserializer> Deserializers => _deserializers;
@@ -33,34 +38,11 @@ public class StructureRegistry
     /// <summary>
     /// Initializes an instance of <see cref="StructureRegistry"/>.
     /// </summary>
-    /// <param name="deserializers">Deserializers.</param>
-    /// <param name="methods">Methods.</param>
-    public StructureRegistry(IReadOnlyCollection<IDeserializer>? deserializers = null,
-        IReadOnlyCollection<MethodCallExpression.NamedDelegate>? methods = null)
+    public StructureRegistry()
     {
         _structures = new Dictionary<string, Structure>();
-
         _deserializers = LinearUtil.CreateDefaultDeserializerRegistry();
-        if (deserializers != null)
-        {
-            foreach (var deserializer in deserializers)
-            {
-                string? dname = deserializer.GetTargetTypeName();
-                if (dname == null)
-                {
-                    throw new ArgumentException("Target name is required for all deserializers");
-                }
-                _deserializers[dname] = deserializer;
-            }
-        }
         _methods = LinearUtil.CreateDefaultMethodDictionary();
-        if (methods != null)
-        {
-            foreach (var method in methods)
-            {
-                _methods[method.Name] = method.Delegate;
-            }
-        }
     }
 
     /// <summary>

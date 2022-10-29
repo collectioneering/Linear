@@ -9,12 +9,6 @@ namespace Linear.Runtime.Expressions;
 /// </summary>
 public class MethodCallExpression : ExpressionDefinition
 {
-    /// <summary>
-    /// Represents a named delegate.
-    /// </summary>
-    /// <param name="Name">Name.</param>
-    /// <param name="Delegate">Delegate.</param>
-    public readonly record struct NamedDelegate(string Name, MethodCallDelegate Delegate);
 
     private readonly MethodCallDelegate _delegate;
     private readonly List<ExpressionDefinition> _args;

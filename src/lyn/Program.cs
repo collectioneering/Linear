@@ -28,13 +28,17 @@ namespace lyn
 
         private static int Run(Configuration conf)
         {
-            List<MethodCallExpression.NamedDelegate> methods;
+            List<NamedMethodCallDelegate> methods;
 #if EnableLinearLambda
-            methods = new List<MethodCallExpression.NamedDelegate>();
+            methods = new List<NamedMethodCallDelegate>();
 #else
             methods = null;
 #endif
-            var registry = new StructureRegistry(null, methods);
+            var registry = new StructureRegistry();
+            foreach (var method in methods)
+            {
+                registry.AddMethod(method.Name, method.Delegate);
+            }
             using (StreamReader sr = File.OpenText(conf.LayoutFile!))
                 if (!registry.TryLoad(sr, Console.WriteLine))
                 {
