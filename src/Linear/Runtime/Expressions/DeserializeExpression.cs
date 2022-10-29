@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using static Linear.CastUtil;
 
 namespace Linear.Runtime.Expressions;
 
@@ -89,7 +90,7 @@ public class DeserializeExpression : ExpressionDefinition
             object? offset = Source.Evaluate(structure, stream);
             object? littleEndian = LittleEndian.Evaluate(structure, stream);
             LongRange range;
-            if (LinearCommon.TryCastLong(offset, out long offsetValue))
+            if (TryCastLong(offset, out long offsetValue))
                 range = new LongRange(Offset: offsetValue, Length: 0);
             else if (offset is LongRange r)
             {

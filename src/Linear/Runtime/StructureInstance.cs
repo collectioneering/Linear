@@ -144,7 +144,7 @@ namespace Linear.Runtime
         /// <exception cref="KeyNotFoundException">If key was not found in members</exception>
         public T GetNumber<T>(string member) where T : INumber<T>
         {
-            return LinearCommon.CastNumber<T>(_members[member]) ?? throw new InvalidCastException();
+            return NumberUtil.CastNumber<T>(_members[member]) ?? throw new InvalidCastException();
         }
 
         /// <summary>
@@ -160,7 +160,7 @@ namespace Linear.Runtime
             result = default!;
             try
             {
-                if (_members.TryGetValue(member, out object? v) && LinearCommon.CastNumber<T>(v) is { } v2)
+                if (_members.TryGetValue(member, out object? v) && NumberUtil.CastNumber<T>(v) is { } v2)
                 {
                     result = v2;
                     return true;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using static Linear.CastUtil;
 
 namespace Linear.Runtime.Expressions;
 
@@ -78,35 +79,35 @@ public class OperatorDualExpression : ExpressionDefinition
             if (left == null) throw new NullReferenceException("LHS null");
             if (right == null) throw new NullReferenceException("RHS null");
 
-            if (left is double doubleLeft) return doubleLeft + LinearCommon.CastDouble(right);
-            if (right is double doubleRight) return LinearCommon.CastDouble(left) + doubleRight;
+            if (left is double doubleLeft) return doubleLeft + CastDouble(right);
+            if (right is double doubleRight) return CastDouble(left) + doubleRight;
 
-            if (left is float floatLeft) return floatLeft + LinearCommon.CastFloat(right);
-            if (right is float floatRight) return LinearCommon.CastFloat(left) + floatRight;
+            if (left is float floatLeft) return floatLeft + CastFloat(right);
+            if (right is float floatRight) return CastFloat(left) + floatRight;
 
-            if (left is long longLeft) return longLeft + LinearCommon.CastLong(right);
-            if (right is long longRight) return LinearCommon.CastLong(left) + longRight;
+            if (left is long longLeft) return longLeft + CastLong(right);
+            if (right is long longRight) return CastLong(left) + longRight;
 
-            if (left is ulong ulongLeft) return ulongLeft + LinearCommon.CastULong(right);
-            if (right is ulong ulongRight) return LinearCommon.CastULong(left) + ulongRight;
+            if (left is ulong ulongLeft) return ulongLeft + CastULong(right);
+            if (right is ulong ulongRight) return CastULong(left) + ulongRight;
 
-            if (left is int intLeft) return intLeft + LinearCommon.CastInt(right);
-            if (right is int intRight) return LinearCommon.CastInt(left) + intRight;
+            if (left is int intLeft) return intLeft + CastInt(right);
+            if (right is int intRight) return CastInt(left) + intRight;
 
-            if (left is uint uintLeft) return uintLeft + LinearCommon.CastUInt(right);
-            if (right is uint uintRight) return LinearCommon.CastUInt(left) + uintRight;
+            if (left is uint uintLeft) return uintLeft + CastUInt(right);
+            if (right is uint uintRight) return CastUInt(left) + uintRight;
 
-            if (left is short shortLeft) return shortLeft + LinearCommon.CastShort(right);
-            if (right is short shortRight) return LinearCommon.CastShort(left) + shortRight;
+            if (left is short shortLeft) return shortLeft + CastShort(right);
+            if (right is short shortRight) return CastShort(left) + shortRight;
 
-            if (left is ushort ushortLeft) return ushortLeft + LinearCommon.CastUShort(right);
-            if (right is ushort ushortRight) return LinearCommon.CastUShort(left) + ushortRight;
+            if (left is ushort ushortLeft) return ushortLeft + CastUShort(right);
+            if (right is ushort ushortRight) return CastUShort(left) + ushortRight;
 
-            if (left is sbyte sbyteLeft) return sbyteLeft + LinearCommon.CastSByte(right);
-            if (right is sbyte sbyteRight) return LinearCommon.CastSByte(left) + sbyteRight;
+            if (left is sbyte sbyteLeft) return sbyteLeft + CastSByte(right);
+            if (right is sbyte sbyteRight) return CastSByte(left) + sbyteRight;
 
-            if (left is byte byteLeft) return byteLeft + LinearCommon.CastByte(right);
-            if (right is byte byteRight) return LinearCommon.CastByte(left) + byteRight;
+            if (left is byte byteLeft) return byteLeft + CastByte(right);
+            if (right is byte byteRight) return CastByte(left) + byteRight;
             return new Exception("No suitable types found for operator");
         }
     }
@@ -118,35 +119,35 @@ public class OperatorDualExpression : ExpressionDefinition
             object left = Left.Evaluate(structure, stream) ?? throw new NullReferenceException("LHS null");
             object right = Right.Evaluate(structure, stream) ?? throw new NullReferenceException("RHS null");
 
-            if (left is double doubleLeft) return doubleLeft - LinearCommon.CastDouble(right);
-            if (right is double doubleRight) return LinearCommon.CastDouble(left) - doubleRight;
+            if (left is double doubleLeft) return doubleLeft - CastDouble(right);
+            if (right is double doubleRight) return CastDouble(left) - doubleRight;
 
-            if (left is float floatLeft) return floatLeft - LinearCommon.CastFloat(right);
-            if (right is float floatRight) return LinearCommon.CastFloat(left) - floatRight;
+            if (left is float floatLeft) return floatLeft - CastFloat(right);
+            if (right is float floatRight) return CastFloat(left) - floatRight;
 
-            if (left is long longLeft) return longLeft - LinearCommon.CastLong(right);
-            if (right is long longRight) return LinearCommon.CastLong(left) - longRight;
+            if (left is long longLeft) return longLeft - CastLong(right);
+            if (right is long longRight) return CastLong(left) - longRight;
 
-            if (left is ulong ulongLeft) return ulongLeft - LinearCommon.CastULong(right);
-            if (right is ulong ulongRight) return LinearCommon.CastULong(left) - ulongRight;
+            if (left is ulong ulongLeft) return ulongLeft - CastULong(right);
+            if (right is ulong ulongRight) return CastULong(left) - ulongRight;
 
-            if (left is int intLeft) return intLeft - LinearCommon.CastInt(right);
-            if (right is int intRight) return LinearCommon.CastInt(left) - intRight;
+            if (left is int intLeft) return intLeft - CastInt(right);
+            if (right is int intRight) return CastInt(left) - intRight;
 
-            if (left is uint uintLeft) return uintLeft - LinearCommon.CastUInt(right);
-            if (right is uint uintRight) return LinearCommon.CastUInt(left) - uintRight;
+            if (left is uint uintLeft) return uintLeft - CastUInt(right);
+            if (right is uint uintRight) return CastUInt(left) - uintRight;
 
-            if (left is short shortLeft) return shortLeft - LinearCommon.CastShort(right);
-            if (right is short shortRight) return LinearCommon.CastShort(left) - shortRight;
+            if (left is short shortLeft) return shortLeft - CastShort(right);
+            if (right is short shortRight) return CastShort(left) - shortRight;
 
-            if (left is ushort ushortLeft) return ushortLeft - LinearCommon.CastUShort(right);
-            if (right is ushort ushortRight) return LinearCommon.CastUShort(left) - ushortRight;
+            if (left is ushort ushortLeft) return ushortLeft - CastUShort(right);
+            if (right is ushort ushortRight) return CastUShort(left) - ushortRight;
 
-            if (left is sbyte sbyteLeft) return sbyteLeft - LinearCommon.CastSByte(right);
-            if (right is sbyte sbyteRight) return LinearCommon.CastSByte(left) - sbyteRight;
+            if (left is sbyte sbyteLeft) return sbyteLeft - CastSByte(right);
+            if (right is sbyte sbyteRight) return CastSByte(left) - sbyteRight;
 
-            if (left is byte byteLeft) return byteLeft - LinearCommon.CastByte(right);
-            if (right is byte byteRight) return LinearCommon.CastByte(left) - byteRight;
+            if (left is byte byteLeft) return byteLeft - CastByte(right);
+            if (right is byte byteRight) return CastByte(left) - byteRight;
             return new Exception("No suitable types found for operator");
         }
     }
@@ -158,35 +159,35 @@ public class OperatorDualExpression : ExpressionDefinition
             object left = Left.Evaluate(structure, stream) ?? throw new NullReferenceException("LHS null");
             object right = Right.Evaluate(structure, stream) ?? throw new NullReferenceException("RHS null");
 
-            if (left is double doubleLeft) return doubleLeft * LinearCommon.CastDouble(right);
-            if (right is double doubleRight) return LinearCommon.CastDouble(left) * doubleRight;
+            if (left is double doubleLeft) return doubleLeft * CastDouble(right);
+            if (right is double doubleRight) return CastDouble(left) * doubleRight;
 
-            if (left is float floatLeft) return floatLeft * LinearCommon.CastFloat(right);
-            if (right is float floatRight) return LinearCommon.CastFloat(left) * floatRight;
+            if (left is float floatLeft) return floatLeft * CastFloat(right);
+            if (right is float floatRight) return CastFloat(left) * floatRight;
 
-            if (left is long longLeft) return longLeft * LinearCommon.CastLong(right);
-            if (right is long longRight) return LinearCommon.CastLong(left) * longRight;
+            if (left is long longLeft) return longLeft * CastLong(right);
+            if (right is long longRight) return CastLong(left) * longRight;
 
-            if (left is ulong ulongLeft) return ulongLeft * LinearCommon.CastULong(right);
-            if (right is ulong ulongRight) return LinearCommon.CastULong(left) * ulongRight;
+            if (left is ulong ulongLeft) return ulongLeft * CastULong(right);
+            if (right is ulong ulongRight) return CastULong(left) * ulongRight;
 
-            if (left is int intLeft) return intLeft * LinearCommon.CastInt(right);
-            if (right is int intRight) return LinearCommon.CastInt(left) * intRight;
+            if (left is int intLeft) return intLeft * CastInt(right);
+            if (right is int intRight) return CastInt(left) * intRight;
 
-            if (left is uint uintLeft) return uintLeft * LinearCommon.CastUInt(right);
-            if (right is uint uintRight) return LinearCommon.CastUInt(left) * uintRight;
+            if (left is uint uintLeft) return uintLeft * CastUInt(right);
+            if (right is uint uintRight) return CastUInt(left) * uintRight;
 
-            if (left is short shortLeft) return shortLeft * LinearCommon.CastShort(right);
-            if (right is short shortRight) return LinearCommon.CastShort(left) * shortRight;
+            if (left is short shortLeft) return shortLeft * CastShort(right);
+            if (right is short shortRight) return CastShort(left) * shortRight;
 
-            if (left is ushort ushortLeft) return ushortLeft * LinearCommon.CastUShort(right);
-            if (right is ushort ushortRight) return LinearCommon.CastUShort(left) * ushortRight;
+            if (left is ushort ushortLeft) return ushortLeft * CastUShort(right);
+            if (right is ushort ushortRight) return CastUShort(left) * ushortRight;
 
-            if (left is sbyte sbyteLeft) return sbyteLeft * LinearCommon.CastSByte(right);
-            if (right is sbyte sbyteRight) return LinearCommon.CastSByte(left) * sbyteRight;
+            if (left is sbyte sbyteLeft) return sbyteLeft * CastSByte(right);
+            if (right is sbyte sbyteRight) return CastSByte(left) * sbyteRight;
 
-            if (left is byte byteLeft) return byteLeft * LinearCommon.CastByte(right);
-            if (right is byte byteRight) return LinearCommon.CastByte(left) * byteRight;
+            if (left is byte byteLeft) return byteLeft * CastByte(right);
+            if (right is byte byteRight) return CastByte(left) * byteRight;
             return new Exception("No suitable types found for operator");
         }
     }
@@ -198,35 +199,35 @@ public class OperatorDualExpression : ExpressionDefinition
             object left = Left.Evaluate(structure, stream) ?? throw new NullReferenceException("LHS null");
             object right = Right.Evaluate(structure, stream) ?? throw new NullReferenceException("RHS null");
 
-            if (left is double doubleLeft) return doubleLeft / LinearCommon.CastDouble(right);
-            if (right is double doubleRight) return LinearCommon.CastDouble(left) / doubleRight;
+            if (left is double doubleLeft) return doubleLeft / CastDouble(right);
+            if (right is double doubleRight) return CastDouble(left) / doubleRight;
 
-            if (left is float floatLeft) return floatLeft / LinearCommon.CastFloat(right);
-            if (right is float floatRight) return LinearCommon.CastFloat(left) / floatRight;
+            if (left is float floatLeft) return floatLeft / CastFloat(right);
+            if (right is float floatRight) return CastFloat(left) / floatRight;
 
-            if (left is long longLeft) return longLeft / LinearCommon.CastLong(right);
-            if (right is long longRight) return LinearCommon.CastLong(left) / longRight;
+            if (left is long longLeft) return longLeft / CastLong(right);
+            if (right is long longRight) return CastLong(left) / longRight;
 
-            if (left is ulong ulongLeft) return ulongLeft / LinearCommon.CastULong(right);
-            if (right is ulong ulongRight) return LinearCommon.CastULong(left) / ulongRight;
+            if (left is ulong ulongLeft) return ulongLeft / CastULong(right);
+            if (right is ulong ulongRight) return CastULong(left) / ulongRight;
 
-            if (left is int intLeft) return intLeft / LinearCommon.CastInt(right);
-            if (right is int intRight) return LinearCommon.CastInt(left) / intRight;
+            if (left is int intLeft) return intLeft / CastInt(right);
+            if (right is int intRight) return CastInt(left) / intRight;
 
-            if (left is uint uintLeft) return uintLeft / LinearCommon.CastUInt(right);
-            if (right is uint uintRight) return LinearCommon.CastUInt(left) / uintRight;
+            if (left is uint uintLeft) return uintLeft / CastUInt(right);
+            if (right is uint uintRight) return CastUInt(left) / uintRight;
 
-            if (left is short shortLeft) return shortLeft / LinearCommon.CastShort(right);
-            if (right is short shortRight) return LinearCommon.CastShort(left) / shortRight;
+            if (left is short shortLeft) return shortLeft / CastShort(right);
+            if (right is short shortRight) return CastShort(left) / shortRight;
 
-            if (left is ushort ushortLeft) return ushortLeft / LinearCommon.CastUShort(right);
-            if (right is ushort ushortRight) return LinearCommon.CastUShort(left) / ushortRight;
+            if (left is ushort ushortLeft) return ushortLeft / CastUShort(right);
+            if (right is ushort ushortRight) return CastUShort(left) / ushortRight;
 
-            if (left is sbyte sbyteLeft) return sbyteLeft / LinearCommon.CastSByte(right);
-            if (right is sbyte sbyteRight) return LinearCommon.CastSByte(left) / sbyteRight;
+            if (left is sbyte sbyteLeft) return sbyteLeft / CastSByte(right);
+            if (right is sbyte sbyteRight) return CastSByte(left) / sbyteRight;
 
-            if (left is byte byteLeft) return byteLeft / LinearCommon.CastByte(right);
-            if (right is byte byteRight) return LinearCommon.CastByte(left) / byteRight;
+            if (left is byte byteLeft) return byteLeft / CastByte(right);
+            if (right is byte byteRight) return CastByte(left) / byteRight;
             return new Exception("No suitable types found for operator");
         }
     }
@@ -238,35 +239,35 @@ public class OperatorDualExpression : ExpressionDefinition
             object left = Left.Evaluate(structure, stream) ?? throw new NullReferenceException("LHS null");
             object right = Right.Evaluate(structure, stream) ?? throw new NullReferenceException("RHS null");
 
-            if (left is double doubleLeft) return doubleLeft % LinearCommon.CastDouble(right);
-            if (right is double doubleRight) return LinearCommon.CastDouble(left) % doubleRight;
+            if (left is double doubleLeft) return doubleLeft % CastDouble(right);
+            if (right is double doubleRight) return CastDouble(left) % doubleRight;
 
-            if (left is float floatLeft) return floatLeft % LinearCommon.CastFloat(right);
-            if (right is float floatRight) return LinearCommon.CastFloat(left) % floatRight;
+            if (left is float floatLeft) return floatLeft % CastFloat(right);
+            if (right is float floatRight) return CastFloat(left) % floatRight;
 
-            if (left is long longLeft) return longLeft % LinearCommon.CastLong(right);
-            if (right is long longRight) return LinearCommon.CastLong(left) % longRight;
+            if (left is long longLeft) return longLeft % CastLong(right);
+            if (right is long longRight) return CastLong(left) % longRight;
 
-            if (left is ulong ulongLeft) return ulongLeft % LinearCommon.CastULong(right);
-            if (right is ulong ulongRight) return LinearCommon.CastULong(left) % ulongRight;
+            if (left is ulong ulongLeft) return ulongLeft % CastULong(right);
+            if (right is ulong ulongRight) return CastULong(left) % ulongRight;
 
-            if (left is int intLeft) return intLeft % LinearCommon.CastInt(right);
-            if (right is int intRight) return LinearCommon.CastInt(left) % intRight;
+            if (left is int intLeft) return intLeft % CastInt(right);
+            if (right is int intRight) return CastInt(left) % intRight;
 
-            if (left is uint uintLeft) return uintLeft % LinearCommon.CastUInt(right);
-            if (right is uint uintRight) return LinearCommon.CastUInt(left) % uintRight;
+            if (left is uint uintLeft) return uintLeft % CastUInt(right);
+            if (right is uint uintRight) return CastUInt(left) % uintRight;
 
-            if (left is short shortLeft) return shortLeft % LinearCommon.CastShort(right);
-            if (right is short shortRight) return LinearCommon.CastShort(left) % shortRight;
+            if (left is short shortLeft) return shortLeft % CastShort(right);
+            if (right is short shortRight) return CastShort(left) % shortRight;
 
-            if (left is ushort ushortLeft) return ushortLeft % LinearCommon.CastUShort(right);
-            if (right is ushort ushortRight) return LinearCommon.CastUShort(left) % ushortRight;
+            if (left is ushort ushortLeft) return ushortLeft % CastUShort(right);
+            if (right is ushort ushortRight) return CastUShort(left) % ushortRight;
 
-            if (left is sbyte sbyteLeft) return sbyteLeft % LinearCommon.CastSByte(right);
-            if (right is sbyte sbyteRight) return LinearCommon.CastSByte(left) % sbyteRight;
+            if (left is sbyte sbyteLeft) return sbyteLeft % CastSByte(right);
+            if (right is sbyte sbyteRight) return CastSByte(left) % sbyteRight;
 
-            if (left is byte byteLeft) return byteLeft % LinearCommon.CastByte(right);
-            if (right is byte byteRight) return LinearCommon.CastByte(left) % byteRight;
+            if (left is byte byteLeft) return byteLeft % CastByte(right);
+            if (right is byte byteRight) return CastByte(left) % byteRight;
             return new Exception("No suitable types found for operator");
         }
     }
@@ -278,29 +279,29 @@ public class OperatorDualExpression : ExpressionDefinition
             object left = Left.Evaluate(structure, stream) ?? throw new NullReferenceException("LHS null");
             object right = Right.Evaluate(structure, stream) ?? throw new NullReferenceException("RHS null");
 
-            if (left is long longLeft) return longLeft & LinearCommon.CastLong(right);
-            if (right is long longRight) return LinearCommon.CastLong(left) & longRight;
+            if (left is long longLeft) return longLeft & CastLong(right);
+            if (right is long longRight) return CastLong(left) & longRight;
 
-            if (left is ulong ulongLeft) return ulongLeft & LinearCommon.CastULong(right);
-            if (right is ulong ulongRight) return LinearCommon.CastULong(left) & ulongRight;
+            if (left is ulong ulongLeft) return ulongLeft & CastULong(right);
+            if (right is ulong ulongRight) return CastULong(left) & ulongRight;
 
-            if (left is int intLeft) return intLeft & LinearCommon.CastInt(right);
-            if (right is int intRight) return LinearCommon.CastInt(left) & intRight;
+            if (left is int intLeft) return intLeft & CastInt(right);
+            if (right is int intRight) return CastInt(left) & intRight;
 
-            if (left is uint uintLeft) return uintLeft & LinearCommon.CastUInt(right);
-            if (right is uint uintRight) return LinearCommon.CastUInt(left) & uintRight;
+            if (left is uint uintLeft) return uintLeft & CastUInt(right);
+            if (right is uint uintRight) return CastUInt(left) & uintRight;
 
-            if (left is short shortLeft) return shortLeft & LinearCommon.CastShort(right);
-            if (right is short shortRight) return LinearCommon.CastShort(left) & shortRight;
+            if (left is short shortLeft) return shortLeft & CastShort(right);
+            if (right is short shortRight) return CastShort(left) & shortRight;
 
-            if (left is ushort ushortLeft) return ushortLeft & LinearCommon.CastUShort(right);
-            if (right is ushort ushortRight) return LinearCommon.CastUShort(left) & ushortRight;
+            if (left is ushort ushortLeft) return ushortLeft & CastUShort(right);
+            if (right is ushort ushortRight) return CastUShort(left) & ushortRight;
 
-            if (left is sbyte sbyteLeft) return sbyteLeft & LinearCommon.CastSByte(right);
-            if (right is sbyte sbyteRight) return LinearCommon.CastSByte(left) & sbyteRight;
+            if (left is sbyte sbyteLeft) return sbyteLeft & CastSByte(right);
+            if (right is sbyte sbyteRight) return CastSByte(left) & sbyteRight;
 
-            if (left is byte byteLeft) return byteLeft & LinearCommon.CastByte(right);
-            if (right is byte byteRight) return LinearCommon.CastByte(left) & byteRight;
+            if (left is byte byteLeft) return byteLeft & CastByte(right);
+            if (right is byte byteRight) return CastByte(left) & byteRight;
             return new Exception("No suitable types found for operator");
         }
     }
@@ -312,29 +313,29 @@ public class OperatorDualExpression : ExpressionDefinition
             object left = Left.Evaluate(structure, stream) ?? throw new NullReferenceException("LHS null");
             object right = Right.Evaluate(structure, stream) ?? throw new NullReferenceException("RHS null");
 
-            if (left is long longLeft) return longLeft | LinearCommon.CastLong(right);
-            if (right is long longRight) return LinearCommon.CastLong(left) | longRight;
+            if (left is long longLeft) return longLeft | CastLong(right);
+            if (right is long longRight) return CastLong(left) | longRight;
 
-            if (left is ulong ulongLeft) return ulongLeft | LinearCommon.CastULong(right);
-            if (right is ulong ulongRight) return LinearCommon.CastULong(left) | ulongRight;
+            if (left is ulong ulongLeft) return ulongLeft | CastULong(right);
+            if (right is ulong ulongRight) return CastULong(left) | ulongRight;
 
-            if (left is int intLeft) return intLeft | LinearCommon.CastInt(right);
-            if (right is int intRight) return LinearCommon.CastInt(left) | intRight;
+            if (left is int intLeft) return intLeft | CastInt(right);
+            if (right is int intRight) return CastInt(left) | intRight;
 
-            if (left is uint uintLeft) return uintLeft | LinearCommon.CastUInt(right);
-            if (right is uint uintRight) return LinearCommon.CastUInt(left) | uintRight;
+            if (left is uint uintLeft) return uintLeft | CastUInt(right);
+            if (right is uint uintRight) return CastUInt(left) | uintRight;
 
-            if (left is short shortLeft) return shortLeft | LinearCommon.CastShort(right);
-            if (right is short shortRight) return LinearCommon.CastShort(left) | shortRight;
+            if (left is short shortLeft) return shortLeft | CastShort(right);
+            if (right is short shortRight) return CastShort(left) | shortRight;
 
-            if (left is ushort ushortLeft) return ushortLeft | LinearCommon.CastUShort(right);
-            if (right is ushort ushortRight) return LinearCommon.CastUShort(left) | ushortRight;
+            if (left is ushort ushortLeft) return ushortLeft | CastUShort(right);
+            if (right is ushort ushortRight) return CastUShort(left) | ushortRight;
 
-            if (left is sbyte sbyteLeft) return sbyteLeft | LinearCommon.CastSByte(right);
-            if (right is sbyte sbyteRight) return LinearCommon.CastSByte(left) | sbyteRight;
+            if (left is sbyte sbyteLeft) return sbyteLeft | CastSByte(right);
+            if (right is sbyte sbyteRight) return CastSByte(left) | sbyteRight;
 
-            if (left is byte byteLeft) return byteLeft | LinearCommon.CastByte(right);
-            if (right is byte byteRight) return LinearCommon.CastByte(left) | byteRight;
+            if (left is byte byteLeft) return byteLeft | CastByte(right);
+            if (right is byte byteRight) return CastByte(left) | byteRight;
             return new Exception("No suitable types found for operator");
         }
     }
@@ -346,29 +347,29 @@ public class OperatorDualExpression : ExpressionDefinition
             object left = Left.Evaluate(structure, stream) ?? throw new NullReferenceException("LHS null");
             object right = Right.Evaluate(structure, stream) ?? throw new NullReferenceException("RHS null");
 
-            if (left is long longLeft) return longLeft ^ LinearCommon.CastLong(right);
-            if (right is long longRight) return LinearCommon.CastLong(left) ^ longRight;
+            if (left is long longLeft) return longLeft ^ CastLong(right);
+            if (right is long longRight) return CastLong(left) ^ longRight;
 
-            if (left is ulong ulongLeft) return ulongLeft ^ LinearCommon.CastULong(right);
-            if (right is ulong ulongRight) return LinearCommon.CastULong(left) ^ ulongRight;
+            if (left is ulong ulongLeft) return ulongLeft ^ CastULong(right);
+            if (right is ulong ulongRight) return CastULong(left) ^ ulongRight;
 
-            if (left is int intLeft) return intLeft ^ LinearCommon.CastInt(right);
-            if (right is int intRight) return LinearCommon.CastInt(left) ^ intRight;
+            if (left is int intLeft) return intLeft ^ CastInt(right);
+            if (right is int intRight) return CastInt(left) ^ intRight;
 
-            if (left is uint uintLeft) return uintLeft ^ LinearCommon.CastUInt(right);
-            if (right is uint uintRight) return LinearCommon.CastUInt(left) ^ uintRight;
+            if (left is uint uintLeft) return uintLeft ^ CastUInt(right);
+            if (right is uint uintRight) return CastUInt(left) ^ uintRight;
 
-            if (left is short shortLeft) return shortLeft ^ LinearCommon.CastShort(right);
-            if (right is short shortRight) return LinearCommon.CastShort(left) ^ shortRight;
+            if (left is short shortLeft) return shortLeft ^ CastShort(right);
+            if (right is short shortRight) return CastShort(left) ^ shortRight;
 
-            if (left is ushort ushortLeft) return ushortLeft ^ LinearCommon.CastUShort(right);
-            if (right is ushort ushortRight) return LinearCommon.CastUShort(left) ^ ushortRight;
+            if (left is ushort ushortLeft) return ushortLeft ^ CastUShort(right);
+            if (right is ushort ushortRight) return CastUShort(left) ^ ushortRight;
 
-            if (left is sbyte sbyteLeft) return sbyteLeft ^ LinearCommon.CastSByte(right);
-            if (right is sbyte sbyteRight) return LinearCommon.CastSByte(left) ^ sbyteRight;
+            if (left is sbyte sbyteLeft) return sbyteLeft ^ CastSByte(right);
+            if (right is sbyte sbyteRight) return CastSByte(left) ^ sbyteRight;
 
-            if (left is byte byteLeft) return byteLeft ^ LinearCommon.CastByte(right);
-            if (right is byte byteRight) return LinearCommon.CastByte(left) ^ byteRight;
+            if (left is byte byteLeft) return byteLeft ^ CastByte(right);
+            if (right is byte byteRight) return CastByte(left) ^ byteRight;
             return new Exception("No suitable types found for operator");
         }
     }

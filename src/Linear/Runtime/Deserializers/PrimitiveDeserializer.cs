@@ -37,24 +37,24 @@ namespace Linear.Runtime.Deserializers
             offset += instance.AbsoluteOffset;
             return Type.GetTypeCode(_type) switch
             {
-                TypeCode.Boolean => new DeserializeResult(LinearCommon.ReadBool(stream, offset), 1),
-                TypeCode.Byte => new DeserializeResult(LinearCommon.ReadU8(stream, offset), 1),
-                TypeCode.Char => new DeserializeResult(LinearCommon.ReadU16(stream, offset, littleEndian), 2),
+                TypeCode.Boolean => new DeserializeResult(PrimitiveUtil.ReadBool(stream, offset), 1),
+                TypeCode.Byte => new DeserializeResult(PrimitiveUtil.ReadU8(stream, offset), 1),
+                TypeCode.Char => new DeserializeResult(PrimitiveUtil.ReadU16(stream, offset, littleEndian), 2),
                 TypeCode.DateTime => throw new NotSupportedException(),
                 TypeCode.DBNull => throw new NotSupportedException(),
                 TypeCode.Decimal => throw new NotSupportedException(),
-                TypeCode.Double => new DeserializeResult(LinearCommon.ReadDouble(stream, offset), 8),
+                TypeCode.Double => new DeserializeResult(PrimitiveUtil.ReadDouble(stream, offset), 8),
                 TypeCode.Empty => throw new NullReferenceException(),
-                TypeCode.Int16 => new DeserializeResult(LinearCommon.ReadS16(stream, offset, littleEndian), 2),
-                TypeCode.Int32 => new DeserializeResult(LinearCommon.ReadS32(stream, offset, littleEndian), 4),
-                TypeCode.Int64 => new DeserializeResult(LinearCommon.ReadS64(stream, offset, littleEndian), 8),
+                TypeCode.Int16 => new DeserializeResult(PrimitiveUtil.ReadS16(stream, offset, littleEndian), 2),
+                TypeCode.Int32 => new DeserializeResult(PrimitiveUtil.ReadS32(stream, offset, littleEndian), 4),
+                TypeCode.Int64 => new DeserializeResult(PrimitiveUtil.ReadS64(stream, offset, littleEndian), 8),
                 TypeCode.Object => throw new NotSupportedException(), // Not supporting direct
-                TypeCode.SByte => new DeserializeResult(LinearCommon.ReadS8(stream, offset), 1),
-                TypeCode.Single => new DeserializeResult(LinearCommon.ReadSingle(stream, offset), 4),
+                TypeCode.SByte => new DeserializeResult(PrimitiveUtil.ReadS8(stream, offset), 1),
+                TypeCode.Single => new DeserializeResult(PrimitiveUtil.ReadSingle(stream, offset), 4),
                 TypeCode.String => throw new NotSupportedException(), // Not supporting direct
-                TypeCode.UInt16 => new DeserializeResult(LinearCommon.ReadU16(stream, offset, littleEndian), 2),
-                TypeCode.UInt32 => new DeserializeResult(LinearCommon.ReadU32(stream, offset, littleEndian), 4),
-                TypeCode.UInt64 => new DeserializeResult(LinearCommon.ReadU64(stream, offset, littleEndian), 8),
+                TypeCode.UInt16 => new DeserializeResult(PrimitiveUtil.ReadU16(stream, offset, littleEndian), 2),
+                TypeCode.UInt32 => new DeserializeResult(PrimitiveUtil.ReadU32(stream, offset, littleEndian), 4),
+                TypeCode.UInt64 => new DeserializeResult(PrimitiveUtil.ReadU64(stream, offset, littleEndian), 8),
                 _ => throw new ArgumentOutOfRangeException()
             };
         }

@@ -36,8 +36,7 @@ namespace Linear.Runtime.Deserializers
             Dictionary<string, object>? parameters, long length = 0, int index = 0)
         {
             if (standardProperties == null) throw new NullReferenceException();
-            int arrayLength =
-                LinearCommon.CastInt(standardProperties[LinearCommon.StandardProperty.ArrayLengthProperty]);
+            int arrayLength = CastUtil.CastInt(standardProperties[LinearCommon.StandardProperty.ArrayLengthProperty]);
             Array res = Array.CreateInstance(_elementType, arrayLength);
             long curOffset = offset;
             for (int i = 0; i < arrayLength; i++)

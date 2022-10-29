@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using static Linear.CastUtil;
 
 namespace Linear.Runtime.Expressions;
 
@@ -58,8 +59,8 @@ public class RangeExpression : ExpressionDefinition
     {
         public override object Evaluate(StructureInstance structure, Stream stream)
         {
-            long start = LinearCommon.CastLong(Start.Evaluate(structure, stream));
-            long end = LinearCommon.CastLong(End.Evaluate(structure, stream));
+            long start = CastLong(Start.Evaluate(structure, stream));
+            long end = CastLong(End.Evaluate(structure, stream));
             return new LongRange(start, end - start);
         }
     }
@@ -68,8 +69,8 @@ public class RangeExpression : ExpressionDefinition
     {
         public override object Evaluate(StructureInstance structure, Stream stream)
         {
-            long start = LinearCommon.CastLong(Start.Evaluate(structure, stream));
-            long length = LinearCommon.CastLong(Length.Evaluate(structure, stream));
+            long start = CastLong(Start.Evaluate(structure, stream));
+            long length = CastLong(Length.Evaluate(structure, stream));
             return new LongRange(start, length);
         }
     }
