@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
+using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 using Linear.Runtime;
 using Linear.Runtime.Deserializers;
@@ -80,7 +81,7 @@ internal class LinearListener : LinearBaseListener
         var e = GetExpression(context.expr(), typeName);
         if (!_currentNames.Add(dataName))
         {
-            AddError($"Duplicate name {dataName}");
+            AddError($"Duplicate name {dataName}", ids[1].Symbol);
             return;
         }
         if (e == null)
@@ -102,11 +103,11 @@ internal class LinearListener : LinearBaseListener
         string dataName = ids[1].GetText();
         (int _, bool littleEndian) = StringToPrimitiveInfo(typeName);
         ExpressionDefinition littleEndianExpression = new ConstantExpression<bool>(littleEndian);
-        IDeserializer? deserializer = StringToDeserializer(typeName);
+        IDeserializer? deserializer = StringToDeserializer(typeName, context);
         var propGroup = GetPropertyGroup(context.property_group());
         if (!_currentNames.Add(dataName))
         {
-            AddError($"Duplicate name {dataName}");
+            AddError($"Duplicate name {dataName}", ids[1].Symbol);
             return;
         }
         if (countExpression == null)
@@ -144,12 +145,12 @@ internal class LinearListener : LinearBaseListener
         string typeName = ids[0].GetText();
         string targetTypeName = ids[1].GetText();
         string dataName = ids[2].GetText();
-        IDeserializer? deserializer = StringToDeserializer(typeName);
-        IDeserializer? targetDeserializer = StringToDeserializer(targetTypeName);
+        IDeserializer? deserializer = StringToDeserializer(typeName, context);
+        IDeserializer? targetDeserializer = StringToDeserializer(targetTypeName, context);
         var propGroup = GetPropertyGroup(context.property_group());
         if (!_currentNames.Add(dataName))
         {
-            AddError($"Duplicate name {dataName}");
+            AddError($"Duplicate name {dataName}", ids[1].Symbol);
             return;
         }
         if (countExpression == null)
@@ -251,19 +252,19 @@ internal class LinearListener : LinearBaseListener
             var e = GetExpression(entry.expr());
             if (key == null && e == null)
             {
-                AddError("Null key/value pair in property group");
+                AddError("Null key/value pair in property group", context.Start);
                 fail = true;
                 continue;
             }
             if (key == null)
             {
-                AddError($"Null key for expression {e}");
+                AddError($"Null key for expression {e}", context.Start);
                 fail = true;
                 continue;
             }
             if (e == null)
             {
-                AddError($"Null expression for key {key}");
+                AddError($"Null expression for key {key}", context.Start);
                 fail = true;
                 continue;
             }
@@ -295,11 +296,11 @@ internal class LinearListener : LinearBaseListener
         _ => (0, false)
     };
 
-    private IDeserializer? StringToDeserializer(string identifier)
+    private IDeserializer? StringToDeserializer(string identifier, ParserRuleContext context)
     {
         if (_deserializers.TryGetValue(identifier, out IDeserializer? deserializer))
             return deserializer;
-        AddError($"Failed to find deserializer for type {identifier}");
+        AddError($"Failed to find deserializer for type {identifier}", context.Start);
         return null;
     }
 
@@ -350,11 +351,11 @@ internal class LinearListener : LinearBaseListener
             LinearParser.ExprTermContext exprTermContext => GetTerm(exprTermContext.term()),
             LinearParser.ExprDeserializeContext exprDeserializeContext =>
                 RequireNonNull(GetExpression(exprDeserializeContext.expr()), GetPropertyGroup(exprDeserializeContext.property_group()), out var e0, out var propGroup)
-                    ? GetDeserializeExpression(exprDeserializeContext.IDENTIFIER().GetText(), e0, propGroup, new Dictionary<StandardProperty, ExpressionDefinition>())
+                    ? GetDeserializeExpression(exprDeserializeContext.IDENTIFIER().GetText(), e0, propGroup, new Dictionary<StandardProperty, ExpressionDefinition>(), exprDeserializeContext)
                     : null,
             LinearParser.ExprUnboundDeserializeContext exprUnboundDeserializeContext =>
-                RequireNonNull(GetActiveType(activeType, nameof(DeserializeExpression)), GetExpression(exprUnboundDeserializeContext.expr()), GetPropertyGroup(exprUnboundDeserializeContext.property_group()), out var name, out var e0, out var propGroup)
-                    ? GetDeserializeExpression(name, e0, propGroup, new Dictionary<StandardProperty, ExpressionDefinition>())
+                RequireNonNull(GetActiveType(activeType, nameof(DeserializeExpression), exprUnboundDeserializeContext), GetExpression(exprUnboundDeserializeContext.expr()), GetPropertyGroup(exprUnboundDeserializeContext.property_group()), out var name, out var e0, out var propGroup)
+                    ? GetDeserializeExpression(name, e0, propGroup, new Dictionary<StandardProperty, ExpressionDefinition>(), exprUnboundDeserializeContext)
                     : null,
             LinearParser.ExprUnOpContext exprUnOpContext => GetExpression(exprUnOpContext.expr()) is { } e0 ? new OperatorUnaryExpression(e0, OperatorUnaryExpression.GetOperator(exprUnOpContext.un_op().GetText())) : null,
             LinearParser.ExprWrappedContext exprWrappedContext => GetExpression(exprWrappedContext.expr()),
@@ -452,21 +453,22 @@ internal class LinearListener : LinearBaseListener
         return false;
     }
 
-    private string? GetActiveType(string? activeType, string expressionType)
+    private string? GetActiveType(string? activeType, string expressionType, ParserRuleContext context)
     {
         if (activeType != null)
         {
             return activeType;
         }
-        AddError($"{expressionType} cannot be used without type name");
+        AddError($"{expressionType} cannot be used without type name", context.Start);
         return null;
     }
 
     private ExpressionDefinition? GetDeserializeExpression(string typeName, ExpressionDefinition offsetDefinition,
-        Dictionary<string, ExpressionDefinition> deserializerParams, Dictionary<StandardProperty, ExpressionDefinition> standardProperties)
+        Dictionary<string, ExpressionDefinition> deserializerParams,
+        Dictionary<StandardProperty, ExpressionDefinition> standardProperties, ParserRuleContext context)
     {
         (int _, bool littleEndian) = StringToPrimitiveInfo(typeName);
-        IDeserializer? deserializer = StringToDeserializer(typeName);
+        IDeserializer? deserializer = StringToDeserializer(typeName, context);
         if (deserializer == null)
         {
             return null;
@@ -494,9 +496,14 @@ internal class LinearListener : LinearBaseListener
         };
     }
 
-    private void AddError(string error)
+    private void AddError(string error, IToken token)
+    {
+        AddError(error, token.Line, token.Column);
+    }
+
+    private void AddError(string error, int l, int c)
     {
         Fail = true;
-        _errors.Add(error);
+        _errors.Add($"({l}:{c}): {error}");
     }
 }
