@@ -1,4 +1,4 @@
-namespace Linear;
+namespace Linear.Runtime;
 
 /// <summary>
 /// Standard properties

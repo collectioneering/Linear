@@ -1,4 +1,4 @@
-namespace Linear;
+namespace Linear.Lyn;
 
 /// <summary>
 /// Marks a parse error.

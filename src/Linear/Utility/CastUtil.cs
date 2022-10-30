@@ -1,6 +1,6 @@
 using System;
 
-namespace Linear;
+namespace Linear.Utility;
 
 internal static class CastUtil
 {

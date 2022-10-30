@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using Fp;
 
-namespace Linear;
+namespace Linear.Utility;
 
 internal static class PrimitiveUtil
 {

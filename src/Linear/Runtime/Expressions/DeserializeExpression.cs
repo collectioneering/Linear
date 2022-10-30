@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using static Linear.CastUtil;
+using static Linear.Utility.CastUtil;
 
 namespace Linear.Runtime.Expressions;
 

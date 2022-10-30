@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using static Linear.CastUtil;
+using static Linear.Utility.CastUtil;
 
 namespace Linear.Runtime.Deserializers;
 

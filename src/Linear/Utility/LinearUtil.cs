@@ -7,7 +7,7 @@ using Linear.Runtime.Deserializers;
 using Linear.Runtime.Exporters;
 using Linear.Runtime.Expressions;
 
-namespace Linear;
+namespace Linear.Utility;
 
 /// <summary>
 /// Base utilities.

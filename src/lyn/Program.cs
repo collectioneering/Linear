@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Fp;
-using Linear;
 using Linear.Runtime;
 using Linear.Runtime.Expressions;
+using Linear.Utility;
 
 namespace lyn
 {

@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using Linear.Utility;
 
 namespace Linear.Runtime.Expressions.Operators;
 
