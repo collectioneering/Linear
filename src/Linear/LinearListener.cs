@@ -23,7 +23,7 @@ internal class LinearListener : LinearBaseListener
     private readonly IReadOnlyDictionary<string, MethodCallDelegate> _methods;
     private readonly string? _filenameHint;
     private readonly List<StructureDefinition> _structures;
-    private readonly List<string> _errors;
+    private readonly List<ParseError> _errors;
     private readonly HashSet<string> _currentNames;
     private StructureDefinition? _currentDefinition;
 
@@ -36,7 +36,7 @@ internal class LinearListener : LinearBaseListener
         _methods = methods;
         _filenameHint = filenameHint;
         _structures = new List<StructureDefinition>();
-        _errors = new List<string>();
+        _errors = new List<ParseError>();
         _currentNames = new HashSet<string>();
     }
 
@@ -44,7 +44,7 @@ internal class LinearListener : LinearBaseListener
     /// Gets errors.
     /// </summary>
     /// <returns>Errors.</returns>
-    public List<string> GetErrors() => new(_errors);
+    public List<ParseError> GetErrors() => new(_errors);
 
     /// <summary>
     /// Gets parsed structures.
@@ -185,8 +185,7 @@ internal class LinearListener : LinearBaseListener
         bool lenFinder = context.PLUS() != null;
         standardProperties.Add(StandardProperty.ArrayLengthProperty,
             lenFinder
-                ? new OperatorDualExpression(countExpression, new ConstantExpression<int>(1),
-                    OperatorDualExpression.Operator.Add)
+                ? new OperatorDualExpression(countExpression, new ConstantExpression<int>(1), BinaryOperator.Add)
                 : countExpression);
         standardProperties.Add(StandardProperty.PointerOffsetProperty, pointerOffsetExpression);
         standardProperties.Add(StandardProperty.PointerArrayLengthProperty, countExpression);
@@ -365,12 +364,12 @@ internal class LinearListener : LinearBaseListener
         };
     }
 
-    internal static Dictionary<TKey, TValue>? RequireNonNull<TKey, TValue>(IEnumerable<KeyValuePair<TKey?, TValue?>> sequence)
+    internal static Dictionary<TKey, TValue>? RequireNonNull<TKey, TValue>(IEnumerable<KeyValuePair<TKey, TValue?>> sequence) where TKey : notnull
     {
         Dictionary<TKey, TValue> dict = new();
         foreach (var e in sequence)
         {
-            if (e.Key == null || e.Value == null)
+            if (e.Value == null)
             {
                 return null;
             }
@@ -483,10 +482,10 @@ internal class LinearListener : LinearBaseListener
         return context switch
         {
             LinearParser.TermCharContext termCharContext => new ConstantExpression<char>(termCharContext.GetText().Trim(' ', '\'')[0]),
-            LinearParser.TermHexContext termHexContext => new ConstantExpression<long>(Convert.ToInt32(termHexContext.GetText(), 16)),
+            LinearParser.TermHexContext termHexContext => new ConstantNumberExpression<long>(Convert.ToInt32(termHexContext.GetText(), 16)),
             LinearParser.TermIdentifierContext termIdentifierContext => new MemberExpression(termIdentifierContext.GetText()),
-            LinearParser.TermIntContext termIntContext => new ConstantExpression<long>(long.Parse(termIntContext.GetText(), CultureInfo.InvariantCulture)),
-            LinearParser.TermRealContext termRealContext => new ConstantExpression<double>(double.Parse(termRealContext.GetText(), CultureInfo.InvariantCulture)),
+            LinearParser.TermIntContext termIntContext => new ConstantNumberExpression<long>(long.Parse(termIntContext.GetText(), CultureInfo.InvariantCulture)),
+            LinearParser.TermRealContext termRealContext => new ConstantNumberExpression<double>(double.Parse(termRealContext.GetText(), CultureInfo.InvariantCulture)),
             LinearParser.TermRepAContext => new StructureEvaluateExpression<long>(i => i.AbsoluteOffset),
             LinearParser.TermRepIContext => new StructureEvaluateExpression<long>(i => i.Index),
             LinearParser.TermRepLengthContext => new StructureEvaluateExpression<long>(i => i.Length),
@@ -506,13 +505,6 @@ internal class LinearListener : LinearBaseListener
     private void AddError(string error, int l, int c)
     {
         Fail = true;
-        if (_filenameHint is { } filenameHint)
-        {
-            _errors.Add($"{filenameHint}({l}:{c}): {error}");
-        }
-        else
-        {
-            _errors.Add($"({l}:{c}): {error}");
-        }
+        _errors.Add(new ParseError(new SourceLocation(_filenameHint, l, c), error));
     }
 }

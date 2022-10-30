@@ -9,7 +9,6 @@ namespace Linear.Runtime.Expressions;
 /// </summary>
 public class MethodCallExpression : ExpressionDefinition
 {
-
     private readonly MethodCallDelegate _delegate;
     private readonly List<ExpressionDefinition> _args;
 

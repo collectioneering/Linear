@@ -176,9 +176,9 @@ public class StructureRegistry
         }
         catch (LynFormatException e)
         {
-            foreach (string? error in e.Errors)
+            foreach (var error in e.Errors)
             {
-                logDelegate(error);
+                logDelegate(error.GetFormattedText());
             }
             logDelegate(e.Message);
             return false;
@@ -247,14 +247,14 @@ public class StructureRegistry
 
 internal class LynFormatException : IOException
 {
-    public IReadOnlyList<string> Errors { get; }
+    public IReadOnlyList<ParseError> Errors { get; }
 
-    public LynFormatException(IReadOnlyList<string> errors) : base("Errors occurred while parsing format")
+    public LynFormatException(IReadOnlyList<ParseError> errors) : base("Errors occurred while parsing format")
     {
         Errors = errors;
     }
 
-    public LynFormatException(string message, IReadOnlyList<string> errors) : base(message)
+    public LynFormatException(string message, IReadOnlyList<ParseError> errors) : base(message)
     {
         Errors = errors;
     }

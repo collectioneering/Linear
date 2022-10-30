@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using static Linear.CastUtil;
+using Linear.Runtime.Expressions.Operators;
 
 namespace Linear.Runtime.Expressions;
 
@@ -11,26 +10,9 @@ namespace Linear.Runtime.Expressions;
 /// </summary>
 public class OperatorDualExpression : ExpressionDefinition
 {
-    /// <summary>
-    /// Operator
-    /// </summary>
-    public enum Operator
-#pragma warning disable 1591
-    {
-        Add,
-        Sub,
-        Div,
-        Mult,
-        Mod,
-        And,
-        Or,
-        Xor
-    }
-#pragma warning restore 1591
-
     private readonly ExpressionDefinition _left;
     private readonly ExpressionDefinition _right;
-    private readonly Operator _operator;
+    private readonly BinaryOperator _operator;
 
     /// <summary>
     /// Create new instance of <see cref="OperatorDualExpression"/>
@@ -38,7 +20,7 @@ public class OperatorDualExpression : ExpressionDefinition
     /// <param name="left">Left expression</param>
     /// <param name="right">Right expression</param>
     /// <param name="op">Operator</param>
-    public OperatorDualExpression(ExpressionDefinition left, ExpressionDefinition right, Operator op)
+    public OperatorDualExpression(ExpressionDefinition left, ExpressionDefinition right, BinaryOperator op)
     {
         _left = left;
         _right = right;
@@ -54,324 +36,16 @@ public class OperatorDualExpression : ExpressionDefinition
     {
         return _operator switch
         {
-            Operator.Add => new OperatorDualAddExpressionInstance(_left.GetInstance(), _right.GetInstance()),
-            Operator.Sub => new OperatorDualSubExpressionInstance(_left.GetInstance(), _right.GetInstance()),
-            Operator.Div => new OperatorDualDivExpressionInstance(_left.GetInstance(), _right.GetInstance()),
-            Operator.Mult => new OperatorDualMultExpressionInstance(_left.GetInstance(), _right.GetInstance()),
-            Operator.Mod => new OperatorDualModExpressionInstance(_left.GetInstance(), _right.GetInstance()),
-            Operator.And => new OperatorDualAndExpressionInstance(_left.GetInstance(), _right.GetInstance()),
-            Operator.Or => new OperatorDualOrExpressionInstance(_left.GetInstance(), _right.GetInstance()),
-            Operator.Xor => new OperatorDualXorExpressionInstance(_left.GetInstance(), _right.GetInstance()),
+            BinaryOperator.Add => new OperatorDualAddExpressionInstance(_left.GetInstance(), _right.GetInstance()),
+            BinaryOperator.Sub => new OperatorDualSubExpressionInstance(_left.GetInstance(), _right.GetInstance()),
+            BinaryOperator.Div => new OperatorDualDivExpressionInstance(_left.GetInstance(), _right.GetInstance()),
+            BinaryOperator.Mult => new OperatorDualMultExpressionInstance(_left.GetInstance(), _right.GetInstance()),
+            BinaryOperator.Mod => new OperatorDualModExpressionInstance(_left.GetInstance(), _right.GetInstance()),
+            BinaryOperator.And => new OperatorDualAndExpressionInstance(_left.GetInstance(), _right.GetInstance()),
+            BinaryOperator.Or => new OperatorDualOrExpressionInstance(_left.GetInstance(), _right.GetInstance()),
+            BinaryOperator.Xor => new OperatorDualXorExpressionInstance(_left.GetInstance(), _right.GetInstance()),
             _ => throw new ArgumentOutOfRangeException()
         };
-    }
-
-    private record OperatorDualAddExpressionInstance(ExpressionInstance Left, ExpressionInstance Right) : ExpressionInstance
-    {
-        public override object? Evaluate(StructureInstance structure, Stream stream)
-        {
-            object? left = Left.Evaluate(structure, stream);
-            object? right = Right.Evaluate(structure, stream);
-
-            if (left is string strLeft) return strLeft + right;
-            if (right is string strRight) return left + strRight;
-
-            if (left == null) throw new NullReferenceException("LHS null");
-            if (right == null) throw new NullReferenceException("RHS null");
-
-            if (left is double doubleLeft) return doubleLeft + CastDouble(right);
-            if (right is double doubleRight) return CastDouble(left) + doubleRight;
-
-            if (left is float floatLeft) return floatLeft + CastFloat(right);
-            if (right is float floatRight) return CastFloat(left) + floatRight;
-
-            if (left is long longLeft) return longLeft + CastLong(right);
-            if (right is long longRight) return CastLong(left) + longRight;
-
-            if (left is ulong ulongLeft) return ulongLeft + CastULong(right);
-            if (right is ulong ulongRight) return CastULong(left) + ulongRight;
-
-            if (left is int intLeft) return intLeft + CastInt(right);
-            if (right is int intRight) return CastInt(left) + intRight;
-
-            if (left is uint uintLeft) return uintLeft + CastUInt(right);
-            if (right is uint uintRight) return CastUInt(left) + uintRight;
-
-            if (left is short shortLeft) return shortLeft + CastShort(right);
-            if (right is short shortRight) return CastShort(left) + shortRight;
-
-            if (left is ushort ushortLeft) return ushortLeft + CastUShort(right);
-            if (right is ushort ushortRight) return CastUShort(left) + ushortRight;
-
-            if (left is sbyte sbyteLeft) return sbyteLeft + CastSByte(right);
-            if (right is sbyte sbyteRight) return CastSByte(left) + sbyteRight;
-
-            if (left is byte byteLeft) return byteLeft + CastByte(right);
-            if (right is byte byteRight) return CastByte(left) + byteRight;
-            return new Exception("No suitable types found for operator");
-        }
-    }
-
-    private record OperatorDualSubExpressionInstance(ExpressionInstance Left, ExpressionInstance Right) : ExpressionInstance
-    {
-        public override object? Evaluate(StructureInstance structure, Stream stream)
-        {
-            object left = Left.Evaluate(structure, stream) ?? throw new NullReferenceException("LHS null");
-            object right = Right.Evaluate(structure, stream) ?? throw new NullReferenceException("RHS null");
-
-            if (left is double doubleLeft) return doubleLeft - CastDouble(right);
-            if (right is double doubleRight) return CastDouble(left) - doubleRight;
-
-            if (left is float floatLeft) return floatLeft - CastFloat(right);
-            if (right is float floatRight) return CastFloat(left) - floatRight;
-
-            if (left is long longLeft) return longLeft - CastLong(right);
-            if (right is long longRight) return CastLong(left) - longRight;
-
-            if (left is ulong ulongLeft) return ulongLeft - CastULong(right);
-            if (right is ulong ulongRight) return CastULong(left) - ulongRight;
-
-            if (left is int intLeft) return intLeft - CastInt(right);
-            if (right is int intRight) return CastInt(left) - intRight;
-
-            if (left is uint uintLeft) return uintLeft - CastUInt(right);
-            if (right is uint uintRight) return CastUInt(left) - uintRight;
-
-            if (left is short shortLeft) return shortLeft - CastShort(right);
-            if (right is short shortRight) return CastShort(left) - shortRight;
-
-            if (left is ushort ushortLeft) return ushortLeft - CastUShort(right);
-            if (right is ushort ushortRight) return CastUShort(left) - ushortRight;
-
-            if (left is sbyte sbyteLeft) return sbyteLeft - CastSByte(right);
-            if (right is sbyte sbyteRight) return CastSByte(left) - sbyteRight;
-
-            if (left is byte byteLeft) return byteLeft - CastByte(right);
-            if (right is byte byteRight) return CastByte(left) - byteRight;
-            return new Exception("No suitable types found for operator");
-        }
-    }
-
-    private record OperatorDualMultExpressionInstance(ExpressionInstance Left, ExpressionInstance Right) : ExpressionInstance
-    {
-        public override object? Evaluate(StructureInstance structure, Stream stream)
-        {
-            object left = Left.Evaluate(structure, stream) ?? throw new NullReferenceException("LHS null");
-            object right = Right.Evaluate(structure, stream) ?? throw new NullReferenceException("RHS null");
-
-            if (left is double doubleLeft) return doubleLeft * CastDouble(right);
-            if (right is double doubleRight) return CastDouble(left) * doubleRight;
-
-            if (left is float floatLeft) return floatLeft * CastFloat(right);
-            if (right is float floatRight) return CastFloat(left) * floatRight;
-
-            if (left is long longLeft) return longLeft * CastLong(right);
-            if (right is long longRight) return CastLong(left) * longRight;
-
-            if (left is ulong ulongLeft) return ulongLeft * CastULong(right);
-            if (right is ulong ulongRight) return CastULong(left) * ulongRight;
-
-            if (left is int intLeft) return intLeft * CastInt(right);
-            if (right is int intRight) return CastInt(left) * intRight;
-
-            if (left is uint uintLeft) return uintLeft * CastUInt(right);
-            if (right is uint uintRight) return CastUInt(left) * uintRight;
-
-            if (left is short shortLeft) return shortLeft * CastShort(right);
-            if (right is short shortRight) return CastShort(left) * shortRight;
-
-            if (left is ushort ushortLeft) return ushortLeft * CastUShort(right);
-            if (right is ushort ushortRight) return CastUShort(left) * ushortRight;
-
-            if (left is sbyte sbyteLeft) return sbyteLeft * CastSByte(right);
-            if (right is sbyte sbyteRight) return CastSByte(left) * sbyteRight;
-
-            if (left is byte byteLeft) return byteLeft * CastByte(right);
-            if (right is byte byteRight) return CastByte(left) * byteRight;
-            return new Exception("No suitable types found for operator");
-        }
-    }
-
-    private record OperatorDualDivExpressionInstance(ExpressionInstance Left, ExpressionInstance Right) : ExpressionInstance
-    {
-        public override object? Evaluate(StructureInstance structure, Stream stream)
-        {
-            object left = Left.Evaluate(structure, stream) ?? throw new NullReferenceException("LHS null");
-            object right = Right.Evaluate(structure, stream) ?? throw new NullReferenceException("RHS null");
-
-            if (left is double doubleLeft) return doubleLeft / CastDouble(right);
-            if (right is double doubleRight) return CastDouble(left) / doubleRight;
-
-            if (left is float floatLeft) return floatLeft / CastFloat(right);
-            if (right is float floatRight) return CastFloat(left) / floatRight;
-
-            if (left is long longLeft) return longLeft / CastLong(right);
-            if (right is long longRight) return CastLong(left) / longRight;
-
-            if (left is ulong ulongLeft) return ulongLeft / CastULong(right);
-            if (right is ulong ulongRight) return CastULong(left) / ulongRight;
-
-            if (left is int intLeft) return intLeft / CastInt(right);
-            if (right is int intRight) return CastInt(left) / intRight;
-
-            if (left is uint uintLeft) return uintLeft / CastUInt(right);
-            if (right is uint uintRight) return CastUInt(left) / uintRight;
-
-            if (left is short shortLeft) return shortLeft / CastShort(right);
-            if (right is short shortRight) return CastShort(left) / shortRight;
-
-            if (left is ushort ushortLeft) return ushortLeft / CastUShort(right);
-            if (right is ushort ushortRight) return CastUShort(left) / ushortRight;
-
-            if (left is sbyte sbyteLeft) return sbyteLeft / CastSByte(right);
-            if (right is sbyte sbyteRight) return CastSByte(left) / sbyteRight;
-
-            if (left is byte byteLeft) return byteLeft / CastByte(right);
-            if (right is byte byteRight) return CastByte(left) / byteRight;
-            return new Exception("No suitable types found for operator");
-        }
-    }
-
-    private record OperatorDualModExpressionInstance(ExpressionInstance Left, ExpressionInstance Right) : ExpressionInstance
-    {
-        public override object? Evaluate(StructureInstance structure, Stream stream)
-        {
-            object left = Left.Evaluate(structure, stream) ?? throw new NullReferenceException("LHS null");
-            object right = Right.Evaluate(structure, stream) ?? throw new NullReferenceException("RHS null");
-
-            if (left is double doubleLeft) return doubleLeft % CastDouble(right);
-            if (right is double doubleRight) return CastDouble(left) % doubleRight;
-
-            if (left is float floatLeft) return floatLeft % CastFloat(right);
-            if (right is float floatRight) return CastFloat(left) % floatRight;
-
-            if (left is long longLeft) return longLeft % CastLong(right);
-            if (right is long longRight) return CastLong(left) % longRight;
-
-            if (left is ulong ulongLeft) return ulongLeft % CastULong(right);
-            if (right is ulong ulongRight) return CastULong(left) % ulongRight;
-
-            if (left is int intLeft) return intLeft % CastInt(right);
-            if (right is int intRight) return CastInt(left) % intRight;
-
-            if (left is uint uintLeft) return uintLeft % CastUInt(right);
-            if (right is uint uintRight) return CastUInt(left) % uintRight;
-
-            if (left is short shortLeft) return shortLeft % CastShort(right);
-            if (right is short shortRight) return CastShort(left) % shortRight;
-
-            if (left is ushort ushortLeft) return ushortLeft % CastUShort(right);
-            if (right is ushort ushortRight) return CastUShort(left) % ushortRight;
-
-            if (left is sbyte sbyteLeft) return sbyteLeft % CastSByte(right);
-            if (right is sbyte sbyteRight) return CastSByte(left) % sbyteRight;
-
-            if (left is byte byteLeft) return byteLeft % CastByte(right);
-            if (right is byte byteRight) return CastByte(left) % byteRight;
-            return new Exception("No suitable types found for operator");
-        }
-    }
-
-    private record OperatorDualAndExpressionInstance(ExpressionInstance Left, ExpressionInstance Right) : ExpressionInstance
-    {
-        public override object? Evaluate(StructureInstance structure, Stream stream)
-        {
-            object left = Left.Evaluate(structure, stream) ?? throw new NullReferenceException("LHS null");
-            object right = Right.Evaluate(structure, stream) ?? throw new NullReferenceException("RHS null");
-
-            if (left is long longLeft) return longLeft & CastLong(right);
-            if (right is long longRight) return CastLong(left) & longRight;
-
-            if (left is ulong ulongLeft) return ulongLeft & CastULong(right);
-            if (right is ulong ulongRight) return CastULong(left) & ulongRight;
-
-            if (left is int intLeft) return intLeft & CastInt(right);
-            if (right is int intRight) return CastInt(left) & intRight;
-
-            if (left is uint uintLeft) return uintLeft & CastUInt(right);
-            if (right is uint uintRight) return CastUInt(left) & uintRight;
-
-            if (left is short shortLeft) return shortLeft & CastShort(right);
-            if (right is short shortRight) return CastShort(left) & shortRight;
-
-            if (left is ushort ushortLeft) return ushortLeft & CastUShort(right);
-            if (right is ushort ushortRight) return CastUShort(left) & ushortRight;
-
-            if (left is sbyte sbyteLeft) return sbyteLeft & CastSByte(right);
-            if (right is sbyte sbyteRight) return CastSByte(left) & sbyteRight;
-
-            if (left is byte byteLeft) return byteLeft & CastByte(right);
-            if (right is byte byteRight) return CastByte(left) & byteRight;
-            return new Exception("No suitable types found for operator");
-        }
-    }
-
-    private record OperatorDualOrExpressionInstance(ExpressionInstance Left, ExpressionInstance Right) : ExpressionInstance
-    {
-        public override object? Evaluate(StructureInstance structure, Stream stream)
-        {
-            object left = Left.Evaluate(structure, stream) ?? throw new NullReferenceException("LHS null");
-            object right = Right.Evaluate(structure, stream) ?? throw new NullReferenceException("RHS null");
-
-            if (left is long longLeft) return longLeft | CastLong(right);
-            if (right is long longRight) return CastLong(left) | longRight;
-
-            if (left is ulong ulongLeft) return ulongLeft | CastULong(right);
-            if (right is ulong ulongRight) return CastULong(left) | ulongRight;
-
-            if (left is int intLeft) return intLeft | CastInt(right);
-            if (right is int intRight) return CastInt(left) | intRight;
-
-            if (left is uint uintLeft) return uintLeft | CastUInt(right);
-            if (right is uint uintRight) return CastUInt(left) | uintRight;
-
-            if (left is short shortLeft) return shortLeft | CastShort(right);
-            if (right is short shortRight) return CastShort(left) | shortRight;
-
-            if (left is ushort ushortLeft) return ushortLeft | CastUShort(right);
-            if (right is ushort ushortRight) return CastUShort(left) | ushortRight;
-
-            if (left is sbyte sbyteLeft) return sbyteLeft | CastSByte(right);
-            if (right is sbyte sbyteRight) return CastSByte(left) | sbyteRight;
-
-            if (left is byte byteLeft) return byteLeft | CastByte(right);
-            if (right is byte byteRight) return CastByte(left) | byteRight;
-            return new Exception("No suitable types found for operator");
-        }
-    }
-
-    private record OperatorDualXorExpressionInstance(ExpressionInstance Left, ExpressionInstance Right) : ExpressionInstance
-    {
-        public override object? Evaluate(StructureInstance structure, Stream stream)
-        {
-            object left = Left.Evaluate(structure, stream) ?? throw new NullReferenceException("LHS null");
-            object right = Right.Evaluate(structure, stream) ?? throw new NullReferenceException("RHS null");
-
-            if (left is long longLeft) return longLeft ^ CastLong(right);
-            if (right is long longRight) return CastLong(left) ^ longRight;
-
-            if (left is ulong ulongLeft) return ulongLeft ^ CastULong(right);
-            if (right is ulong ulongRight) return CastULong(left) ^ ulongRight;
-
-            if (left is int intLeft) return intLeft ^ CastInt(right);
-            if (right is int intRight) return CastInt(left) ^ intRight;
-
-            if (left is uint uintLeft) return uintLeft ^ CastUInt(right);
-            if (right is uint uintRight) return CastUInt(left) ^ uintRight;
-
-            if (left is short shortLeft) return shortLeft ^ CastShort(right);
-            if (right is short shortRight) return CastShort(left) ^ shortRight;
-
-            if (left is ushort ushortLeft) return ushortLeft ^ CastUShort(right);
-            if (right is ushort ushortRight) return CastUShort(left) ^ ushortRight;
-
-            if (left is sbyte sbyteLeft) return sbyteLeft ^ CastSByte(right);
-            if (right is sbyte sbyteRight) return CastSByte(left) ^ sbyteRight;
-
-            if (left is byte byteLeft) return byteLeft ^ CastByte(right);
-            if (right is byte byteRight) return CastByte(left) ^ byteRight;
-            return new Exception("No suitable types found for operator");
-        }
     }
 
     /// <summary>
@@ -379,18 +53,18 @@ public class OperatorDualExpression : ExpressionDefinition
     /// </summary>
     /// <param name="op">String representation</param>
     /// <returns>Enum value</returns>
-    public static Operator GetOperator(string op)
+    public static BinaryOperator GetOperator(string op)
     {
         return op switch
         {
-            "+" => Operator.Add,
-            "-" => Operator.Sub,
-            "*" => Operator.Mult,
-            "/" => Operator.Div,
-            "%" => Operator.Mod,
-            "&" => Operator.And,
-            "|" => Operator.Or,
-            "^" => Operator.Xor,
+            "+" => BinaryOperator.Add,
+            "-" => BinaryOperator.Sub,
+            "*" => BinaryOperator.Mult,
+            "/" => BinaryOperator.Div,
+            "%" => BinaryOperator.Mod,
+            "&" => BinaryOperator.And,
+            "|" => BinaryOperator.Or,
+            "^" => BinaryOperator.Xor,
             _ => throw new ArgumentOutOfRangeException(nameof(op))
         };
     }
