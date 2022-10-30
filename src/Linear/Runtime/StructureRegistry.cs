@@ -110,6 +110,49 @@ public class StructureRegistry
     public bool TryGetStructure(string name, [NotNullWhen(true)] out Structure? structure) => _structures.TryGetValue(name, out structure);
 
     /// <summary>
+    /// Parses structure from stream.
+    /// </summary>
+    /// <param name="name">Structure name.</param>
+    /// <param name="stream">Stream to read from.</param>
+    /// <returns>Parsed structure.</returns>
+    public StructureInstance Parse(string name, Stream stream)
+    {
+        if (TryGetStructure(name, out var structure))
+        {
+            long length = 0;
+            try
+            {
+                if (stream.CanSeek)
+                {
+                    length = stream.Length;
+                }
+            }
+            catch
+            {
+                // ignored
+            }
+            return structure.Parse(Structures, stream, new ParseState(name, Length: length));
+        }
+        throw new InvalidOperationException($"No structure named {name} was found");
+    }
+
+    /// <summary>
+    /// Parses structure from stream.
+    /// </summary>
+    /// <param name="name">Structure name.</param>
+    /// <param name="stream">Stream to read from.</param>
+    /// <param name="parseState">Initial parse state.</param>
+    /// <returns>Parsed structure.</returns>
+    public StructureInstance Parse(string name, Stream stream, ParseState parseState)
+    {
+        if (TryGetStructure(name, out var structure))
+        {
+            return structure.Parse(Structures, stream, parseState);
+        }
+        throw new InvalidOperationException($"No structure named {name} was found");
+    }
+
+    /// <summary>
     /// Parses and adds structures.
     /// </summary>
     /// <param name="input">Lyn format input.</param>

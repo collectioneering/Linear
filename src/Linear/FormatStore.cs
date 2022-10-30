@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using Linear.Runtime;
 using Linear.Runtime.Expressions;
 
@@ -91,6 +92,29 @@ public class FormatStore : IEnumerable<string>
     /// <param name="structure">Structure.</param>
     /// <returns>True if found.</returns>
     public bool TryGetStructure(string name, [NotNullWhen(true)] out Structure? structure) => _registry.TryGetStructure(name, out structure);
+
+    /// <summary>
+    /// Parses structure from stream.
+    /// </summary>
+    /// <param name="name">Structure name.</param>
+    /// <param name="stream">Stream to read from.</param>
+    /// <returns>Parsed structure.</returns>
+    public StructureInstance Parse(string name, Stream stream)
+    {
+        return _registry.Parse(name, stream);
+    }
+
+    /// <summary>
+    /// Parses structure from stream.
+    /// </summary>
+    /// <param name="name">Structure name.</param>
+    /// <param name="stream">Stream to read from.</param>
+    /// <param name="parseState">Initial parse state.</param>
+    /// <returns>Parsed structure.</returns>
+    public StructureInstance Parse(string name, Stream stream, ParseState parseState)
+    {
+        return _registry.Parse(name, stream, parseState);
+    }
 
     /// <inheritdoc />
     public IEnumerator<string> GetEnumerator() => _specs.GetEnumerator();

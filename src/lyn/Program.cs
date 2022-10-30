@@ -75,7 +75,7 @@ namespace lyn
             Console.WriteLine($">>{inputFile}");
             using Stream baseStream = File.OpenRead(inputFile);
             using MultiBufferStream mbs = new MultiBufferStream(baseStream);
-            StructureInstance si = mainStructure.Parse(registry, mbs, new ParseState(MainLayout, 0, null, baseStream.Length));
+            StructureInstance si = registry.Parse(MainLayout, mbs);
             Dictionary<string, IExporter> exporterDictionary = LinearUtil.CreateDefaultExporterDictionary();
             foreach (var output in si.GetOutputs())
             {

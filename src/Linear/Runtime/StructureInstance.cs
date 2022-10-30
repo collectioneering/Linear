@@ -11,44 +11,44 @@ using System.Numerics;
 namespace Linear.Runtime
 {
     /// <summary>
-    /// Parsed body of structure
+    /// Parsed body of structure.
     /// </summary>
     public class StructureInstance
     {
         private int _u;
 
         /// <summary>
-        /// Index of structure in array
+        /// Index of structure in array.
         /// </summary>
         public int Index { get; }
 
         /// <summary>
-        /// Registry this structure belongs to
+        /// Registry to use for this instance.
         /// </summary>
-        public StructureRegistry Registry { get; }
+        public IReadOnlyDictionary<string, Structure> Registry { get; }
 
         /// <summary>
-        /// Absolute offset of structure
+        /// Absolute offset of structure.
         /// </summary>
         public long AbsoluteOffset { get; }
 
         /// <summary>
-        /// Parent object
+        /// Parent object.
         /// </summary>
         public StructureInstance? Parent { get; }
 
         /// <summary>
-        /// Length of structure
+        /// Length of structure.
         /// </summary>
         /// <remarks>
-        /// Only available in trailing-length pointer array
+        /// Only available in trailing-length pointer array.
         /// </remarks>
         public long Length { get; set; }
 
         /// <summary>
-        /// Get unique sequential identifier
+        /// Get unique sequential identifier.
         /// </summary>
-        /// <returns>Unique identifier</returns>
+        /// <returns>Unique identifier.</returns>
         public int GetUniqueId() => Parent?.GetUniqueId() ?? _u++;
 
         private readonly Dictionary<string, object> _members = new();
@@ -56,14 +56,14 @@ namespace Linear.Runtime
         private readonly List<StructureOutput> _outputs = new();
 
         /// <summary>
-        /// Create new instance of <see cref="StructureInstance"/>
+        /// Initializes an instance of <see cref="StructureInstance"/>.
         /// </summary>
-        /// <param name="registry">Registry this instance belongs to</param>
-        /// <param name="parent">Parent object</param>
-        /// <param name="absoluteOffset">Absolute offset of structure</param>
-        /// <param name="length">Length of structure</param>
-        /// <param name="i">Structure index</param>
-        public StructureInstance(StructureRegistry registry, StructureInstance? parent, long absoluteOffset, long length = 0, int i = 0)
+        /// <param name="registry">Registry to use for this instance.</param>
+        /// <param name="parent">Parent object.</param>
+        /// <param name="absoluteOffset">Absolute offset of structure.</param>
+        /// <param name="length">Length of structure.</param>
+        /// <param name="i">Structure index.</param>
+        public StructureInstance(IReadOnlyDictionary<string, Structure> registry, StructureInstance? parent, long absoluteOffset, long length = 0, int i = 0)
         {
             Registry = registry;
             Parent = parent;
