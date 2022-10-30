@@ -29,7 +29,7 @@ main {
         {
             var res = new StructureRegistry();
             Assert.That(res.TryLoad(_test1,Console.WriteLine), Is.True);
-            Assert.IsTrue(res.TryGetValue("main", out Structure structure));
+            Assert.IsTrue(res.TryGetStructure("main", out Structure structure));
             MemoryStream ms = new(new byte[] { 0, 1, 2, 3, 4, 5 });
             StructureInstance si = structure.Parse(res, ms, new ParseState("main"));
             Assert.AreEqual(4 * 2 + 5, si["a"]);

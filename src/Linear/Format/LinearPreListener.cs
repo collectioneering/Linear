@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Antlr4.Runtime.Tree;
 
-namespace Linear.Lyn;
+namespace Linear.Format;
 
 /// <summary>
 /// ANTLR listener implementation

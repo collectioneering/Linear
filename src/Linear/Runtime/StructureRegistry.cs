@@ -5,8 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Antlr4.Runtime;
-using Antlr4.Runtime.Tree;
-using Linear.Lyn;
+using Linear.Format;
 using Linear.Runtime.Deserializers;
 using Linear.Runtime.Expressions;
 using Linear.Utility;
@@ -103,12 +102,12 @@ public class StructureRegistry
     public Structure this[string name] => _structures[name];
 
     /// <summary>
-    /// Try to get structure by name
+    /// Attempts to get structure by name.
     /// </summary>
-    /// <param name="name">Mae</param>
-    /// <param name="structure">Structure</param>
-    /// <returns>True if found</returns>
-    public bool TryGetValue(string name, [NotNullWhen(true)] out Structure? structure) => _structures.TryGetValue(name, out structure);
+    /// <param name="name">Name.</param>
+    /// <param name="structure">Structure.</param>
+    /// <returns>True if found.</returns>
+    public bool TryGetStructure(string name, [NotNullWhen(true)] out Structure? structure) => _structures.TryGetValue(name, out structure);
 
     /// <summary>
     /// Parses and adds structures.
@@ -132,7 +131,26 @@ public class StructureRegistry
     /// <returns>True if succeeded.</returns>
     public bool TryLoad(string input, Action<string> logDelegate, string? filenameHint = null, IAntlrErrorStrategy? errorHandler = null)
     {
-        return TryLoad(new StringReader(input), logDelegate, filenameHint, errorHandler);
+        try
+        {
+            FormatParser.Load(input, filenameHint, errorHandler, Deserializers, Methods, out var createdDeserializers, out var structures);
+            Add(createdDeserializers, structures);
+        }
+        catch (InvalidOperationException e)
+        {
+            logDelegate(e.Message);
+            return false;
+        }
+        catch (LynFormatException e)
+        {
+            foreach (var error in e.Errors)
+            {
+                logDelegate(error.GetFormattedText());
+            }
+            logDelegate(e.Message);
+            return false;
+        }
+        return true;
     }
 
     /// <summary>
@@ -144,11 +162,7 @@ public class StructureRegistry
     /// <returns>True if succeeded.</returns>
     public void Load(TextReader input, string? filenameHint = null, IAntlrErrorStrategy? errorHandler = null)
     {
-        var inputStream = new AntlrInputStream(input);
-        var lexer = new LinearLexer(inputStream);
-        var tokens = new CommonTokenStream(lexer);
-        var parser = new LinearParser(tokens);
-        Load(parser, filenameHint, errorHandler, Deserializers, Methods, out var createdDeserializers, out var structures);
+        FormatParser.Load(input, filenameHint, errorHandler, Deserializers, Methods, out var createdDeserializers, out var structures);
         Add(createdDeserializers, structures);
     }
 
@@ -162,13 +176,9 @@ public class StructureRegistry
     /// <returns>True if succeeded.</returns>
     public bool TryLoad(TextReader input, Action<string> logDelegate, string? filenameHint = null, IAntlrErrorStrategy? errorHandler = null)
     {
-        var inputStream = new AntlrInputStream(input);
-        var lexer = new LinearLexer(inputStream);
-        var tokens = new CommonTokenStream(lexer);
-        var parser = new LinearParser(tokens);
         try
         {
-            Load(parser, filenameHint, errorHandler, Deserializers, Methods, out var createdDeserializers, out var structures);
+            FormatParser.Load(input, filenameHint, errorHandler, Deserializers, Methods, out var createdDeserializers, out var structures);
             Add(createdDeserializers, structures);
         }
         catch (InvalidOperationException e)
@@ -214,50 +224,5 @@ public class StructureRegistry
         {
             _deserializers.Add(pair.Key, pair.Value);
         }
-    }
-
-    private static void Load(LinearParser parser, string? filenameHint, IAntlrErrorStrategy? errorHandler,
-        IReadOnlyDictionary<string, IDeserializer> deserializers, IReadOnlyDictionary<string, MethodCallDelegate> methods,
-        out List<KeyValuePair<string, IDeserializer>> createdDeserializers,
-        out List<KeyValuePair<string, Structure>> structures)
-    {
-        var listenerPre = new LinearPreListener();
-        if (errorHandler != null)
-            parser.ErrorHandler = errorHandler;
-        ParseTreeWalker.Default.Walk(listenerPre, parser.compilation_unit());
-        if (listenerPre.Fail)
-        {
-            throw new InvalidOperationException("Failed to parse structure");
-        }
-        createdDeserializers = listenerPre.GetStructureNames().Select(v => new KeyValuePair<string, IDeserializer>(v, new StructureDeserializer(v))).ToList();
-        Dictionary<string, IDeserializer> deserializersTmp = new(deserializers.Concat(createdDeserializers));
-        var listener = new LinearListener(deserializersTmp, methods, filenameHint);
-        parser.Reset();
-        ParseTreeWalker.Default.Walk(listener, parser.compilation_unit());
-        if (listener.Fail)
-        {
-            throw new LynFormatException(listener.GetErrors());
-        }
-        structures = new List<KeyValuePair<string, Structure>>();
-        foreach (StructureDefinition structure in listener.GetStructures())
-        {
-            var built = structure.Build();
-            structures.Add(new KeyValuePair<string, Structure>(structure.Name, built));
-        }
-    }
-}
-
-internal class LynFormatException : IOException
-{
-    public IReadOnlyList<ParseError> Errors { get; }
-
-    public LynFormatException(IReadOnlyList<ParseError> errors) : base("Errors occurred while parsing format")
-    {
-        Errors = errors;
-    }
-
-    public LynFormatException(string message, IReadOnlyList<ParseError> errors) : base(message)
-    {
-        Errors = errors;
     }
 }

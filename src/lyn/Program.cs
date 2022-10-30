@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Fp;
 using Linear.Runtime;
@@ -9,7 +8,6 @@ using Linear.Utility;
 
 namespace lyn
 {
-    [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Local")]
     internal static class Program
     {
         private const string MainLayout = "main";
@@ -49,7 +47,7 @@ namespace lyn
                     return 5;
                 }
 
-            if (!registry.TryGetValue(MainLayout, out Structure? mainStructure))
+            if (!registry.TryGetStructure(MainLayout, out Structure? mainStructure))
             {
                 Console.WriteLine($"Failed to find structure named {MainLayout}");
                 return 2;
@@ -101,13 +99,10 @@ namespace lyn
 
         private class Configuration
         {
-            //[Value(0, Required = true, MetaName = nameof(LayoutFile))]
             public string? LayoutFile { get; set; }
 
-            //[Value(1, Required = true, MetaName = nameof(Input))]
             public string? Input { get; set; }
 
-            //[Value(2, Required = true, MetaName = nameof(OutputDir))]
             public string? OutputDir { get; set; }
 
             internal Configuration(string layoutFile, string input, string outputDir)

@@ -10,7 +10,7 @@ using Linear.Runtime.Deserializers;
 using Linear.Runtime.Elements;
 using Linear.Runtime.Expressions;
 
-namespace Linear.Lyn;
+namespace Linear.Format;
 
 /// <summary>
 /// ANTLR listener implementation

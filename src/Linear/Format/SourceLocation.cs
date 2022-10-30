@@ -1,4 +1,4 @@
-namespace Linear.Lyn;
+namespace Linear.Format;
 
 /// <summary>
 /// Marks a source location.
