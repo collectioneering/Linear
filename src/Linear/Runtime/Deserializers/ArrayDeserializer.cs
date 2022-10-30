@@ -34,7 +34,7 @@ public class ArrayDeserializer : IDeserializer
     /// <inheritdoc />
     public DeserializeResult Deserialize(StructureInstance instance, Stream stream,
         long offset, bool littleEndian, Dictionary<StandardProperty, object>? standardProperties,
-        Dictionary<string, object>? parameters, long length = 0, int index = 0)
+        Dictionary<string, object>? parameters, long? length = null, int index = 0)
     {
         if (standardProperties == null) throw new NullReferenceException();
         int arrayLength = CastUtil.CastInt(standardProperties[StandardProperty.ArrayLengthProperty]);
@@ -42,10 +42,44 @@ public class ArrayDeserializer : IDeserializer
         long curOffset = offset;
         for (int i = 0; i < arrayLength; i++)
         {
-            (object value, long elemLength) = _elementDeserializer.Deserialize(instance, stream,
+            (object value, long? elemLength) = _elementDeserializer.Deserialize(instance, stream,
                 curOffset, littleEndian, standardProperties, parameters, 0, i);
             res.SetValue(value, i);
-            curOffset += elemLength;
+            if (elemLength is { } elemLengthValue)
+            {
+                curOffset += elemLengthValue;
+            }
+            else
+            {
+                throw new InvalidOperationException("Unknown length for deserialized element");
+            }
+        }
+
+        return new DeserializeResult(res, curOffset - offset);
+    }
+
+    /// <inheritdoc />
+    public DeserializeResult Deserialize(StructureInstance instance, ReadOnlySpan<byte> span,
+        long offset, bool littleEndian, Dictionary<StandardProperty, object>? standardProperties,
+        Dictionary<string, object>? parameters, long? length = null, int index = 0)
+    {
+        if (standardProperties == null) throw new NullReferenceException();
+        int arrayLength = CastUtil.CastInt(standardProperties[StandardProperty.ArrayLengthProperty]);
+        Array res = Array.CreateInstance(_elementType, arrayLength);
+        long curOffset = offset;
+        for (int i = 0; i < arrayLength; i++)
+        {
+            (object value, long? elemLength) = _elementDeserializer.Deserialize(instance, span,
+                curOffset, littleEndian, standardProperties, parameters, 0, i);
+            res.SetValue(value, i);
+            if (elemLength is { } elemLengthValue)
+            {
+                curOffset += elemLengthValue;
+            }
+            else
+            {
+                throw new InvalidOperationException("Unknown length for deserialized element");
+            }
         }
 
         return new DeserializeResult(res, curOffset - offset);

@@ -7,7 +7,7 @@ namespace Linear.Test
 {
     public class LinearTests
     {
-        private const string _test1 = """
+        private const string SrcSpec = """
 main {
     var a 4*2+5;
     var b 5+8*9;
@@ -25,15 +25,26 @@ main {
         {
         }
 
+        private static readonly byte[] s_Test1_Data = { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05 };
+
         [Test]
         public void Test1()
         {
             var res = new StructureRegistry();
-            Assert.That(res.TryLoad(_test1, Console.WriteLine), Is.True);
+            Assert.That(res.TryLoad(SrcSpec, Console.WriteLine), Is.True);
             Assert.That(res.TryGetStructure("main", out Structure structure), Is.True);
             Assert.That(structure, Is.Not.Null);
-            MemoryStream ms = new(new byte[] { 0, 1, 2, 3, 4, 5 });
+            MemoryStream ms = new(s_Test1_Data);
             StructureInstance si = res.Parse("main", ms);
+            Assert.That(si["a"], Is.EqualTo(4 * 2 + 5));
+            Assert.That(si["b"], Is.EqualTo(5 + 8 * 9));
+            Assert.That(si["c"], Is.EqualTo(4 / 2 * 8));
+            Assert.That(si["d"], Is.EqualTo(9 * 7 / 3));
+            Assert.That(si["e"], Is.EqualTo(0xff & 0x11));
+            Assert.That(si["f"], Is.EqualTo(0x100));
+            Assert.That(si["f2"], Is.EqualTo(0x0302));
+            Assert.That(si["g"], Is.EqualTo(0x5));
+            si = res.Parse("main", s_Test1_Data);
             Assert.That(si["a"], Is.EqualTo(4 * 2 + 5));
             Assert.That(si["b"], Is.EqualTo(5 + 8 * 9));
             Assert.That(si["c"], Is.EqualTo(4 / 2 * 8));

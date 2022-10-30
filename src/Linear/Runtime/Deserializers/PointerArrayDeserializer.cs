@@ -40,7 +40,7 @@ public class PointerArrayDeserializer : IDeserializer
     /// <inheritdoc />
     public DeserializeResult Deserialize(StructureInstance instance, Stream stream,
         long offset, bool littleEndian, Dictionary<StandardProperty, object>? standardProperties,
-        Dictionary<string, object>? parameters, long length = 0, int index = 0)
+        Dictionary<string, object>? parameters, long? length = null, int index = 0)
     {
         if (standardProperties == null) throw new NullReferenceException();
         (object src, _) = _mainDeserializer.Deserialize(instance, stream, offset, littleEndian, standardProperties, parameters);
@@ -48,16 +48,60 @@ public class PointerArrayDeserializer : IDeserializer
         int pointerArrayLength = CastInt(standardProperties[StandardProperty.PointerArrayLengthProperty]);
         long pointerOffset = CastLong(standardProperties[StandardProperty.PointerOffsetProperty]);
         Array tarArray = Array.CreateInstance(_elementType, pointerArrayLength);
-        long curOffset = offset;
+        long? curOffset = offset;
         for (int i = 0; i < pointerArrayLength; i++)
         {
             long vI = CastLong(baseArray.GetValue(i));
             long preElemLength = _lenFinder ? CastLong(baseArray.GetValue(i + 1)) - vI : 0;
-            (object value, long elemLength) = _elementDeserializer.Deserialize(instance, stream, pointerOffset + vI, littleEndian, standardProperties, parameters, preElemLength, i);
+            (object value, long? elemLength) = _elementDeserializer.Deserialize(instance, stream, pointerOffset + vI, littleEndian, standardProperties, parameters, preElemLength, i);
             tarArray.SetValue(value, i);
-            curOffset += elemLength;
+            if (curOffset is { } curOffsetValue)
+            {
+                if (elemLength is { } elemLengthValue)
+                {
+                    curOffset = curOffsetValue + elemLengthValue;
+                }
+                else
+                {
+                    curOffset = null;
+                }
+            }
         }
 
-        return new DeserializeResult(tarArray, curOffset - offset);
+        return new DeserializeResult(tarArray, curOffset.HasValue ? curOffset.Value - offset : null);
+    }
+
+    /// <inheritdoc />
+    public DeserializeResult Deserialize(StructureInstance instance, ReadOnlySpan<byte> span,
+        long offset, bool littleEndian, Dictionary<StandardProperty, object>? standardProperties,
+        Dictionary<string, object>? parameters, long? length = null, int index = 0)
+    {
+        if (standardProperties == null) throw new NullReferenceException();
+        (object src, _) = _mainDeserializer.Deserialize(instance, span, offset, littleEndian, standardProperties, parameters);
+        Array baseArray = (Array)src;
+        int pointerArrayLength = CastInt(standardProperties[StandardProperty.PointerArrayLengthProperty]);
+        long pointerOffset = CastLong(standardProperties[StandardProperty.PointerOffsetProperty]);
+        Array tarArray = Array.CreateInstance(_elementType, pointerArrayLength);
+        long? curOffset = offset;
+        for (int i = 0; i < pointerArrayLength; i++)
+        {
+            long vI = CastLong(baseArray.GetValue(i));
+            long preElemLength = _lenFinder ? CastLong(baseArray.GetValue(i + 1)) - vI : 0;
+            (object value, long? elemLength) = _elementDeserializer.Deserialize(instance, span, pointerOffset + vI, littleEndian, standardProperties, parameters, preElemLength, i);
+            tarArray.SetValue(value, i);
+            if (curOffset is { } curOffsetValue)
+            {
+                if (elemLength is { } elemLengthValue)
+                {
+                    curOffset = curOffsetValue + elemLengthValue;
+                }
+                else
+                {
+                    curOffset = null;
+                }
+            }
+        }
+
+        return new DeserializeResult(tarArray, curOffset.HasValue ? curOffset.Value - offset : null);
     }
 }

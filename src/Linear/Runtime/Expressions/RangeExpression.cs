@@ -63,6 +63,13 @@ public class RangeExpression : ExpressionDefinition
             long end = CastLong(End.Evaluate(structure, stream));
             return new LongRange(start, end - start);
         }
+
+        public override object Evaluate(StructureInstance structure, ReadOnlySpan<byte> span)
+        {
+            long start = CastLong(Start.Evaluate(structure, span));
+            long end = CastLong(End.Evaluate(structure, span));
+            return new LongRange(start, end - start);
+        }
     }
 
     private record RangeExpressionInstanceStartLength(ExpressionInstance Start, ExpressionInstance Length) : ExpressionInstance
@@ -71,6 +78,13 @@ public class RangeExpression : ExpressionDefinition
         {
             long start = CastLong(Start.Evaluate(structure, stream));
             long length = CastLong(Length.Evaluate(structure, stream));
+            return new LongRange(start, length);
+        }
+
+        public override object Evaluate(StructureInstance structure, ReadOnlySpan<byte> span)
+        {
+            long start = CastLong(Start.Evaluate(structure, span));
+            long length = CastLong(Length.Evaluate(structure, span));
             return new LongRange(start, length);
         }
     }

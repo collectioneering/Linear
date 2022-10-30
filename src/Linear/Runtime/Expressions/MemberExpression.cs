@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -32,6 +33,11 @@ public class MemberExpression : ExpressionDefinition
     private record MemberExpressionInstance(string Name) : ExpressionInstance
     {
         public override object Evaluate(StructureInstance structure, Stream stream)
+        {
+            return structure[Name];
+        }
+
+        public override object Evaluate(StructureInstance structure, ReadOnlySpan<byte> span)
         {
             return structure[Name];
         }

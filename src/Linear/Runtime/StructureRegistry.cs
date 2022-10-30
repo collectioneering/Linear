@@ -137,6 +137,21 @@ public class StructureRegistry
     }
 
     /// <summary>
+    /// Parses structure from buffer.
+    /// </summary>
+    /// <param name="name">Structure name.</param>
+    /// <param name="span">Buffer to read from.</param>
+    /// <returns>Parsed structure.</returns>
+    public StructureInstance Parse(string name, ReadOnlySpan<byte> span)
+    {
+        if (TryGetStructure(name, out var structure))
+        {
+            return structure.Parse(Structures, span, new ParseState(name, Length: span.Length));
+        }
+        throw new InvalidOperationException($"No structure named {name} was found");
+    }
+
+    /// <summary>
     /// Parses structure from stream.
     /// </summary>
     /// <param name="name">Structure name.</param>
@@ -148,6 +163,22 @@ public class StructureRegistry
         if (TryGetStructure(name, out var structure))
         {
             return structure.Parse(Structures, stream, parseState);
+        }
+        throw new InvalidOperationException($"No structure named {name} was found");
+    }
+
+    /// <summary>
+    /// Parses structure from buffer.
+    /// </summary>
+    /// <param name="name">Structure name.</param>
+    /// <param name="span">Buffer to read from.</param>
+    /// <param name="parseState">Initial parse state.</param>
+    /// <returns>Parsed structure.</returns>
+    public StructureInstance Parse(string name, ReadOnlySpan<byte> span, ParseState parseState)
+    {
+        if (TryGetStructure(name, out var structure))
+        {
+            return structure.Parse(Structures, span, parseState);
         }
         throw new InvalidOperationException($"No structure named {name} was found");
     }

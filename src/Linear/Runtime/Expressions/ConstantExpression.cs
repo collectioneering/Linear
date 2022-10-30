@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -29,6 +30,11 @@ public class ConstantExpression<T> : ExpressionDefinition
     private record ConstantExpressionInstance(T Value) : ExpressionInstance
     {
         public override object? Evaluate(StructureInstance structure, Stream stream)
+        {
+            return Value;
+        }
+
+        public override object? Evaluate(StructureInstance structure, ReadOnlySpan<byte> span)
         {
             return Value;
         }
@@ -84,11 +90,16 @@ public class ConstantNumberExpression<T> : ConstantNumberExpression
         public override TResult Cast<TResult>()
         {
             // TODO
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 #endif
 
         public override object Evaluate(StructureInstance structure, Stream stream)
+        {
+            return Value;
+        }
+
+        public override object Evaluate(StructureInstance structure, ReadOnlySpan<byte> span)
         {
             return Value;
         }

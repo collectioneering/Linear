@@ -68,6 +68,27 @@ public class OutputElement : Element
                     exporterParams![kvp.Key] = kvp.Value.Evaluate(structure, stream) ?? throw new NullReferenceException();
                 }
             }
+            InitializeInternal(structure, format, range, name, exporterParams);
+        }
+
+        public override void Initialize(StructureInstance structure, ReadOnlySpan<byte> span)
+        {
+            object? format = Format.Evaluate(structure, span);
+            object? range = Range.Evaluate(structure, span);
+            object? name = Name.Evaluate(structure, span);
+            Dictionary<string, object>? exporterParams = ExporterParamsCompact == null ? null : new Dictionary<string, object>();
+            if (ExporterParamsCompact != null)
+            {
+                foreach (var kvp in ExporterParamsCompact)
+                {
+                    exporterParams![kvp.Key] = kvp.Value.Evaluate(structure, span) ?? throw new NullReferenceException();
+                }
+            }
+            InitializeInternal(structure, format, range, name, exporterParams);
+        }
+
+        private static void InitializeInternal(StructureInstance structure, object? format, object? range, object? name, Dictionary<string, object>? exporterParams)
+        {
             if (format is not string formatValue)
             {
                 throw new InvalidCastException($"Could not cast expression of type {format?.GetType().FullName} to type {nameof(String)}");

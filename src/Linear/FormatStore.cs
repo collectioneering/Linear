@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
@@ -105,6 +106,17 @@ public class FormatStore : IEnumerable<string>
     }
 
     /// <summary>
+    /// Parses structure from buffer.
+    /// </summary>
+    /// <param name="name">Structure name.</param>
+    /// <param name="span">Buffer to read from.</param>
+    /// <returns>Parsed structure.</returns>
+    public StructureInstance Parse(string name, ReadOnlySpan<byte> span)
+    {
+        return _registry.Parse(name, span);
+    }
+
+    /// <summary>
     /// Parses structure from stream.
     /// </summary>
     /// <param name="name">Structure name.</param>
@@ -114,6 +126,18 @@ public class FormatStore : IEnumerable<string>
     public StructureInstance Parse(string name, Stream stream, ParseState parseState)
     {
         return _registry.Parse(name, stream, parseState);
+    }
+
+    /// <summary>
+    /// Parses structure from buffer.
+    /// </summary>
+    /// <param name="name">Structure name.</param>
+    /// <param name="span">Buffer to read from.</param>
+    /// <param name="parseState">Initial parse state.</param>
+    /// <returns>Parsed structure.</returns>
+    public StructureInstance Parse(string name, ReadOnlySpan<byte> span, ParseState parseState)
+    {
+        return _registry.Parse(name, span, parseState);
     }
 
     /// <inheritdoc />

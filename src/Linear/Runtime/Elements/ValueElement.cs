@@ -39,5 +39,11 @@ public class ValueElement : Element
             object expression = Expression.Evaluate(structure, stream) ?? throw new NullReferenceException();
             structure.SetMember(Name, expression);
         }
+
+        public override void Initialize(StructureInstance structure, ReadOnlySpan<byte> span)
+        {
+            object expression = Expression.Evaluate(structure, span) ?? throw new NullReferenceException();
+            structure.SetMember(Name, expression);
+        }
     }
 }

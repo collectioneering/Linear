@@ -8,7 +8,17 @@ internal record OperatorUnaryMinusExpressionInstance(ExpressionInstance Expressi
     public override object Evaluate(StructureInstance structure, Stream stream)
     {
         object value = Expression.Evaluate(structure, stream) ?? throw new NullReferenceException("Expr value null");
+        return EvaluateInternal(value);
+    }
 
+    public override object Evaluate(StructureInstance structure, ReadOnlySpan<byte> span)
+    {
+        object value = Expression.Evaluate(structure, span) ?? throw new NullReferenceException("Expr value null");
+        return EvaluateInternal(value);
+    }
+
+    private static object EvaluateInternal(object value)
+    {
         return value switch
         {
             double doubleValue => -doubleValue,

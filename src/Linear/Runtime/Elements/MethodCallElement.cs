@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Linear.Runtime.Elements;
@@ -33,6 +34,11 @@ public class MethodCallElement : Element
         public override void Initialize(StructureInstance structure, Stream stream)
         {
             Expression.Evaluate(structure, stream);
+        }
+
+        public override void Initialize(StructureInstance structure, ReadOnlySpan<byte> span)
+        {
+            Expression.Evaluate(structure, span);
         }
     }
 }

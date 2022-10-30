@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -40,6 +41,16 @@ public class MethodCallExpression : ExpressionDefinition
         public override object? Evaluate(StructureInstance structure, Stream stream)
         {
             return Delegate(ArgsCompact.Select(arg => arg.Evaluate(structure, stream)).ToArray());
+        }
+
+        public override object? Evaluate(StructureInstance structure, ReadOnlySpan<byte> span)
+        {
+            List<object?> args = new();
+            foreach (var arg in ArgsCompact)
+            {
+                args.Add(arg.Evaluate(structure, span));
+            }
+            return Delegate(args);
         }
     }
 }

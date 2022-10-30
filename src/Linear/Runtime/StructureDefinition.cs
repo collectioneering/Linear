@@ -17,7 +17,7 @@ public class StructureDefinition
     /// <summary>
     /// Default length of structure
     /// </summary>
-    public int DefaultLength { get; }
+    public int? DefaultLength { get; }
 
     /// <summary>
     /// Members not sorted for dependency
@@ -29,7 +29,7 @@ public class StructureDefinition
     /// </summary>
     /// <param name="name">Name of structure</param>
     /// <param name="defaultLength">Default length of structure</param>
-    public StructureDefinition(string name, int defaultLength)
+    public StructureDefinition(string name, int? defaultLength)
     {
         Name = name;
         DefaultLength = defaultLength;

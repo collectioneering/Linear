@@ -41,9 +41,9 @@ namespace Linear.Runtime
         /// Length of structure.
         /// </summary>
         /// <remarks>
-        /// Only available in trailing-length pointer array.
+        /// Only available in trailing-length pointer array or when explicitly declared for a structure definition.
         /// </remarks>
-        public long Length { get; set; }
+        public long? Length { get; set; }
 
         /// <summary>
         /// Get unique sequential identifier.
@@ -63,7 +63,7 @@ namespace Linear.Runtime
         /// <param name="absoluteOffset">Absolute offset of structure.</param>
         /// <param name="length">Length of structure.</param>
         /// <param name="i">Structure index.</param>
-        public StructureInstance(IReadOnlyDictionary<string, Structure> registry, StructureInstance? parent, long absoluteOffset, long length = 0, int i = 0)
+        public StructureInstance(IReadOnlyDictionary<string, Structure> registry, StructureInstance? parent, long absoluteOffset, long? length = null, int i = 0)
         {
             Registry = registry;
             Parent = parent;

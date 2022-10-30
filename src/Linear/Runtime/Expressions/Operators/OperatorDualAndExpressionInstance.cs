@@ -6,11 +6,22 @@ namespace Linear.Runtime.Expressions.Operators;
 
 internal record OperatorDualAndExpressionInstance(ExpressionInstance Left, ExpressionInstance Right) : ExpressionInstance
 {
-    public override object? Evaluate(StructureInstance structure, Stream stream)
+    public override object Evaluate(StructureInstance structure, Stream stream)
     {
         object left = Left.Evaluate(structure, stream) ?? throw new NullReferenceException("LHS null");
         object right = Right.Evaluate(structure, stream) ?? throw new NullReferenceException("RHS null");
+        return EvaluateInternal(left, right);
+    }
 
+    public override object Evaluate(StructureInstance structure, ReadOnlySpan<byte> span)
+    {
+        object left = Left.Evaluate(structure, span) ?? throw new NullReferenceException("LHS null");
+        object right = Right.Evaluate(structure, span) ?? throw new NullReferenceException("RHS null");
+        return EvaluateInternal(left, right);
+    }
+
+    private static object EvaluateInternal(object left, object right)
+    {
         if (left is long longLeft) return longLeft & CastUtil.CastLong(right);
         if (right is long longRight) return CastUtil.CastLong(left) & longRight;
 
@@ -34,6 +45,6 @@ internal record OperatorDualAndExpressionInstance(ExpressionInstance Left, Expre
 
         if (left is byte byteLeft) return byteLeft & CastUtil.CastByte(right);
         if (right is byte byteRight) return CastUtil.CastByte(left) & byteRight;
-        return new Exception("No suitable types found for operator");
+        throw new Exception("No suitable types found for operator");
     }
 }

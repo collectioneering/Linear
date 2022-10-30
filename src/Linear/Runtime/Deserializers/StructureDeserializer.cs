@@ -29,9 +29,18 @@ public class StructureDeserializer : IDeserializer
     /// <inheritdoc />
     public DeserializeResult Deserialize(StructureInstance instance, Stream stream,
         long offset, bool littleEndian, Dictionary<StandardProperty, object>? standardProperties,
-        Dictionary<string, object>? parameters, long length = 0, int index = 0)
+        Dictionary<string, object>? parameters, long? length = null, int index = 0)
     {
         StructureInstance i = instance.Registry[_name].Parse(instance.Registry, stream, new ParseState(_name, offset, instance, length, index));
+        return new DeserializeResult(i, i.Length);
+    }
+
+    /// <inheritdoc />
+    public DeserializeResult Deserialize(StructureInstance instance, ReadOnlySpan<byte> span,
+        long offset, bool littleEndian, Dictionary<StandardProperty, object>? standardProperties,
+        Dictionary<string, object>? parameters, long? length = null, int index = 0)
+    {
+        StructureInstance i = instance.Registry[_name].Parse(instance.Registry, span, new ParseState(_name, offset, instance, length, index));
         return new DeserializeResult(i, i.Length);
     }
 }

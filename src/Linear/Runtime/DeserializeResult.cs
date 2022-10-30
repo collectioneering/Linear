@@ -5,4 +5,4 @@ namespace Linear.Runtime;
 /// </summary>
 /// <param name="Value">Deserialized value.</param>
 /// <param name="Length">Deserialized length.</param>
-public readonly record struct DeserializeResult(object Value, long Length);
+public readonly record struct DeserializeResult(object Value, long? Length);

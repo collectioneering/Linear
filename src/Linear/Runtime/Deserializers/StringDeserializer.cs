@@ -71,17 +71,18 @@ public class StringDeserializer : IDeserializer
     /// <inheritdoc />
     public DeserializeResult Deserialize(StructureInstance instance, Stream stream,
         long offset, bool littleEndian, Dictionary<StandardProperty, object>? standardProperties,
-        Dictionary<string, object>? parameters, long length = 0, int index = 0)
+        Dictionary<string, object>? parameters, long? length = null, int index = 0)
     {
-        stream.Position = instance.AbsoluteOffset + offset;
+        offset += instance.AbsoluteOffset;
+        stream.Position = offset;
         switch (_mode)
         {
             case Mode.Utf8Fixed:
                 {
-                    var result = ReadUtf8String(stream, (int)length);
-                    if (length != result.ByteLength)
-                        throw new Exception(
-                            $"UTF-8 fixed length mismatch between specified length {length} and result length {result.ByteLength}");
+                    if (length is not { } l) throw new InvalidOperationException("No length specified for fixed-length UTF-8 string");
+                    var result = ReadUtf8String(stream, (int)l);
+                    if (l != result.ByteLength)
+                        throw new Exception($"UTF-8 fixed length mismatch between specified length {l} and result length {result.ByteLength}");
                     return new DeserializeResult(result.Text, result.ByteLength);
                 }
             case Mode.Utf8Null:
@@ -91,16 +92,59 @@ public class StringDeserializer : IDeserializer
                 }
             case Mode.Utf16Fixed:
                 {
-                    var result = ReadUtf16String(stream, (int)length);
-                    if (length != result.ByteLength)
-                        throw new Exception(
-                            $"UTF-16 fixed length mismatch between specified length {length} and result length {result.ByteLength}");
+                    if (length is not { } l) throw new InvalidOperationException("No length specified for fixed-length UTF-16 string");
+                    var result = ReadUtf16String(stream, (int)l);
+                    if (l != result.ByteLength)
+                        throw new Exception($"UTF-16 fixed length mismatch between specified length {l} and result length {result.ByteLength}");
                     return new DeserializeResult(result.Text, result.ByteLength);
                 }
             case Mode.Utf16Null:
                 {
                     var result = ReadUtf16String(stream);
                     return new DeserializeResult(result.Text, result.ByteLength + 2);
+                }
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    }
+
+    /// <inheritdoc />
+    public DeserializeResult Deserialize(StructureInstance instance, ReadOnlySpan<byte> span,
+        long offset, bool littleEndian, Dictionary<StandardProperty, object>? standardProperties,
+        Dictionary<string, object>? parameters, long? length = null, int index = 0)
+    {
+        offset += instance.AbsoluteOffset;
+        checked
+        {
+            span = span[(int)offset..];
+        }
+        switch (_mode)
+        {
+            case Mode.Utf8Fixed:
+                {
+                    if (length is not { } l) throw new InvalidOperationException("No length specified for fixed-length UTF-8 string");
+                    string result = Processor.ReadUtf8String(span, out _, out int numBytes, (int)l);
+                    if (l != numBytes)
+                        throw new Exception($"UTF-8 fixed length mismatch between specified length {l} and result length {numBytes}");
+                    return new DeserializeResult(result, numBytes);
+                }
+            case Mode.Utf8Null:
+                {
+                    string result = Processor.ReadUtf8String(span, out int read, out _);
+                    return new DeserializeResult(result, read);
+                }
+            case Mode.Utf16Fixed:
+                {
+                    if (length is not { } l) throw new InvalidOperationException("No length specified for fixed-length UTF-16 string");
+                    string result = Processor.ReadUtf16String(span, out _, out int numBytes, (int)l);
+                    if (l != numBytes)
+                        throw new Exception($"UTF-16 fixed length mismatch between specified length {l} and result length {numBytes}");
+                    return new DeserializeResult(result, numBytes);
+                }
+            case Mode.Utf16Null:
+                {
+                    string result = Processor.ReadUtf16String(span, out int read, out _);
+                    return new DeserializeResult(result, read);
                 }
             default:
                 throw new ArgumentOutOfRangeException();

@@ -107,5 +107,41 @@ public class DeserializeExpression : ExpressionDefinition
             }
             throw new InvalidCastException($"Could not cast expression of type {littleEndian?.GetType().FullName} to type {nameof(Boolean)}");
         }
+
+        public override object Evaluate(StructureInstance structure, ReadOnlySpan<byte> span)
+        {
+            Dictionary<string, object>? deserializerParamsGen =
+                DeserializerParamsCompact.Count != 0 ? new Dictionary<string, object>() : null;
+            if (deserializerParamsGen != null)
+                foreach (var kvp in DeserializerParamsCompact)
+                    deserializerParamsGen[kvp.Key] = kvp.Value.Evaluate(structure, span) ?? throw new NullReferenceException();
+
+            Dictionary<StandardProperty, object>? standardPropertiesGen =
+                StandardPropertiesCompact.Count != 0
+                    ? new Dictionary<StandardProperty, object>()
+                    : null;
+            if (standardPropertiesGen != null)
+                foreach (var kvp in StandardPropertiesCompact)
+                    standardPropertiesGen[kvp.Key] = kvp.Value.Evaluate(structure, span) ?? throw new NullReferenceException();
+            object? offset = Source.Evaluate(structure, span);
+            object? littleEndian = LittleEndian.Evaluate(structure, span);
+            LongRange range;
+            if (TryCastLong(offset, out long offsetValue))
+                range = new LongRange(Offset: offsetValue, Length: 0);
+            else if (offset is LongRange r)
+            {
+                range = r;
+            }
+            else
+            {
+                throw new InvalidCastException("Cannot find offset or range type for source delegate");
+            }
+
+            if (littleEndian is bool littleEndianValue)
+            {
+                return Deserializer.Deserialize(structure, span, range.Offset, littleEndianValue, standardPropertiesGen, deserializerParamsGen, range.Length).Value;
+            }
+            throw new InvalidCastException($"Could not cast expression of type {littleEndian?.GetType().FullName} to type {nameof(Boolean)}");
+        }
     }
 }

@@ -54,11 +54,11 @@ internal class LinearListener : LinearBaseListener
 
     public override void EnterStruct(LinearParser.StructContext context)
     {
-        int defaultLength = context.struct_size() switch
+        int? defaultLength = context.struct_size() switch
         {
             LinearParser.StrictSizeHexContext strictSizeHexContext => Convert.ToInt32(strictSizeHexContext.GetText(), 16),
             LinearParser.StructSizeIntContext structSizeIntContext => int.Parse(structSizeIntContext.GetText(), CultureInfo.InvariantCulture),
-            _ => 0
+            _ => null
         };
         _currentDefinition = new StructureDefinition(context.IDENTIFIER().GetText(), defaultLength);
     }
@@ -488,7 +488,7 @@ internal class LinearListener : LinearBaseListener
             LinearParser.TermRealContext termRealContext => new ConstantNumberExpression<double>(double.Parse(termRealContext.GetText(), CultureInfo.InvariantCulture)),
             LinearParser.TermRepAContext => new StructureEvaluateExpression<long>(i => i.AbsoluteOffset),
             LinearParser.TermRepIContext => new StructureEvaluateExpression<long>(i => i.Index),
-            LinearParser.TermRepLengthContext => new StructureEvaluateExpression<long>(i => i.Length),
+            LinearParser.TermRepLengthContext => new StructureEvaluateExpression<long>(i => i.Length ?? throw new InvalidOperationException("Length is not defined for this structure")),
             LinearParser.TermRepPContext => new StructureEvaluateExpression<StructureInstance?>(i => i.Parent),
             LinearParser.TermRepUContext => new StructureEvaluateExpression<int>(i => i.GetUniqueId()),
             LinearParser.TermStringContext termStringContext => new ConstantExpression<string>(termStringContext.GetText().Trim(' ', '"')),

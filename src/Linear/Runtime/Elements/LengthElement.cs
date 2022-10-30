@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using Linear.Utility;
 
@@ -21,8 +22,7 @@ public class LengthElement : Element
     }
 
     /// <inheritdoc />
-    public override IEnumerable<Element> GetDependencies(StructureDefinition definition) =>
-        _expression.GetDependencies(definition);
+    public override IEnumerable<Element> GetDependencies(StructureDefinition definition) => _expression.GetDependencies(definition);
 
     /// <inheritdoc />
     public override ElementInitializer GetInitializer()
@@ -35,6 +35,11 @@ public class LengthElement : Element
         public override void Initialize(StructureInstance structure, Stream stream)
         {
             structure.Length = CastUtil.CastLong(Expression.Evaluate(structure, stream));
+        }
+
+        public override void Initialize(StructureInstance structure, ReadOnlySpan<byte> span)
+        {
+            structure.Length = CastUtil.CastLong(Expression.Evaluate(structure, span));
         }
     }
 }
