@@ -10,5 +10,5 @@ file 0x8 {
     intb length `0x4;
     int offset (offsetChunk * 0x800);
     $call log(format("Entry {0} offset {1} length {2}", $i, offset, length));
-    $output data [offset - $a, length: length] format("{0:D6}.dat", $i); // $a is a replacement
+    $output data [offset - $a, length] format("{0:D6}.dat", $i); // $a is a replacement
 }

@@ -28,7 +28,7 @@ entry {
     short hLength `0x0;
 
     // null-terminated utf-8 string starting at 0x2 and ending at "hLength" relative to this structure
-    cstring mimeType `[2, end: hLength];
+    cstring mimeType `[2..hLength];
 
     // log information
     $call log(format("{0}: mimeType {1} offset {2}", $i, mimeType, hLength + $a));
@@ -38,7 +38,7 @@ entry {
     * The output file is named "<arrayIndex>.dat" (string concatenation should work as expected)
     * Provide the exporter the expression "gzip" as its "format" configuration property
     */
-    $output compressed [hLength, end: $length] $i+".dat" {
+    $output compressed [hLength..$length] $i+".dat" {
         format="gzip";
     };
 

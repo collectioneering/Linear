@@ -41,10 +41,8 @@ other types:
 string cstring data data.zip
 
 types with variable but necessary length can take two range types:
-[<offset>, end: <end>]
-[<offset>, length: <length>]
-//[<offset>,<end>] (same as [<offset>, <end> - <offset>})
-//{<offset>,<length>}
+[<offset>..<end>]
+[<offset>, <length>]
 
 
 //int[count] table 0x28
@@ -53,8 +51,8 @@ types with variable but necessary length can take two range types:
 
 entry {
 short hLength 0x0;
-string type [2, end: hLength];
-range data [hLength, end: $length];
+string type [2..hLength];
+range data [hLength..$length];
 output compressed data $i {
     format="gzip";
 };

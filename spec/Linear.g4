@@ -74,8 +74,8 @@ expr:
 	| term															# ExprTerm
 	| '`' expr WS? property_group?									# ExprUnboundDeserialize
 	| IDENTIFIER '`' expr WS? property_group?						# ExprDeserialize
-	| OPENSQ WS? expr WS? ',' WS? 'end:' WS? expr WS? CLOSESQ		# ExprRangeEnd
-	| OPENSQ WS? expr WS? ',' WS? 'length:' WS? expr WS? CLOSESQ	# ExprRangeLength
+	| OPENSQ WS? expr WS? '..' WS? expr WS? CLOSESQ					# ExprRangeEnd
+	| OPENSQ WS? expr WS? ',' WS? expr WS? CLOSESQ					# ExprRangeLength
 	| expr '.' IDENTIFIER											# ExprMember
 	| expr '!' expr													# ExprSourceWithOffset
 	| expr '[' WS? expr WS? ']'										# ExprArrayAccess

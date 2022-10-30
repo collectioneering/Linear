@@ -51,7 +51,7 @@ file 0x8 {
     // Export content using the 'data' (direct) exporter.
     // Format name (again using string.Format).
     // $a is a replacement for the absolute position of the structure in the stream.
-    $output data [offset - $a, length: length] format("{0:D6}.dat", $i);
+    $output data [offset - $a, length] format("{0:D6}.dat", $i);
 }
 ```
 
@@ -59,7 +59,7 @@ file 0x8 {
 
 Some deserializers like string and string16 need a range instead of an offset.
 
-These ranges are expressed as `[<sourceIdx>, end: <endIdxExclusive>]` and `[<sourceIdx>, length: <length>]`
+These ranges are expressed as `[<sourceOffset>..<endOffsetExclusive>]` and `[<sourceOffset>, <length>]`
 
 #### Standard deserializers
 

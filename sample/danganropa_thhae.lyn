@@ -6,9 +6,9 @@ main{
 
 entry{
     byte strLen `0;
-    string path `[1, length: strLen];
+    string path `[1, strLen];
     int offsetAbs `(1 + strLen);
     int length `(1 + strLen + 4);
     $setlength 1 + strLen + 24;
-    $output data [offsetAbs - $a, length: length] path;
+    $output data [(offsetAbs - $a), length] path;
 }
