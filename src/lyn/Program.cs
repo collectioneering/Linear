@@ -43,7 +43,7 @@ namespace lyn
                 }
             }
             using (StreamReader sr = File.OpenText(conf.LayoutFile!))
-                if (!registry.TryLoad(sr, Console.WriteLine))
+                if (!registry.TryLoad(sr, Console.WriteLine, Path.GetFullPath(conf.LayoutFile!)))
                 {
                     Console.WriteLine("Errors occurred while parsing structure file, aborting.");
                     return 5;

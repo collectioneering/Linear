@@ -112,11 +112,12 @@ public class StructureRegistry
     /// Parses and adds structures.
     /// </summary>
     /// <param name="input">Lyn format input.</param>
+    /// <param name="filenameHint">Filename hint.</param>
     /// <param name="errorHandler">Parser error handler.</param>
     /// <returns>True if succeeded.</returns>
-    public void Load(string input, IAntlrErrorStrategy? errorHandler = null)
+    public void Load(string input, string? filenameHint = null, IAntlrErrorStrategy? errorHandler = null)
     {
-        Load(new StringReader(input), errorHandler);
+        Load(new StringReader(input), filenameHint, errorHandler);
     }
 
     /// <summary>
@@ -124,26 +125,28 @@ public class StructureRegistry
     /// </summary>
     /// <param name="input">Lyn format input.</param>
     /// <param name="logDelegate">Log delegate.</param>
+    /// <param name="filenameHint">Filename hint.</param>
     /// <param name="errorHandler">Parser error handler.</param>
     /// <returns>True if succeeded.</returns>
-    public bool TryLoad(string input, Action<string> logDelegate, IAntlrErrorStrategy? errorHandler = null)
+    public bool TryLoad(string input, Action<string> logDelegate, string? filenameHint = null, IAntlrErrorStrategy? errorHandler = null)
     {
-        return TryLoad(new StringReader(input), logDelegate, errorHandler);
+        return TryLoad(new StringReader(input), logDelegate, filenameHint, errorHandler);
     }
 
     /// <summary>
     /// Parses and adds structures.
     /// </summary>
     /// <param name="input">Lyn format reader.</param>
+    /// <param name="filenameHint">Filename hint.</param>
     /// <param name="errorHandler">Parser error handler.</param>
     /// <returns>True if succeeded.</returns>
-    public void Load(TextReader input, IAntlrErrorStrategy? errorHandler = null)
+    public void Load(TextReader input, string? filenameHint = null, IAntlrErrorStrategy? errorHandler = null)
     {
         var inputStream = new AntlrInputStream(input);
         var lexer = new LinearLexer(inputStream);
         var tokens = new CommonTokenStream(lexer);
         var parser = new LinearParser(tokens);
-        Load(parser, errorHandler, Deserializers, Methods, out var createdDeserializers, out var structures);
+        Load(parser, filenameHint, errorHandler, Deserializers, Methods, out var createdDeserializers, out var structures);
         Add(createdDeserializers, structures);
     }
 
@@ -152,9 +155,10 @@ public class StructureRegistry
     /// </summary>
     /// <param name="input">Lyn format reader.</param>
     /// <param name="logDelegate">Log delegate.</param>
+    /// <param name="filenameHint">Filename hint.</param>
     /// <param name="errorHandler">Parser error handler.</param>
     /// <returns>True if succeeded.</returns>
-    public bool TryLoad(TextReader input, Action<string> logDelegate, IAntlrErrorStrategy? errorHandler = null)
+    public bool TryLoad(TextReader input, Action<string> logDelegate, string? filenameHint = null, IAntlrErrorStrategy? errorHandler = null)
     {
         var inputStream = new AntlrInputStream(input);
         var lexer = new LinearLexer(inputStream);
@@ -162,7 +166,7 @@ public class StructureRegistry
         var parser = new LinearParser(tokens);
         try
         {
-            Load(parser, errorHandler, Deserializers, Methods, out var createdDeserializers, out var structures);
+            Load(parser, filenameHint, errorHandler, Deserializers, Methods, out var createdDeserializers, out var structures);
             Add(createdDeserializers, structures);
         }
         catch (InvalidOperationException e)
@@ -210,7 +214,7 @@ public class StructureRegistry
         }
     }
 
-    private static void Load(LinearParser parser, IAntlrErrorStrategy? errorHandler,
+    private static void Load(LinearParser parser, string? filenameHint, IAntlrErrorStrategy? errorHandler,
         IReadOnlyDictionary<string, IDeserializer> deserializers, IReadOnlyDictionary<string, MethodCallDelegate> methods,
         out List<KeyValuePair<string, IDeserializer>> createdDeserializers,
         out List<KeyValuePair<string, Structure>> structures)
@@ -225,7 +229,7 @@ public class StructureRegistry
         }
         createdDeserializers = listenerPre.GetStructureNames().Select(v => new KeyValuePair<string, IDeserializer>(v, new StructureDeserializer(v))).ToList();
         Dictionary<string, IDeserializer> deserializersTmp = new(deserializers.Concat(createdDeserializers));
-        var listener = new LinearListener(deserializersTmp, methods);
+        var listener = new LinearListener(deserializersTmp, methods, filenameHint);
         parser.Reset();
         ParseTreeWalker.Default.Walk(listener, parser.compilation_unit());
         if (listener.Fail)

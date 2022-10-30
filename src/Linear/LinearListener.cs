@@ -21,6 +21,7 @@ internal class LinearListener : LinearBaseListener
 
     private readonly IReadOnlyDictionary<string, IDeserializer> _deserializers;
     private readonly IReadOnlyDictionary<string, MethodCallDelegate> _methods;
+    private readonly string? _filenameHint;
     private readonly List<StructureDefinition> _structures;
     private readonly List<string> _errors;
     private readonly HashSet<string> _currentNames;
@@ -29,10 +30,11 @@ internal class LinearListener : LinearBaseListener
     /// <summary>
     /// Create new instance of <see cref="LinearListener"/>
     /// </summary>
-    public LinearListener(IReadOnlyDictionary<string, IDeserializer> deserializers, IReadOnlyDictionary<string, MethodCallDelegate> methods)
+    public LinearListener(IReadOnlyDictionary<string, IDeserializer> deserializers, IReadOnlyDictionary<string, MethodCallDelegate> methods, string? filenameHint = null)
     {
         _deserializers = deserializers;
         _methods = methods;
+        _filenameHint = filenameHint;
         _structures = new List<StructureDefinition>();
         _errors = new List<string>();
         _currentNames = new HashSet<string>();
@@ -504,6 +506,13 @@ internal class LinearListener : LinearBaseListener
     private void AddError(string error, int l, int c)
     {
         Fail = true;
-        _errors.Add($"({l}:{c}): {error}");
+        if (_filenameHint is { } filenameHint)
+        {
+            _errors.Add($"{filenameHint}({l}:{c}): {error}");
+        }
+        else
+        {
+            _errors.Add($"({l}:{c}): {error}");
+        }
     }
 }
