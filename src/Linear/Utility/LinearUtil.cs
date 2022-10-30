@@ -100,4 +100,50 @@ public static class LinearUtil
         buffer = ReadOnlySpan<byte>.Empty;
         return false;
     }
+
+    internal static void TrimExportTarget(ref ReadOnlyMemory<byte> memory, StructureInstance instance, LongRange range)
+    {
+        int absoluteOffset, length;
+        checked
+        {
+            absoluteOffset = (int)(instance.AbsoluteOffset + range.Offset);
+            length = (int)range.Length;
+        }
+        if (absoluteOffset < 0)
+        {
+            throw new ArgumentException("Export target start cannot be negative");
+        }
+        if (length < 0)
+        {
+            throw new ArgumentException("Export target length cannot be negative");
+        }
+        if (absoluteOffset + length > memory.Length)
+        {
+            throw new ArgumentException("Export target region exceeds buffer");
+        }
+        memory = memory.Slice(absoluteOffset, length);
+    }
+
+    internal static void TrimExportTarget(ref ReadOnlySpan<byte> span, StructureInstance instance, LongRange range)
+    {
+        int absoluteOffset, length;
+        checked
+        {
+            absoluteOffset = (int)(instance.AbsoluteOffset + range.Offset);
+            length = (int)range.Length;
+        }
+        if (absoluteOffset < 0)
+        {
+            throw new ArgumentException("Export target start cannot be negative");
+        }
+        if (length < 0)
+        {
+            throw new ArgumentException("Export target length cannot be negative");
+        }
+        if (absoluteOffset + length > span.Length)
+        {
+            throw new ArgumentException("Export target region exceeds buffer");
+        }
+        span = span.Slice(absoluteOffset, length);
+    }
 }

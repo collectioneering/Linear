@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using Fp;
+using Linear.Utility;
 
 namespace Linear.Runtime.Exporters;
 
@@ -24,5 +26,21 @@ public class DataExporter : IExporter
         stream.Position = instance.AbsoluteOffset + range.Offset;
         using SStream sStream = new(stream, range.Length);
         sStream.CopyTo(outputStream);
+    }
+
+    /// <inheritdoc />
+    public void Export(ReadOnlyMemory<byte> memory, StructureInstance instance, LongRange range,
+        IReadOnlyDictionary<string, object>? parameters, Stream outputStream)
+    {
+        LinearUtil.TrimExportTarget(ref memory, instance, range);
+        outputStream.Write(memory.Span);
+    }
+
+    /// <inheritdoc />
+    public void Export(ReadOnlySpan<byte> span, StructureInstance instance, LongRange range,
+        IReadOnlyDictionary<string, object>? parameters, Stream outputStream)
+    {
+        LinearUtil.TrimExportTarget(ref span, instance, range);
+        outputStream.Write(span);
     }
 }
