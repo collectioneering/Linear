@@ -83,7 +83,7 @@ public static class LinearUtil
         return new Dictionary<string, IExporter>(s_defaultExporters);
     }
 
-    internal static bool TryGetReadOnlySpanFromPossibleBuffer(object source, out ReadOnlySpan<byte> buffer)
+    internal static bool TryGetReadOnlySpanFromPossibleBuffer(object? source, out ReadOnlySpan<byte> buffer)
     {
         switch (source)
         {

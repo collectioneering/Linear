@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Linear.Utility;
 using static Linear.Utility.CastUtil;
 
 namespace Linear.Runtime.Expressions;
@@ -78,13 +79,22 @@ public class DeserializeExpression : ExpressionDefinition
             if (deserializerParamsGen != null)
                 foreach (var kvp in DeserializerParamsCompact)
                     deserializerParamsGen[kvp.Key] = kvp.Value.Evaluate(context, stream) ?? throw new NullReferenceException();
-
             Dictionary<StandardProperty, object>? standardPropertiesGen = StandardPropertiesCompact.Count != 0 ? new Dictionary<StandardProperty, object>() : null;
             if (standardPropertiesGen != null)
                 foreach (var kvp in StandardPropertiesCompact)
                     standardPropertiesGen[kvp.Key] = kvp.Value.Evaluate(context, stream) ?? throw new NullReferenceException();
-            object? offset = Source.Evaluate(context, stream);
             object? littleEndian = LittleEndian.Evaluate(context, stream);
+            if (littleEndian is not bool littleEndianValue)
+            {
+                throw new InvalidCastException($"Could not cast expression of type {littleEndian?.GetType().FullName} to type {nameof(Boolean)}");
+            }
+            object? source = Source.Evaluate(context, stream);
+            if (source is SourceWithOffset swo && LinearUtil.TryGetReadOnlySpanFromPossibleBuffer(swo.Source, out var buffer))
+            {
+                // TODO this construction doesn't support specifying length
+                return Deserializer.Deserialize(context.Structure, buffer, swo.Offset, littleEndianValue, standardPropertiesGen, deserializerParamsGen, null).Value;
+            }
+            object? offset = source;
             LongRange range;
             if (TryCastLong(offset, out long offsetValue))
                 range = new LongRange(Offset: offsetValue, Length: 0);
@@ -97,11 +107,7 @@ public class DeserializeExpression : ExpressionDefinition
                 throw new InvalidCastException("Cannot find offset or range type for source delegate");
             }
 
-            if (littleEndian is bool littleEndianValue)
-            {
-                return Deserializer.Deserialize(context.Structure, stream, range.Offset, littleEndianValue, standardPropertiesGen, deserializerParamsGen, range.Length).Value;
-            }
-            throw new InvalidCastException($"Could not cast expression of type {littleEndian?.GetType().FullName} to type {nameof(Boolean)}");
+            return Deserializer.Deserialize(context.Structure, stream, range.Offset, littleEndianValue, standardPropertiesGen, deserializerParamsGen, range.Length).Value;
         }
 
         public override object Evaluate(StructureEvaluationContext context, ReadOnlySpan<byte> span)
@@ -110,13 +116,22 @@ public class DeserializeExpression : ExpressionDefinition
             if (deserializerParamsGen != null)
                 foreach (var kvp in DeserializerParamsCompact)
                     deserializerParamsGen[kvp.Key] = kvp.Value.Evaluate(context, span) ?? throw new NullReferenceException();
-
             Dictionary<StandardProperty, object>? standardPropertiesGen = StandardPropertiesCompact.Count != 0 ? new Dictionary<StandardProperty, object>() : null;
             if (standardPropertiesGen != null)
                 foreach (var kvp in StandardPropertiesCompact)
                     standardPropertiesGen[kvp.Key] = kvp.Value.Evaluate(context, span) ?? throw new NullReferenceException();
-            object? offset = Source.Evaluate(context, span);
             object? littleEndian = LittleEndian.Evaluate(context, span);
+            if (littleEndian is not bool littleEndianValue)
+            {
+                throw new InvalidCastException($"Could not cast expression of type {littleEndian?.GetType().FullName} to type {nameof(Boolean)}");
+            }
+            object? source = Source.Evaluate(context, span);
+            if (source is SourceWithOffset swo && LinearUtil.TryGetReadOnlySpanFromPossibleBuffer(swo.Source, out var buffer))
+            {
+                // TODO this construction doesn't support specifying length
+                return Deserializer.Deserialize(context.Structure, buffer, swo.Offset, littleEndianValue, standardPropertiesGen, deserializerParamsGen, null).Value;
+            }
+            object? offset = source;
             LongRange range;
             if (TryCastLong(offset, out long offsetValue))
                 range = new LongRange(Offset: offsetValue, Length: 0);
@@ -128,12 +143,7 @@ public class DeserializeExpression : ExpressionDefinition
             {
                 throw new InvalidCastException("Cannot find offset or range type for source delegate");
             }
-
-            if (littleEndian is bool littleEndianValue)
-            {
-                return Deserializer.Deserialize(context.Structure, span, range.Offset, littleEndianValue, standardPropertiesGen, deserializerParamsGen, range.Length).Value;
-            }
-            throw new InvalidCastException($"Could not cast expression of type {littleEndian?.GetType().FullName} to type {nameof(Boolean)}");
+            return Deserializer.Deserialize(context.Structure, span, range.Offset, littleEndianValue, standardPropertiesGen, deserializerParamsGen, range.Length).Value;
         }
     }
 }
