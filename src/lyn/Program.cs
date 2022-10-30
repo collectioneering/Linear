@@ -35,9 +35,12 @@ namespace lyn
             methods = null;
 #endif
             var registry = new StructureRegistry();
-            foreach (var method in methods)
+            if (methods != null)
             {
-                registry.AddMethod(method.Name, method.Delegate);
+                foreach (var method in methods)
+                {
+                    registry.AddMethod(method.Name, method.Delegate);
+                }
             }
             using (StreamReader sr = File.OpenText(conf.LayoutFile!))
                 if (!registry.TryLoad(sr, Console.WriteLine))
@@ -71,6 +74,7 @@ namespace lyn
 
         private static int OperateFile(StructureRegistry registry, Structure mainStructure, string inputFile, string outputDir)
         {
+            Console.WriteLine($">>{inputFile}");
             using Stream baseStream = File.OpenRead(inputFile);
             using MultiBufferStream mbs = new MultiBufferStream(baseStream);
             StructureInstance si = mainStructure.Parse(registry, mbs, new ParseState(MainLayout, 0, null, baseStream.Length));

@@ -111,6 +111,45 @@ public class StructureRegistry
     /// <summary>
     /// Parses and adds structures.
     /// </summary>
+    /// <param name="input">Lyn format input.</param>
+    /// <param name="errorHandler">Parser error handler.</param>
+    /// <returns>True if succeeded.</returns>
+    public void Load(string input, IAntlrErrorStrategy? errorHandler = null)
+    {
+        Load(new StringReader(input), errorHandler);
+    }
+
+    /// <summary>
+    /// Parses and adds structures.
+    /// </summary>
+    /// <param name="input">Lyn format input.</param>
+    /// <param name="logDelegate">Log delegate.</param>
+    /// <param name="errorHandler">Parser error handler.</param>
+    /// <returns>True if succeeded.</returns>
+    public bool TryLoad(string input, Action<string> logDelegate, IAntlrErrorStrategy? errorHandler = null)
+    {
+        return TryLoad(new StringReader(input), logDelegate, errorHandler);
+    }
+
+    /// <summary>
+    /// Parses and adds structures.
+    /// </summary>
+    /// <param name="input">Lyn format reader.</param>
+    /// <param name="errorHandler">Parser error handler.</param>
+    /// <returns>True if succeeded.</returns>
+    public void Load(TextReader input, IAntlrErrorStrategy? errorHandler = null)
+    {
+        var inputStream = new AntlrInputStream(input);
+        var lexer = new LinearLexer(inputStream);
+        var tokens = new CommonTokenStream(lexer);
+        var parser = new LinearParser(tokens);
+        Load(parser, errorHandler, Deserializers, Methods, out var createdDeserializers, out var structures);
+        Add(createdDeserializers, structures);
+    }
+
+    /// <summary>
+    /// Parses and adds structures.
+    /// </summary>
     /// <param name="input">Lyn format reader.</param>
     /// <param name="logDelegate">Log delegate.</param>
     /// <param name="errorHandler">Parser error handler.</param>
@@ -121,43 +160,60 @@ public class StructureRegistry
         var lexer = new LinearLexer(inputStream);
         var tokens = new CommonTokenStream(lexer);
         var parser = new LinearParser(tokens);
-        if (TryLoad(parser, logDelegate, errorHandler, Deserializers, Methods, out var createdDeserializers, out var structures))
+        try
         {
-            List<string> existingDeserializers = Deserializers.Keys.Intersect(createdDeserializers.Select(v => v.Key)).ToList();
-            if (existingDeserializers.Count != 0)
-            {
-                StringBuilder messageBuilder = new("Existing deserializers ");
-                messageBuilder.AppendJoin(", ", existingDeserializers);
-                messageBuilder.Append("with the same name cannot be replaced");
-                logDelegate(messageBuilder.ToString());
-                return false;
-            }
-            List<string> existingStructures = _structures.Keys.Intersect(structures.Select(v => v.Key)).ToList();
-            if (existingStructures.Count != 0)
-            {
-                StringBuilder messageBuilder = new("Existing structures ");
-                messageBuilder.AppendJoin(", ", existingStructures);
-                messageBuilder.Append("with the same name cannot be replaced");
-                logDelegate(messageBuilder.ToString());
-                return false;
-            }
-            foreach (var structure in structures)
-            {
-                _structures.Add(structure.Key, structure.Value);
-            }
-            foreach (var pair in createdDeserializers)
-            {
-                _deserializers.Add(pair.Key, pair.Value);
-            }
-            return true;
+            Load(parser, errorHandler, Deserializers, Methods, out var createdDeserializers, out var structures);
+            Add(createdDeserializers, structures);
         }
-        return false;
+        catch (InvalidOperationException e)
+        {
+            logDelegate(e.Message);
+            return false;
+        }
+        catch (LynFormatException e)
+        {
+            foreach (string? error in e.Errors)
+            {
+                logDelegate(error);
+            }
+            logDelegate(e.Message);
+            return false;
+        }
+        return true;
     }
 
-    private static bool TryLoad(LinearParser parser, Action<string> logDelegate, IAntlrErrorStrategy? errorHandler,
+    private void Add(List<KeyValuePair<string, IDeserializer>> createdDeserializers, List<KeyValuePair<string, Structure>> structures)
+    {
+        List<string> existingDeserializers = Deserializers.Keys.Intersect(createdDeserializers.Select(v => v.Key)).ToList();
+        if (existingDeserializers.Count != 0)
+        {
+            StringBuilder messageBuilder = new("Existing deserializers ");
+            messageBuilder.AppendJoin(", ", existingDeserializers);
+            messageBuilder.Append("with the same name cannot be replaced");
+            throw new InvalidOperationException(messageBuilder.ToString());
+        }
+        List<string> existingStructures = _structures.Keys.Intersect(structures.Select(v => v.Key)).ToList();
+        if (existingStructures.Count != 0)
+        {
+            StringBuilder messageBuilder = new("Existing structures ");
+            messageBuilder.AppendJoin(", ", existingStructures);
+            messageBuilder.Append("with the same name cannot be replaced");
+            throw new InvalidOperationException(messageBuilder.ToString());
+        }
+        foreach (var structure in structures)
+        {
+            _structures.Add(structure.Key, structure.Value);
+        }
+        foreach (var pair in createdDeserializers)
+        {
+            _deserializers.Add(pair.Key, pair.Value);
+        }
+    }
+
+    private static void Load(LinearParser parser, IAntlrErrorStrategy? errorHandler,
         IReadOnlyDictionary<string, IDeserializer> deserializers, IReadOnlyDictionary<string, MethodCallDelegate> methods,
-        [NotNullWhen(true)] out List<KeyValuePair<string, IDeserializer>>? createdDeserializers,
-        [NotNullWhen(true)] out List<KeyValuePair<string, Structure>>? structures)
+        out List<KeyValuePair<string, IDeserializer>> createdDeserializers,
+        out List<KeyValuePair<string, Structure>> structures)
     {
         var listenerPre = new LinearPreListener();
         if (errorHandler != null)
@@ -165,21 +221,37 @@ public class StructureRegistry
         ParseTreeWalker.Default.Walk(listenerPre, parser.compilation_unit());
         if (listenerPre.Fail)
         {
-            createdDeserializers = null;
-            structures = null;
-            return false;
+            throw new InvalidOperationException("Failed to parse structure");
         }
         createdDeserializers = listenerPre.GetStructureNames().Select(v => new KeyValuePair<string, IDeserializer>(v, new StructureDeserializer(v))).ToList();
         Dictionary<string, IDeserializer> deserializersTmp = new(deserializers.Concat(createdDeserializers));
-        var listener = new LinearListener(deserializersTmp, methods, logDelegate);
+        var listener = new LinearListener(deserializersTmp, methods);
         parser.Reset();
         ParseTreeWalker.Default.Walk(listener, parser.compilation_unit());
+        if (listener.Fail)
+        {
+            throw new LynFormatException(listener.GetErrors());
+        }
         structures = new List<KeyValuePair<string, Structure>>();
         foreach (StructureDefinition structure in listener.GetStructures())
         {
             var built = structure.Build();
             structures.Add(new KeyValuePair<string, Structure>(structure.Name, built));
         }
-        return true;
+    }
+}
+
+internal class LynFormatException : IOException
+{
+    public IReadOnlyList<string> Errors { get; }
+
+    public LynFormatException(IReadOnlyList<string> errors) : base("Errors occurred while parsing format")
+    {
+        Errors = errors;
+    }
+
+    public LynFormatException(string message, IReadOnlyList<string> errors) : base(message)
+    {
+        Errors = errors;
     }
 }

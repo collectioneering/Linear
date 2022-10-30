@@ -28,8 +28,7 @@ main {
         public void Test1()
         {
             var res = new StructureRegistry();
-            Assert.IsTrue(res.TryLoad(new StringReader(_test1), Console.WriteLine));
-            Assert.IsNotNull(res);
+            Assert.That(res.TryLoad(_test1,Console.WriteLine), Is.True);
             Assert.IsTrue(res.TryGetValue("main", out Structure structure));
             MemoryStream ms = new(new byte[] { 0, 1, 2, 3, 4, 5 });
             StructureInstance si = structure.Parse(res, ms, new ParseState("main"));
