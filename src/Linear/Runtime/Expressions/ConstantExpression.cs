@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -56,6 +55,8 @@ public abstract class ConstantNumberExpression : ExpressionDefinition
 public class ConstantNumberExpression<T> : ConstantNumberExpression
 #if NET7_0_OR_GREATER
     where T : System.Numerics.INumber<T>
+#else
+    where T : unmanaged
 #endif
 {
     private readonly T _value;
@@ -83,11 +84,11 @@ public class ConstantNumberExpression<T> : ConstantNumberExpression
         public override TResult Cast<TResult>()
         {
             // TODO
-            throw new NotImplementedException();
+            throw new System.NotImplementedException();
         }
 #endif
 
-        public override object? Evaluate(StructureInstance structure, Stream stream)
+        public override object Evaluate(StructureInstance structure, Stream stream)
         {
             return Value;
         }
