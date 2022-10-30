@@ -37,9 +37,9 @@ public class ProxyMemberExpression : ExpressionDefinition
 
     private record ProxyMemberExpressionInstance(ExpressionInstance Delegate, string Name) : ExpressionInstance
     {
-        public override object Evaluate(StructureInstance structure, Stream stream)
+        public override object Evaluate(StructureEvaluationContext context, Stream stream)
         {
-            object? val = Delegate.Evaluate(structure, stream);
+            object? val = Delegate.Evaluate(context, stream);
             if (val is StructureInstance i2)
             {
                 return i2[Name];
@@ -47,9 +47,9 @@ public class ProxyMemberExpression : ExpressionDefinition
             throw new InvalidCastException($"Could not cast object of type {val?.GetType().FullName} to {nameof(StructureInstance)}");
         }
 
-        public override object Evaluate(StructureInstance structure, ReadOnlySpan<byte> span)
+        public override object Evaluate(StructureEvaluationContext context, ReadOnlySpan<byte> span)
         {
-            object? val = Delegate.Evaluate(structure, span);
+            object? val = Delegate.Evaluate(context, span);
             if (val is StructureInstance i2)
             {
                 return i2[Name];

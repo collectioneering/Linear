@@ -30,18 +30,32 @@ public class LambdaReplacementExpression : ExpressionDefinition
     /// <inheritdoc />
     public override ExpressionInstance GetInstance() => new LambdaReplacementExpressionInstance(_name);
 
-    // TODO this requires additional context during call to evaluate lambda replacements
-
     private record LambdaReplacementExpressionInstance(string Name) : ExpressionInstance
     {
-        public override object Evaluate(StructureInstance structure, Stream stream)
+        public override object Evaluate(StructureEvaluationContext context, Stream stream)
         {
-            throw new NotImplementedException();
+            if (context.LambdaReplacements == null)
+            {
+                throw new InvalidOperationException("No lambda replacements available");
+            }
+            if (context.LambdaReplacements.TryGetValue(Name, out object? obj))
+            {
+                return obj;
+            }
+            throw new InvalidOperationException($"Could not find lambda replacement {Name}");
         }
 
-        public override object Evaluate(StructureInstance structure, ReadOnlySpan<byte> span)
+        public override object Evaluate(StructureEvaluationContext context, ReadOnlySpan<byte> span)
         {
-            throw new NotImplementedException();
+            if (context.LambdaReplacements == null)
+            {
+                throw new InvalidOperationException("No lambda replacements available");
+            }
+            if (context.LambdaReplacements.TryGetValue(Name, out object? obj))
+            {
+                return obj;
+            }
+            throw new InvalidOperationException($"Could not find lambda replacement {Name}");
         }
     }
 }

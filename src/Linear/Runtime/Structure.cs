@@ -39,7 +39,7 @@ public class Structure
         StructureInstance instance = new(registry, parseState.Parent, parseState.Offset, parseState.Length ?? DefaultLength, parseState.Index);
         foreach (var member in _members)
         {
-            member.Initializer.Initialize(instance, stream);
+            member.Initializer.Initialize(new StructureEvaluationContext(instance), stream);
         }
 
         return instance;
@@ -57,7 +57,7 @@ public class Structure
         StructureInstance instance = new(registry, parseState.Parent, parseState.Offset, parseState.Length ?? DefaultLength, parseState.Index);
         foreach (var member in _members)
         {
-            member.Initializer.Initialize(instance, span);
+            member.Initializer.Initialize(new StructureEvaluationContext(instance), span);
         }
 
         return instance;

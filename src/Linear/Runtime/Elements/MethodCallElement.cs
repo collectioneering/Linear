@@ -31,14 +31,14 @@ public class MethodCallElement : Element
 
     private record MethodCallElementInitializer(ExpressionInstance Expression) : ElementInitializer
     {
-        public override void Initialize(StructureInstance structure, Stream stream)
+        public override void Initialize(StructureEvaluationContext context, Stream stream)
         {
-            Expression.Evaluate(structure, stream);
+            Expression.Evaluate(context, stream);
         }
 
-        public override void Initialize(StructureInstance structure, ReadOnlySpan<byte> span)
+        public override void Initialize(StructureEvaluationContext context, ReadOnlySpan<byte> span)
         {
-            Expression.Evaluate(structure, span);
+            Expression.Evaluate(context, span);
         }
     }
 }

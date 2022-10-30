@@ -6,17 +6,17 @@ namespace Linear.Runtime.Expressions.Operators;
 
 internal record OperatorDualAddExpressionInstance(ExpressionInstance Left, ExpressionInstance Right) : ExpressionInstance
 {
-    public override object Evaluate(StructureInstance structure, Stream stream)
+    public override object Evaluate(StructureEvaluationContext context, Stream stream)
     {
-        object? left = Left.Evaluate(structure, stream);
-        object? right = Right.Evaluate(structure, stream);
+        object? left = Left.Evaluate(context, stream);
+        object? right = Right.Evaluate(context, stream);
         return EvaluateInternal(left, right);
     }
 
-    public override object Evaluate(StructureInstance structure, ReadOnlySpan<byte> span)
+    public override object Evaluate(StructureEvaluationContext context, ReadOnlySpan<byte> span)
     {
-        object? left = Left.Evaluate(structure, span);
-        object? right = Right.Evaluate(structure, span);
+        object? left = Left.Evaluate(context, span);
+        object? right = Right.Evaluate(context, span);
         return EvaluateInternal(left, right);
     }
 

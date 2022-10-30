@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using Linear.Runtime;
 using NUnit.Framework;
@@ -18,8 +19,9 @@ main {
     var f2 ushort`2;
     byte g `5;
 
-    int tmp 10;
+    var tmp 10;
     lambda l1 $$i * tmp;
+    var l1_result call_lambda_with_i(l1, 20);
 }
 """;
 
@@ -34,6 +36,21 @@ main {
         public void Test1()
         {
             var res = new StructureRegistry();
+            res.AddMethod("call_lambda_with_i", static (context, args) =>
+            {
+                if (args.Length != 2)
+                {
+                    throw new ArgumentException($"expected <lambda> <i> (actual length {args.Length})");
+                }
+                if (args[0] is not ExpressionInstance expr)
+                {
+                    throw new ArgumentException("expected <lambda> <i> (did not receive lambda at position 0)");
+                }
+                var replacements = new Dictionary<string, object>();
+                replacements["i"] = args[1];
+                context = context with { LambdaReplacements = replacements };
+                return expr.Evaluate(context, ReadOnlySpan<byte>.Empty);
+            });
             Assert.That(res.TryLoad(SrcSpec, Console.WriteLine), Is.True);
             Assert.That(res.TryGetStructure("main", out Structure structure), Is.True);
             Assert.That(structure, Is.Not.Null);
@@ -47,6 +64,7 @@ main {
             Assert.That(si["f"], Is.EqualTo(0x100));
             Assert.That(si["f2"], Is.EqualTo(0x0302));
             Assert.That(si["g"], Is.EqualTo(0x5));
+            Assert.That(si["l1_result"], Is.EqualTo(200));
             si = res.Parse("main", s_Test1_Data);
             Assert.That(si["a"], Is.EqualTo(4 * 2 + 5));
             Assert.That(si["b"], Is.EqualTo(5 + 8 * 9));
@@ -56,6 +74,7 @@ main {
             Assert.That(si["f"], Is.EqualTo(0x100));
             Assert.That(si["f2"], Is.EqualTo(0x0302));
             Assert.That(si["g"], Is.EqualTo(0x5));
+            Assert.That(si["l1_result"], Is.EqualTo(200));
         }
     }
 }

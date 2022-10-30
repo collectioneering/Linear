@@ -32,14 +32,14 @@ public class MemberExpression : ExpressionDefinition
 
     private record MemberExpressionInstance(string Name) : ExpressionInstance
     {
-        public override object Evaluate(StructureInstance structure, Stream stream)
+        public override object Evaluate(StructureEvaluationContext context, Stream stream)
         {
-            return structure[Name];
+            return context.Structure[Name];
         }
 
-        public override object Evaluate(StructureInstance structure, ReadOnlySpan<byte> span)
+        public override object Evaluate(StructureEvaluationContext context, ReadOnlySpan<byte> span)
         {
-            return structure[Name];
+            return context.Structure[Name];
         }
     }
 }

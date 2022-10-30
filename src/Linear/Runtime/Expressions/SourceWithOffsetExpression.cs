@@ -39,17 +39,17 @@ public class SourceWithOffsetExpression : ExpressionDefinition
 
     private record SourceWithOffsetExpressionInstance(ExpressionInstance Source, ExpressionInstance Offset) : ExpressionInstance
     {
-        public override object Evaluate(StructureInstance structure, Stream stream)
+        public override object Evaluate(StructureEvaluationContext context, Stream stream)
         {
-            object source = Source.Evaluate(structure, stream) ?? throw new InvalidOperationException($"{nameof(SourceWithOffset)} source is null");
-            long offset = CastUtil.CastLong(Offset.Evaluate(structure, stream));
+            object source = Source.Evaluate(context, stream) ?? throw new InvalidOperationException($"{nameof(SourceWithOffset)} source is null");
+            long offset = CastUtil.CastLong(Offset.Evaluate(context, stream));
             return new SourceWithOffset(source, offset);
         }
 
-        public override object Evaluate(StructureInstance structure, ReadOnlySpan<byte> span)
+        public override object Evaluate(StructureEvaluationContext context, ReadOnlySpan<byte> span)
         {
-            object source = Source.Evaluate(structure, span) ?? throw new InvalidOperationException($"{nameof(SourceWithOffset)} source is null");
-            long offset = CastUtil.CastLong(Offset.Evaluate(structure, span));
+            object source = Source.Evaluate(context, span) ?? throw new InvalidOperationException($"{nameof(SourceWithOffset)} source is null");
+            long offset = CastUtil.CastLong(Offset.Evaluate(context, span));
             return new SourceWithOffset(source, offset);
         }
     }

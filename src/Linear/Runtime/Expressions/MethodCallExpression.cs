@@ -38,19 +38,24 @@ public class MethodCallExpression : ExpressionDefinition
 
     private record MethodCallExpressionInstance(List<ExpressionInstance> ArgsCompact, MethodCallDelegate Delegate) : ExpressionInstance
     {
-        public override object? Evaluate(StructureInstance structure, Stream stream)
-        {
-            return Delegate(ArgsCompact.Select(arg => arg.Evaluate(structure, stream)).ToArray());
-        }
-
-        public override object? Evaluate(StructureInstance structure, ReadOnlySpan<byte> span)
+        public override object? Evaluate(StructureEvaluationContext context, Stream stream)
         {
             List<object?> args = new();
             foreach (var arg in ArgsCompact)
             {
-                args.Add(arg.Evaluate(structure, span));
+                args.Add(arg.Evaluate(context, stream));
             }
-            return Delegate(args);
+            return Delegate(context, args.ToArray());
+        }
+
+        public override object? Evaluate(StructureEvaluationContext context, ReadOnlySpan<byte> span)
+        {
+            List<object?> args = new();
+            foreach (var arg in ArgsCompact)
+            {
+                args.Add(arg.Evaluate(context, span));
+            }
+            return Delegate(context, args.ToArray());
         }
     }
 }

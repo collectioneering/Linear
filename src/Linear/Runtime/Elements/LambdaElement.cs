@@ -34,14 +34,14 @@ public class LambdaElement : Element
 
     private record LambdaElementInitializer(ExpressionInstance Expression, string Name) : ElementInitializer
     {
-        public override void Initialize(StructureInstance structure, Stream stream)
+        public override void Initialize(StructureEvaluationContext context, Stream stream)
         {
-            structure.SetMember(Name, Expression);
+            context.Structure.SetMember(Name, Expression);
         }
 
-        public override void Initialize(StructureInstance structure, ReadOnlySpan<byte> span)
+        public override void Initialize(StructureEvaluationContext context, ReadOnlySpan<byte> span)
         {
-            structure.SetMember(Name, Expression);
+            context.Structure.SetMember(Name, Expression);
         }
     }
 }

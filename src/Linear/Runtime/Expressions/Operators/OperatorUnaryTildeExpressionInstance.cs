@@ -5,15 +5,15 @@ namespace Linear.Runtime.Expressions.Operators;
 
 internal record OperatorUnaryTildeExpressionInstance(ExpressionInstance Expression) : ExpressionInstance
 {
-    public override object Evaluate(StructureInstance structure, Stream stream)
+    public override object Evaluate(StructureEvaluationContext context, Stream stream)
     {
-        object value = Expression.Evaluate(structure, stream) ?? throw new NullReferenceException("Expr value null");
+        object value = Expression.Evaluate(context, stream) ?? throw new NullReferenceException("Expr value null");
         return EvaluateInternal(value);
     }
 
-    public override object Evaluate(StructureInstance structure, ReadOnlySpan<byte> stream)
+    public override object Evaluate(StructureEvaluationContext context, ReadOnlySpan<byte> stream)
     {
-        object value = Expression.Evaluate(structure, stream) ?? throw new NullReferenceException("Expr value null");
+        object value = Expression.Evaluate(context, stream) ?? throw new NullReferenceException("Expr value null");
         return EvaluateInternal(value);
     }
 

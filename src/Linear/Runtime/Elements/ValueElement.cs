@@ -34,16 +34,16 @@ public class ValueElement : Element
 
     private record ValueElementInitializer(ExpressionInstance Expression, string Name) : ElementInitializer
     {
-        public override void Initialize(StructureInstance structure, Stream stream)
+        public override void Initialize(StructureEvaluationContext context, Stream stream)
         {
-            object expression = Expression.Evaluate(structure, stream) ?? throw new NullReferenceException();
-            structure.SetMember(Name, expression);
+            object expression = Expression.Evaluate(context, stream) ?? throw new NullReferenceException();
+            context.Structure.SetMember(Name, expression);
         }
 
-        public override void Initialize(StructureInstance structure, ReadOnlySpan<byte> span)
+        public override void Initialize(StructureEvaluationContext context, ReadOnlySpan<byte> span)
         {
-            object expression = Expression.Evaluate(structure, span) ?? throw new NullReferenceException();
-            structure.SetMember(Name, expression);
+            object expression = Expression.Evaluate(context, span) ?? throw new NullReferenceException();
+            context.Structure.SetMember(Name, expression);
         }
     }
 }
