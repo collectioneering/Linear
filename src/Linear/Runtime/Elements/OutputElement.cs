@@ -55,39 +55,39 @@ public class OutputElement : Element
     private record OutputElementInitializer(ExpressionInstance Format, ExpressionInstance Range, ExpressionInstance Name,
         Dictionary<string, ExpressionInstance>? ExporterParamsCompact) : ElementInitializer
     {
-        public override void Initialize(StructureInstance structure, Stream stream)
+        public override void Initialize(StructureEvaluationContext context, Stream stream)
         {
-            object? format = Format.Evaluate(structure, stream);
-            object? range = Range.Evaluate(structure, stream);
-            object? name = Name.Evaluate(structure, stream);
+            object? format = Format.Evaluate(context, stream);
+            object? range = Range.Evaluate(context, stream);
+            object? name = Name.Evaluate(context, stream);
             Dictionary<string, object>? exporterParams = ExporterParamsCompact == null ? null : new Dictionary<string, object>();
             if (ExporterParamsCompact != null)
             {
                 foreach (var kvp in ExporterParamsCompact)
                 {
-                    exporterParams![kvp.Key] = kvp.Value.Evaluate(structure, stream) ?? throw new NullReferenceException();
+                    exporterParams![kvp.Key] = kvp.Value.Evaluate(context, stream) ?? throw new NullReferenceException();
                 }
             }
-            InitializeInternal(structure, format, range, name, exporterParams);
+            InitializeInternal(context, format, range, name, exporterParams);
         }
 
-        public override void Initialize(StructureInstance structure, ReadOnlySpan<byte> span)
+        public override void Initialize(StructureEvaluationContext context, ReadOnlySpan<byte> span)
         {
-            object? format = Format.Evaluate(structure, span);
-            object? range = Range.Evaluate(structure, span);
-            object? name = Name.Evaluate(structure, span);
+            object? format = Format.Evaluate(context, span);
+            object? range = Range.Evaluate(context, span);
+            object? name = Name.Evaluate(context, span);
             Dictionary<string, object>? exporterParams = ExporterParamsCompact == null ? null : new Dictionary<string, object>();
             if (ExporterParamsCompact != null)
             {
                 foreach (var kvp in ExporterParamsCompact)
                 {
-                    exporterParams![kvp.Key] = kvp.Value.Evaluate(structure, span) ?? throw new NullReferenceException();
+                    exporterParams![kvp.Key] = kvp.Value.Evaluate(context, span) ?? throw new NullReferenceException();
                 }
             }
-            InitializeInternal(structure, format, range, name, exporterParams);
+            InitializeInternal(context, format, range, name, exporterParams);
         }
 
-        private static void InitializeInternal(StructureInstance structure, object? format, object? range, object? name, Dictionary<string, object>? exporterParams)
+        private static void InitializeInternal(StructureEvaluationContext context, object? format, object? range, object? name, Dictionary<string, object>? exporterParams)
         {
             if (format is not string formatValue)
             {
@@ -97,7 +97,7 @@ public class OutputElement : Element
             {
                 throw new InvalidCastException($"Could not cast expression of type {range?.GetType().FullName} to type {nameof(LongRange)}");
             }
-            structure.AddOutput(new StructureOutput(structure, name?.ToString() ?? structure.GetUniqueId().ToString(CultureInfo.InvariantCulture), formatValue, exporterParams, rangeValue));
+            context.Structure.AddOutput(new StructureOutput(context.Structure, name?.ToString() ?? context.Structure.GetUniqueId().ToString(CultureInfo.InvariantCulture), formatValue, exporterParams, rangeValue));
         }
     }
 }

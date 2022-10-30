@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using Linear.Runtime;
 using NUnit.Framework;
@@ -17,8 +18,15 @@ main {
     ushort f `0;
     var f2 ushort`2;
     byte g `5;
+
+    var tmp 10;
+    lambda l1 $$i * tmp;
+    var l1_result call_lambda_with_i(l1, 20);
+
+    string vvv `get_dummy_buffer()![5, length:3];
 }
 """;
+
 
         [SetUp]
         public void Setup()
@@ -26,11 +34,28 @@ main {
         }
 
         private static readonly byte[] s_Test1_Data = { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05 };
+        private static readonly byte[] s_Test1_Data2 = { 0x00, 0x10, 0x20, 0x30, 0, (byte)'l', (byte)'o', (byte)'l', 0, 0, 0, 0 };
 
         [Test]
         public void Test1()
         {
             var res = new StructureRegistry();
+            res.AddMethod("call_lambda_with_i", static (context, args) =>
+            {
+                if (args.Length != 2)
+                {
+                    throw new ArgumentException($"expected <lambda> <i> (actual length {args.Length})");
+                }
+                if (args[0] is not ExpressionInstance expr)
+                {
+                    throw new ArgumentException("expected <lambda> <i> (did not receive lambda at position 0)");
+                }
+                var replacements = new Dictionary<string, object>();
+                replacements["i"] = args[1];
+                context = context with { LambdaReplacements = replacements };
+                return expr.Evaluate(context, ReadOnlySpan<byte>.Empty);
+            });
+            res.AddMethod("get_dummy_buffer", static (context, args) => { return s_Test1_Data2; });
             Assert.That(res.TryLoad(SrcSpec, Console.WriteLine), Is.True);
             Assert.That(res.TryGetStructure("main", out Structure structure), Is.True);
             Assert.That(structure, Is.Not.Null);
@@ -44,6 +69,8 @@ main {
             Assert.That(si["f"], Is.EqualTo(0x100));
             Assert.That(si["f2"], Is.EqualTo(0x0302));
             Assert.That(si["g"], Is.EqualTo(0x5));
+            Assert.That(si["l1_result"], Is.EqualTo(200));
+            Assert.That(si["vvv"], Is.EqualTo("lol"));
             si = res.Parse("main", s_Test1_Data);
             Assert.That(si["a"], Is.EqualTo(4 * 2 + 5));
             Assert.That(si["b"], Is.EqualTo(5 + 8 * 9));
@@ -53,6 +80,8 @@ main {
             Assert.That(si["f"], Is.EqualTo(0x100));
             Assert.That(si["f2"], Is.EqualTo(0x0302));
             Assert.That(si["g"], Is.EqualTo(0x5));
+            Assert.That(si["l1_result"], Is.EqualTo(200));
+            Assert.That(si["vvv"], Is.EqualTo("lol"));
         }
     }
 }

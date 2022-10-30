@@ -57,34 +57,34 @@ public class RangeExpression : ExpressionDefinition
 
     private record RangeExpressionInstanceStartEnd(ExpressionInstance Start, ExpressionInstance End) : ExpressionInstance
     {
-        public override object Evaluate(StructureInstance structure, Stream stream)
+        public override object Evaluate(StructureEvaluationContext context, Stream stream)
         {
-            long start = CastLong(Start.Evaluate(structure, stream));
-            long end = CastLong(End.Evaluate(structure, stream));
+            long start = CastLong(Start.Evaluate(context, stream));
+            long end = CastLong(End.Evaluate(context, stream));
             return new LongRange(start, end - start);
         }
 
-        public override object Evaluate(StructureInstance structure, ReadOnlySpan<byte> span)
+        public override object Evaluate(StructureEvaluationContext context, ReadOnlySpan<byte> span)
         {
-            long start = CastLong(Start.Evaluate(structure, span));
-            long end = CastLong(End.Evaluate(structure, span));
+            long start = CastLong(Start.Evaluate(context, span));
+            long end = CastLong(End.Evaluate(context, span));
             return new LongRange(start, end - start);
         }
     }
 
     private record RangeExpressionInstanceStartLength(ExpressionInstance Start, ExpressionInstance Length) : ExpressionInstance
     {
-        public override object Evaluate(StructureInstance structure, Stream stream)
+        public override object Evaluate(StructureEvaluationContext context, Stream stream)
         {
-            long start = CastLong(Start.Evaluate(structure, stream));
-            long length = CastLong(Length.Evaluate(structure, stream));
+            long start = CastLong(Start.Evaluate(context, stream));
+            long length = CastLong(Length.Evaluate(context, stream));
             return new LongRange(start, length);
         }
 
-        public override object Evaluate(StructureInstance structure, ReadOnlySpan<byte> span)
+        public override object Evaluate(StructureEvaluationContext context, ReadOnlySpan<byte> span)
         {
-            long start = CastLong(Start.Evaluate(structure, span));
-            long length = CastLong(Length.Evaluate(structure, span));
+            long start = CastLong(Start.Evaluate(context, span));
+            long length = CastLong(Length.Evaluate(context, span));
             return new LongRange(start, length);
         }
     }

@@ -5,18 +5,21 @@ using System.IO;
 namespace Linear.Runtime.Elements;
 
 /// <summary>
-/// Element calling method
+/// Element defining lambda.
 /// </summary>
-public class MethodCallElement : Element
+public class LambdaElement : Element
 {
+    private readonly string _name;
     private readonly ExpressionDefinition _expression;
 
     /// <summary>
-    /// Create new instance of <see cref="MethodCallElement"/>
+    /// Create new instance of <see cref="ValueElement"/>
     /// </summary>
+    /// <param name="name">Name of element</param>
     /// <param name="expression">Value definition</param>
-    public MethodCallElement(ExpressionDefinition expression)
+    public LambdaElement(string name, ExpressionDefinition expression)
     {
+        _name = name;
         _expression = expression;
     }
 
@@ -26,19 +29,19 @@ public class MethodCallElement : Element
     /// <inheritdoc />
     public override ElementInitializer GetInitializer()
     {
-        return new MethodCallElementInitializer(_expression.GetInstance());
+        return new LambdaElementInitializer(_expression.GetInstance(), _name);
     }
 
-    private record MethodCallElementInitializer(ExpressionInstance Expression) : ElementInitializer
+    private record LambdaElementInitializer(ExpressionInstance Expression, string Name) : ElementInitializer
     {
         public override void Initialize(StructureEvaluationContext context, Stream stream)
         {
-            Expression.Evaluate(context, stream);
+            context.Structure.SetMember(Name, Expression);
         }
 
         public override void Initialize(StructureEvaluationContext context, ReadOnlySpan<byte> span)
         {
-            Expression.Evaluate(context, span);
+            context.Structure.SetMember(Name, Expression);
         }
     }
 }

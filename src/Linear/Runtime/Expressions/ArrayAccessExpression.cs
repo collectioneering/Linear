@@ -34,10 +34,10 @@ public class ArrayAccessExpression : ExpressionDefinition
 
     private record ArrayAccessExpressionInstance(ExpressionInstance Source, ExpressionInstance Index) : ExpressionInstance
     {
-        public override object? Evaluate(StructureInstance structure, Stream stream)
+        public override object? Evaluate(StructureEvaluationContext context, Stream stream)
         {
-            object? source = Source.Evaluate(structure, stream);
-            object index = Index.Evaluate(structure, stream) ?? throw new NullReferenceException();
+            object? source = Source.Evaluate(context, stream);
+            object index = Index.Evaluate(context, stream) ?? throw new NullReferenceException();
             if (source is Array sourceValue)
             {
                 return sourceValue.GetValue(CastUtil.CastInt(index));
@@ -45,10 +45,10 @@ public class ArrayAccessExpression : ExpressionDefinition
             throw new InvalidCastException($"Could not cast object of type {source?.GetType().FullName} to {nameof(Array)}");
         }
 
-        public override object? Evaluate(StructureInstance structure, ReadOnlySpan<byte> span)
+        public override object? Evaluate(StructureEvaluationContext context, ReadOnlySpan<byte> span)
         {
-            object? source = Source.Evaluate(structure, span);
-            object index = Index.Evaluate(structure, span) ?? throw new NullReferenceException();
+            object? source = Source.Evaluate(context, span);
+            object index = Index.Evaluate(context, span) ?? throw new NullReferenceException();
             if (source is Array sourceValue)
             {
                 return sourceValue.GetValue(CastUtil.CastInt(index));

@@ -6,17 +6,17 @@ namespace Linear.Runtime.Expressions.Operators;
 
 internal record OperatorDualSubExpressionInstance(ExpressionInstance Left, ExpressionInstance Right) : ExpressionInstance
 {
-    public override object Evaluate(StructureInstance structure, Stream stream)
+    public override object Evaluate(StructureEvaluationContext context, Stream stream)
     {
-        object left = Left.Evaluate(structure, stream) ?? throw new NullReferenceException("LHS null");
-        object right = Right.Evaluate(structure, stream) ?? throw new NullReferenceException("RHS null");
+        object left = Left.Evaluate(context, stream) ?? throw new NullReferenceException("LHS null");
+        object right = Right.Evaluate(context, stream) ?? throw new NullReferenceException("RHS null");
         return EvaluateInternal(left, right);
     }
 
-    public override object Evaluate(StructureInstance structure, ReadOnlySpan<byte> span)
+    public override object Evaluate(StructureEvaluationContext context, ReadOnlySpan<byte> span)
     {
-        object left = Left.Evaluate(structure, span) ?? throw new NullReferenceException("LHS null");
-        object right = Right.Evaluate(structure, span) ?? throw new NullReferenceException("RHS null");
+        object left = Left.Evaluate(context, span) ?? throw new NullReferenceException("LHS null");
+        object right = Right.Evaluate(context, span) ?? throw new NullReferenceException("RHS null");
         return EvaluateInternal(left, right);
     }
 

@@ -29,12 +29,12 @@ public class ConstantExpression<T> : ExpressionDefinition
 
     private record ConstantExpressionInstance(T Value) : ExpressionInstance
     {
-        public override object? Evaluate(StructureInstance structure, Stream stream)
+        public override object? Evaluate(StructureEvaluationContext context, Stream stream)
         {
             return Value;
         }
 
-        public override object? Evaluate(StructureInstance structure, ReadOnlySpan<byte> span)
+        public override object? Evaluate(StructureEvaluationContext context, ReadOnlySpan<byte> span)
         {
             return Value;
         }
@@ -94,12 +94,12 @@ public class ConstantNumberExpression<T> : ConstantNumberExpression
         }
 #endif
 
-        public override object Evaluate(StructureInstance structure, Stream stream)
+        public override object Evaluate(StructureEvaluationContext context, Stream stream)
         {
             return Value;
         }
 
-        public override object Evaluate(StructureInstance structure, ReadOnlySpan<byte> span)
+        public override object Evaluate(StructureEvaluationContext context, ReadOnlySpan<byte> span)
         {
             return Value;
         }

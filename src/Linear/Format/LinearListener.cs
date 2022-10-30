@@ -94,6 +94,24 @@ internal class LinearListener : LinearBaseListener
         _currentDefinition!.Members.Add(new StructureDefinitionMember(dataName, dataElement));
     }
 
+    public override void EnterStruct_statement_define_lambda(LinearParser.Struct_statement_define_lambdaContext context)
+    {
+        ITerminalNode id = context.IDENTIFIER();
+        string dataName = id.GetText();
+        var e = GetExpression(context.expr());
+        if (!_currentNames.Add(dataName))
+        {
+            AddError($"Duplicate name {dataName}", id.Symbol);
+            return;
+        }
+        if (e == null)
+        {
+            return;
+        }
+        Element dataElement = new LambdaElement(dataName, e);
+        _currentDefinition!.Members.Add(new StructureDefinitionMember(dataName, dataElement));
+    }
+
     public override void EnterStruct_statement_define_array(
         LinearParser.Struct_statement_define_arrayContext context)
     {
@@ -307,7 +325,6 @@ internal class LinearListener : LinearBaseListener
 
     private ExpressionDefinition? GetExpression(LinearParser.ExprContext context, string? activeType = null)
     {
-        //Console.WriteLine($"Rule ihndex {context.RuleIndex}");
         return context switch
         {
             LinearParser.ExprArrayAccessContext exprArrayAccessContext =>
@@ -360,6 +377,11 @@ internal class LinearListener : LinearBaseListener
                     : null,
             LinearParser.ExprUnOpContext exprUnOpContext => GetExpression(exprUnOpContext.expr()) is { } e0 ? new OperatorUnaryExpression(e0, OperatorUnaryExpression.GetOperator(exprUnOpContext.un_op().GetText())) : null,
             LinearParser.ExprWrappedContext exprWrappedContext => GetExpression(exprWrappedContext.expr()),
+            LinearParser.ExprLambdaReplacementContext exprLambdaReplacementContext => new LambdaReplacementExpression(exprLambdaReplacementContext.IDENTIFIER().GetText()),
+            LinearParser.ExprSourceWithOffsetContext exprSourceWithOffsetContext =>
+                RequireNonNull(GetExpression(exprSourceWithOffsetContext.expr(0)), GetExpression(exprSourceWithOffsetContext.expr(1)), out var e0, out var e1)
+                    ? new SourceWithOffsetExpression(e0, e1)
+                    : null,
             _ => throw new ArgumentOutOfRangeException(nameof(context))
         };
     }

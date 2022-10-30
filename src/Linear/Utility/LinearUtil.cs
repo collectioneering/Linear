@@ -16,14 +16,14 @@ public static class LinearUtil
 {
     private static readonly Dictionary<string, MethodCallDelegate> s_defaultMethods = new() { { "log", Log }, { "format", Format } };
 
-    private static object? Log(params object?[] args)
+    private static object? Log(StructureEvaluationContext context, params object?[] args)
     {
         string? value = args[0]?.ToString();
         Console.WriteLine(value);
         return args[0];
     }
 
-    private static object Format(params object?[] args)
+    private static object Format(StructureEvaluationContext context, params object?[] args)
     {
         return string.Format(CultureInfo.InvariantCulture, args[0]?.ToString() ?? "", args.Skip(1).ToArray());
     }
@@ -81,5 +81,23 @@ public static class LinearUtil
     public static Dictionary<string, IExporter> CreateDefaultExporterDictionary()
     {
         return new Dictionary<string, IExporter>(s_defaultExporters);
+    }
+
+    internal static bool TryGetReadOnlySpanFromPossibleBuffer(object? source, out ReadOnlySpan<byte> buffer)
+    {
+        switch (source)
+        {
+            case Memory<byte> memory:
+                buffer = memory.Span;
+                return true;
+            case ReadOnlyMemory<byte> readOnlyMemory:
+                buffer = readOnlyMemory.Span;
+                return true;
+            case byte[] array:
+                buffer = array;
+                return true;
+        }
+        buffer = ReadOnlySpan<byte>.Empty;
+        return false;
     }
 }

@@ -11,14 +11,14 @@ public abstract record ElementInitializer
     /// <summary>
     /// Initializes element.
     /// </summary>
-    /// <param name="structure">Structure.</param>
+    /// <param name="context">Structure evaluation context.</param>
     /// <param name="stream">Stream.</param>
-    public abstract void Initialize(StructureInstance structure, Stream stream);
+    public abstract void Initialize(StructureEvaluationContext context, Stream stream);
 
     /// <summary>
     /// Initializes element.
     /// </summary>
-    /// <param name="structure">Structure.</param>
+    /// <param name="context">Structure evaluation context.</param>
     /// <param name="span">Span.</param>
-    public abstract void Initialize(StructureInstance structure, ReadOnlySpan<byte> span);
+    public abstract void Initialize(StructureEvaluationContext context, ReadOnlySpan<byte> span);
 }
