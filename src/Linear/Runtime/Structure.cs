@@ -27,12 +27,24 @@ public class Structure
     }
 
     /// <summary>
-    /// Parse structure from stream
+    /// Parses structure from stream.
     /// </summary>
-    /// <param name="registry">Structure registry</param>
-    /// <param name="stream">Stream to read from</param>
+    /// <param name="store">Store.</param>
+    /// <param name="stream">Stream to read from.</param>
     /// <param name="parseState">Current parse state.</param>
-    /// <returns>Parsed structure</returns>
+    /// <returns>Parsed structure.</returns>
+    public StructureInstance Parse(FormatStore store, Stream stream, ParseState parseState)
+    {
+        return Parse(store._registry, stream, parseState);
+    }
+
+    /// <summary>
+    /// Parses structure from stream.
+    /// </summary>
+    /// <param name="registry">Structure registry.</param>
+    /// <param name="stream">Stream to read from.</param>
+    /// <param name="parseState">Current parse state.</param>
+    /// <returns>Parsed structure.</returns>
     public StructureInstance Parse(StructureRegistry registry, Stream stream, ParseState parseState)
     {
         StructureInstance instance = new(registry, parseState.Parent, parseState.Offset, parseState.Length == 0 ? DefaultLength : parseState.Length, parseState.Index);
