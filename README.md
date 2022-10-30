@@ -63,13 +63,14 @@ These ranges are expressed as `[<sourceOffset>..<endOffsetExclusive>]` and `[<so
 
 #### Standard deserializers
 
-| Type    | Description                     |
-|---------|---------------------------------|
-| byte      | 8-bit unsigned integer (LE)   |
+| Type      | Description                   |
+|-----------|-------------------------------|
+| buf       | Byte buffer                   |
+| byte      | 8-bit unsigned integer        |
 | ushort    | 16-bit unsigned integer (LE)  |
 | uint      | 32-bit unsigned integer (LE)  |
 | ulong     | 64-bit unsigned integer (LE   |
-| sbyte     | 8-bit signed integer (LE)     |
+| sbyte     | 8-bit signed integer          |
 | short     | 16-bit signed integer (LE)    |
 | int       | 32-bit signed integer (LE)    |
 | long      | 64-bit signed integer (LE)    |

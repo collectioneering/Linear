@@ -73,11 +73,7 @@ public class PrimitiveDeserializer : IDeserializer
         Dictionary<string, object>? parameters, long? length = null, int index = 0)
     {
         // Possible addition: property group support little endian (requires boolean expressions)
-        offset += instance.AbsoluteOffset;
-        checked
-        {
-            span = span[(int)offset..];
-        }
+        LinearUtil.TrimStart(ref span, instance, offset);
         return Type.GetTypeCode(_type) switch
         {
             TypeCode.Boolean => new DeserializeResult(span[0] != 0, 1),

@@ -40,6 +40,7 @@ public static class LinearUtil
 
     private static readonly Dictionary<string, IDeserializer> s_defaultDeserializers = new()
     {
+        { "buf", new BufferDeserializer() },
         { "byte", new PrimitiveDeserializer(typeof(byte)) },
         { "sbyte", new PrimitiveDeserializer(typeof(sbyte)) },
         { "ushort", new PrimitiveDeserializer(typeof(ushort)) },
@@ -109,7 +110,43 @@ public static class LinearUtil
         return false;
     }
 
-    internal static void TrimExportTarget(ref ReadOnlyMemory<byte> memory, StructureInstance instance, LongRange range)
+    internal static void TrimStart(ref ReadOnlyMemory<byte> memory, StructureInstance instance, long offset)
+    {
+        int absoluteOffset;
+        checked
+        {
+            absoluteOffset = (int)(instance.AbsoluteOffset + offset);
+        }
+        if (absoluteOffset < 0)
+        {
+            throw new ArgumentException("Start cannot be negative");
+        }
+        if (absoluteOffset > memory.Length)
+        {
+            throw new ArgumentException("Region exceeds buffer");
+        }
+        memory = memory.Slice(absoluteOffset);
+    }
+
+    internal static void TrimStart(ref ReadOnlySpan<byte> span, StructureInstance instance, long offset)
+    {
+        int absoluteOffset;
+        checked
+        {
+            absoluteOffset = (int)(instance.AbsoluteOffset + offset);
+        }
+        if (absoluteOffset < 0)
+        {
+            throw new ArgumentException("Start cannot be negative");
+        }
+        if (absoluteOffset > span.Length)
+        {
+            throw new ArgumentException("Region exceeds buffer");
+        }
+        span = span.Slice(absoluteOffset);
+    }
+
+    internal static void TrimRange(ref ReadOnlyMemory<byte> memory, StructureInstance instance, LongRange range)
     {
         int absoluteOffset, length;
         checked
@@ -119,20 +156,20 @@ public static class LinearUtil
         }
         if (absoluteOffset < 0)
         {
-            throw new ArgumentException("Export target start cannot be negative");
+            throw new ArgumentException("Start cannot be negative");
         }
         if (length < 0)
         {
-            throw new ArgumentException("Export target length cannot be negative");
+            throw new ArgumentException("Length cannot be negative");
         }
         if (absoluteOffset + length > memory.Length)
         {
-            throw new ArgumentException("Export target region exceeds buffer");
+            throw new ArgumentException("Region exceeds buffer");
         }
         memory = memory.Slice(absoluteOffset, length);
     }
 
-    internal static void TrimExportTarget(ref ReadOnlySpan<byte> span, StructureInstance instance, LongRange range)
+    internal static void TrimRange(ref ReadOnlySpan<byte> span, StructureInstance instance, LongRange range)
     {
         int absoluteOffset, length;
         checked
@@ -142,15 +179,15 @@ public static class LinearUtil
         }
         if (absoluteOffset < 0)
         {
-            throw new ArgumentException("Export target start cannot be negative");
+            throw new ArgumentException("Start cannot be negative");
         }
         if (length < 0)
         {
-            throw new ArgumentException("Export target length cannot be negative");
+            throw new ArgumentException("Length cannot be negative");
         }
         if (absoluteOffset + length > span.Length)
         {
-            throw new ArgumentException("Export target region exceeds buffer");
+            throw new ArgumentException("Region exceeds buffer");
         }
         span = span.Slice(absoluteOffset, length);
     }

@@ -32,7 +32,7 @@ public class DataExporter : IExporter
     public void Export(ReadOnlyMemory<byte> memory, StructureInstance instance, LongRange range,
         IReadOnlyDictionary<string, object>? parameters, Stream outputStream)
     {
-        LinearUtil.TrimExportTarget(ref memory, instance, range);
+        LinearUtil.TrimRange(ref memory, instance, range);
         outputStream.Write(memory.Span);
     }
 
@@ -40,7 +40,7 @@ public class DataExporter : IExporter
     public void Export(ReadOnlySpan<byte> span, StructureInstance instance, LongRange range,
         IReadOnlyDictionary<string, object>? parameters, Stream outputStream)
     {
-        LinearUtil.TrimExportTarget(ref span, instance, range);
+        LinearUtil.TrimRange(ref span, instance, range);
         outputStream.Write(span);
     }
 }

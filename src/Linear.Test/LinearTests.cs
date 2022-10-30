@@ -25,6 +25,8 @@ main {
 
     string vvv `get_dummy_buffer()![5,3];
     string vvv2 `get_dummy_buffer()![5..8];
+
+    buf bu `[2,2];
 }
 """;
 
@@ -73,6 +75,7 @@ main {
             Assert.That(si["l1_result"], Is.EqualTo(200));
             Assert.That(si["vvv"], Is.EqualTo("lol"));
             Assert.That(si["vvv2"], Is.EqualTo("lol"));
+            Assert.That(((ReadOnlyMemory<byte>)si["bu"]).ToArray(), Is.EqualTo(new byte[] { 0x02, 0x03 }));
             si = res.Parse("main", s_Test1_Data);
             Assert.That(si["a"], Is.EqualTo(4 * 2 + 5));
             Assert.That(si["b"], Is.EqualTo(5 + 8 * 9));
@@ -85,6 +88,7 @@ main {
             Assert.That(si["l1_result"], Is.EqualTo(200));
             Assert.That(si["vvv"], Is.EqualTo("lol"));
             Assert.That(si["vvv2"], Is.EqualTo("lol"));
+            Assert.That(((ReadOnlyMemory<byte>)si["bu"]).ToArray(), Is.EqualTo(new byte[] { 0x02, 0x03 }));
         }
     }
 }
