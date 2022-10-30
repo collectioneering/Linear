@@ -146,6 +146,24 @@ public static class LinearUtil
         span = span.Slice(absoluteOffset);
     }
 
+    internal static void TrimRange(Stream stream, StructureInstance instance, LongRange range)
+    {
+        long absoluteOffset = instance.AbsoluteOffset + range.Offset, length = range.Length;
+        if (absoluteOffset < 0)
+        {
+            throw new ArgumentException("Start cannot be negative");
+        }
+        if (length < 0)
+        {
+            throw new ArgumentException("Length cannot be negative");
+        }
+        if (absoluteOffset + length > stream.Length)
+        {
+            throw new ArgumentException("Region exceeds buffer");
+        }
+        stream.Position = absoluteOffset;
+    }
+
     internal static void TrimRange(ref ReadOnlyMemory<byte> memory, StructureInstance instance, LongRange range)
     {
         int absoluteOffset, length;

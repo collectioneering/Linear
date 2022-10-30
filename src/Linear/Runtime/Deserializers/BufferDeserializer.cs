@@ -23,16 +23,10 @@ public class BufferDeserializer : IDeserializer
         long? length = null, int index = 0)
     {
         if (length == null) throw new ArgumentException("Length required for buffer deserializer");
-        offset += instance.AbsoluteOffset;
-        int lengthValue;
-        checked
-        {
-            lengthValue = (int)length.Value;
-        }
-        stream.Position = offset;
-        byte[] result = new byte[lengthValue];
+        LinearUtil.TrimRange(stream, instance, new LongRange(offset, length.Value));
+        byte[] result = new byte[length.Value];
         Processor.Read(stream, result, false);
-        return new DeserializeResult(new ReadOnlyMemory<byte>(result), lengthValue);
+        return new DeserializeResult(new ReadOnlyMemory<byte>(result), length.Value);
     }
 
     /// <inheritdoc />
