@@ -325,7 +325,6 @@ internal class LinearListener : LinearBaseListener
 
     private ExpressionDefinition? GetExpression(LinearParser.ExprContext context, string? activeType = null)
     {
-        //Console.WriteLine($"Rule ihndex {context.RuleIndex}");
         return context switch
         {
             LinearParser.ExprArrayAccessContext exprArrayAccessContext =>
@@ -379,6 +378,10 @@ internal class LinearListener : LinearBaseListener
             LinearParser.ExprUnOpContext exprUnOpContext => GetExpression(exprUnOpContext.expr()) is { } e0 ? new OperatorUnaryExpression(e0, OperatorUnaryExpression.GetOperator(exprUnOpContext.un_op().GetText())) : null,
             LinearParser.ExprWrappedContext exprWrappedContext => GetExpression(exprWrappedContext.expr()),
             LinearParser.ExprLambdaReplacementContext exprLambdaReplacementContext => new LambdaReplacementExpression(exprLambdaReplacementContext.IDENTIFIER().GetText()),
+            LinearParser.ExprSourceWithOffsetContext exprSourceWithOffsetContext =>
+                RequireNonNull(GetExpression(exprSourceWithOffsetContext.expr(0)), GetExpression(exprSourceWithOffsetContext.expr(1)), out var e0, out var e1)
+                    ? new SourceWithOffsetExpression(e0, e1)
+                    : null,
             _ => throw new ArgumentOutOfRangeException(nameof(context))
         };
     }

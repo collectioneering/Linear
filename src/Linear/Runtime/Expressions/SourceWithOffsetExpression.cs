@@ -42,14 +42,14 @@ public class SourceWithOffsetExpression : ExpressionDefinition
         public override object Evaluate(StructureEvaluationContext context, Stream stream)
         {
             object source = Source.Evaluate(context, stream) ?? throw new InvalidOperationException($"{nameof(SourceWithOffset)} source is null");
-            long offset = CastUtil.CastLong(Offset.Evaluate(context, stream));
+            object offset = Offset.Evaluate(context, stream) ?? throw new InvalidOperationException($"{nameof(SourceWithOffset)} offset is null");
             return new SourceWithOffset(source, offset);
         }
 
         public override object Evaluate(StructureEvaluationContext context, ReadOnlySpan<byte> span)
         {
             object source = Source.Evaluate(context, span) ?? throw new InvalidOperationException($"{nameof(SourceWithOffset)} source is null");
-            long offset = CastUtil.CastLong(Offset.Evaluate(context, span));
+            object offset = Offset.Evaluate(context, span) ?? throw new InvalidOperationException($"{nameof(SourceWithOffset)} offset is null");
             return new SourceWithOffset(source, offset);
         }
     }

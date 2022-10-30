@@ -5,4 +5,4 @@ namespace Linear.Runtime;
 /// </summary>
 /// <param name="Source">Source.</param>
 /// <param name="Offset">Offset.</param>
-public record SourceWithOffset(object Source, long Offset);
+public record SourceWithOffset(object Source, object Offset);

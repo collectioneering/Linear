@@ -91,23 +91,35 @@ public class DeserializeExpression : ExpressionDefinition
             object? source = Source.Evaluate(context, stream);
             if (source is SourceWithOffset swo && LinearUtil.TryGetReadOnlySpanFromPossibleBuffer(swo.Source, out var buffer))
             {
-                // TODO this construction doesn't support specifying length
-                return Deserializer.Deserialize(context.Structure, buffer, swo.Offset, littleEndianValue, standardPropertiesGen, deserializerParamsGen, null).Value;
-            }
-            object? offset = source;
-            LongRange range;
-            if (TryCastLong(offset, out long offsetValue))
-                range = new LongRange(Offset: offsetValue, Length: 0);
-            else if (offset is LongRange r)
-            {
-                range = r;
+                LongRange range;
+                if (TryCastLong(swo.Offset, out long offsetValue))
+                    range = new LongRange(Offset: offsetValue, Length: 0);
+                else if (swo.Offset is LongRange r)
+                {
+                    range = r;
+                }
+                else
+                {
+                    throw new InvalidCastException("Cannot find offset or range type for source delegate");
+                }
+                return Deserializer.Deserialize(context.Structure, buffer, range.Offset, littleEndianValue, standardPropertiesGen, deserializerParamsGen, range.Length).Value;
             }
             else
             {
-                throw new InvalidCastException("Cannot find offset or range type for source delegate");
+                object? offset = source;
+                LongRange range;
+                if (TryCastLong(offset, out long offsetValue))
+                    range = new LongRange(Offset: offsetValue, Length: 0);
+                else if (offset is LongRange r)
+                {
+                    range = r;
+                }
+                else
+                {
+                    throw new InvalidCastException("Cannot find offset or range type for source delegate");
+                }
+                return Deserializer.Deserialize(context.Structure, stream, range.Offset, littleEndianValue, standardPropertiesGen, deserializerParamsGen, range.Length).Value;
             }
-
-            return Deserializer.Deserialize(context.Structure, stream, range.Offset, littleEndianValue, standardPropertiesGen, deserializerParamsGen, range.Length).Value;
         }
 
         public override object Evaluate(StructureEvaluationContext context, ReadOnlySpan<byte> span)
@@ -128,22 +140,35 @@ public class DeserializeExpression : ExpressionDefinition
             object? source = Source.Evaluate(context, span);
             if (source is SourceWithOffset swo && LinearUtil.TryGetReadOnlySpanFromPossibleBuffer(swo.Source, out var buffer))
             {
-                // TODO this construction doesn't support specifying length
-                return Deserializer.Deserialize(context.Structure, buffer, swo.Offset, littleEndianValue, standardPropertiesGen, deserializerParamsGen, null).Value;
-            }
-            object? offset = source;
-            LongRange range;
-            if (TryCastLong(offset, out long offsetValue))
-                range = new LongRange(Offset: offsetValue, Length: 0);
-            else if (offset is LongRange r)
-            {
-                range = r;
+                LongRange range;
+                if (TryCastLong(swo.Offset, out long offsetValue))
+                    range = new LongRange(Offset: offsetValue, Length: 0);
+                else if (swo.Offset is LongRange r)
+                {
+                    range = r;
+                }
+                else
+                {
+                    throw new InvalidCastException("Cannot find offset or range type for source delegate");
+                }
+                return Deserializer.Deserialize(context.Structure, buffer, range.Offset, littleEndianValue, standardPropertiesGen, deserializerParamsGen, range.Length).Value;
             }
             else
             {
-                throw new InvalidCastException("Cannot find offset or range type for source delegate");
+                object? offset = source;
+                LongRange range;
+                if (TryCastLong(offset, out long offsetValue))
+                    range = new LongRange(Offset: offsetValue, Length: 0);
+                else if (offset is LongRange r)
+                {
+                    range = r;
+                }
+                else
+                {
+                    throw new InvalidCastException("Cannot find offset or range type for source delegate");
+                }
+                return Deserializer.Deserialize(context.Structure, span, range.Offset, littleEndianValue, standardPropertiesGen, deserializerParamsGen, range.Length).Value;
             }
-            return Deserializer.Deserialize(context.Structure, span, range.Offset, littleEndianValue, standardPropertiesGen, deserializerParamsGen, range.Length).Value;
         }
     }
 }
