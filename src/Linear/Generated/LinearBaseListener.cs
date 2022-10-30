@@ -96,6 +96,18 @@ public partial class LinearBaseListener : ILinearListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitStruct_statement_define([NotNull] LinearParser.Struct_statement_defineContext context) { }
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="LinearParser.struct_statement_define_lambda"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterStruct_statement_define_lambda([NotNull] LinearParser.Struct_statement_define_lambdaContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="LinearParser.struct_statement_define_lambda"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitStruct_statement_define_lambda([NotNull] LinearParser.Struct_statement_define_lambdaContext context) { }
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="LinearParser.struct_statement_call"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
@@ -282,6 +294,20 @@ public partial class LinearBaseListener : ILinearListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitExprOpBitwiseOr([NotNull] LinearParser.ExprOpBitwiseOrContext context) { }
 	/// <summary>
+	/// Enter a parse tree produced by the <c>ExprLambdaReplacement</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterExprLambdaReplacement([NotNull] LinearParser.ExprLambdaReplacementContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>ExprLambdaReplacement</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitExprLambdaReplacement([NotNull] LinearParser.ExprLambdaReplacementContext context) { }
+	/// <summary>
 	/// Enter a parse tree produced by the <c>ExprUnboundDeserialize</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
 	/// <para>The default implementation does nothing.</para>
@@ -379,6 +405,20 @@ public partial class LinearBaseListener : ILinearListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitExprRangeEnd([NotNull] LinearParser.ExprRangeEndContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by the <c>ExprSourceWithOffset</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterExprSourceWithOffset([NotNull] LinearParser.ExprSourceWithOffsetContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>ExprSourceWithOffset</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitExprSourceWithOffset([NotNull] LinearParser.ExprSourceWithOffsetContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by the <c>ExprArrayAccess</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.

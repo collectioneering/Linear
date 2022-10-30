@@ -17,6 +17,9 @@ main {
     ushort f `0;
     var f2 ushort`2;
     byte g `5;
+
+    int tmp 10;
+    lambda l1 $$i * tmp;
 }
 """;
 

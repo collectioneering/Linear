@@ -74,16 +74,12 @@ public class DeserializeExpression : ExpressionDefinition
     {
         public override object Evaluate(StructureInstance structure, Stream stream)
         {
-            Dictionary<string, object>? deserializerParamsGen =
-                DeserializerParamsCompact.Count != 0 ? new Dictionary<string, object>() : null;
+            Dictionary<string, object>? deserializerParamsGen = DeserializerParamsCompact.Count != 0 ? new Dictionary<string, object>() : null;
             if (deserializerParamsGen != null)
                 foreach (var kvp in DeserializerParamsCompact)
                     deserializerParamsGen[kvp.Key] = kvp.Value.Evaluate(structure, stream) ?? throw new NullReferenceException();
 
-            Dictionary<StandardProperty, object>? standardPropertiesGen =
-                StandardPropertiesCompact.Count != 0
-                    ? new Dictionary<StandardProperty, object>()
-                    : null;
+            Dictionary<StandardProperty, object>? standardPropertiesGen = StandardPropertiesCompact.Count != 0 ? new Dictionary<StandardProperty, object>() : null;
             if (standardPropertiesGen != null)
                 foreach (var kvp in StandardPropertiesCompact)
                     standardPropertiesGen[kvp.Key] = kvp.Value.Evaluate(structure, stream) ?? throw new NullReferenceException();
@@ -110,16 +106,12 @@ public class DeserializeExpression : ExpressionDefinition
 
         public override object Evaluate(StructureInstance structure, ReadOnlySpan<byte> span)
         {
-            Dictionary<string, object>? deserializerParamsGen =
-                DeserializerParamsCompact.Count != 0 ? new Dictionary<string, object>() : null;
+            Dictionary<string, object>? deserializerParamsGen = DeserializerParamsCompact.Count != 0 ? new Dictionary<string, object>() : null;
             if (deserializerParamsGen != null)
                 foreach (var kvp in DeserializerParamsCompact)
                     deserializerParamsGen[kvp.Key] = kvp.Value.Evaluate(structure, span) ?? throw new NullReferenceException();
 
-            Dictionary<StandardProperty, object>? standardPropertiesGen =
-                StandardPropertiesCompact.Count != 0
-                    ? new Dictionary<StandardProperty, object>()
-                    : null;
+            Dictionary<StandardProperty, object>? standardPropertiesGen = StandardPropertiesCompact.Count != 0 ? new Dictionary<StandardProperty, object>() : null;
             if (standardPropertiesGen != null)
                 foreach (var kvp in StandardPropertiesCompact)
                     standardPropertiesGen[kvp.Key] = kvp.Value.Evaluate(structure, span) ?? throw new NullReferenceException();

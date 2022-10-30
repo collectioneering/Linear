@@ -12,6 +12,7 @@ struct:
 
 struct_statement:
 	struct_statement_define
+	| struct_statement_define_lambda
 	| struct_statement_call
 	| struct_statement_length
 //	| struct_statement_define_value
@@ -25,6 +26,9 @@ struct_statement:
 struct_statement_define:
 	IDENTIFIER WS IDENTIFIER WS expr WS? ENDL;
 	//IDENTIFIER WS IDENTIFIER WS expr WS? property_group? ENDL;
+
+struct_statement_define_lambda:
+	'lambda' WS IDENTIFIER WS expr WS? ENDL;
 
 // value memberName valueExpr;
 //struct_statement_define_value:
@@ -66,12 +70,14 @@ term_replacement_p: '$p' | '$parent';
 term_replacement_u: '$u' | '$unique';
 expr:
 	IDENTIFIER WS? '(' WS? expr? WS? (',' WS? expr WS?)* ')'		# ExprMethodCall
+	| '$$' IDENTIFIER												# ExprLambdaReplacement
 	| term															# ExprTerm
 	| '`' expr WS? property_group?									# ExprUnboundDeserialize
 	| IDENTIFIER '`' expr WS? property_group?						# ExprDeserialize
 	| OPENSQ WS? expr WS? ',' WS? 'end:' WS? expr WS? CLOSESQ		# ExprRangeEnd
 	| OPENSQ WS? expr WS? ',' WS? 'length:' WS? expr WS? CLOSESQ	# ExprRangeLength
 	| expr '.' IDENTIFIER											# ExprMember
+	| expr '!' expr													# ExprSourceWithOffset
 	| expr '[' WS? expr WS? ']'										# ExprArrayAccess
 	| '(' WS? expr WS? ')'											# ExprWrapped
 	| un_op WS? expr												# ExprUnOp
