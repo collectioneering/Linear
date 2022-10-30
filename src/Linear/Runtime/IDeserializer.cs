@@ -44,6 +44,22 @@ public interface IDeserializer
     /// Deserializes object.
     /// </summary>
     /// <param name="instance">Structure instance.</param>
+    /// <param name="memory">Buffer to read from.</param>
+    /// <param name="offset">Offset in stream.</param>
+    /// <param name="littleEndian">Endianness.</param>
+    /// <param name="standardProperties">Standard properties.</param>
+    /// <param name="parameters">Deserializer parameters.</param>
+    /// <param name="length">Length of structure.</param>
+    /// <param name="index">Array index.</param>
+    /// <returns>Deserialized object.</returns>
+    DeserializeResult Deserialize(StructureInstance instance, ReadOnlyMemory<byte> memory, long offset, bool littleEndian,
+        Dictionary<StandardProperty, object>? standardProperties, Dictionary<string, object>? parameters,
+        long? length = null, int index = 0);
+
+    /// <summary>
+    /// Deserializes object.
+    /// </summary>
+    /// <param name="instance">Structure instance.</param>
     /// <param name="span">Buffer to read from.</param>
     /// <param name="offset">Offset in stream.</param>
     /// <param name="littleEndian">Endianness.</param>

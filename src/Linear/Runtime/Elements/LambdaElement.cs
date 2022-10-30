@@ -39,6 +39,11 @@ public class LambdaElement : Element
             context.Structure.SetMember(Name, Expression);
         }
 
+        public override void Initialize(StructureEvaluationContext context, ReadOnlyMemory<byte> memory)
+        {
+            context.Structure.SetMember(Name, Expression);
+        }
+
         public override void Initialize(StructureEvaluationContext context, ReadOnlySpan<byte> span)
         {
             context.Structure.SetMember(Name, Expression);

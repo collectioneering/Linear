@@ -56,7 +56,7 @@ main {
                 context = context with { LambdaReplacements = replacements };
                 return expr.Evaluate(context, ReadOnlySpan<byte>.Empty);
             });
-            res.AddMethod("get_dummy_buffer", static (context, args) => { return s_Test1_Data2; });
+            res.AddMethod("get_dummy_buffer", static (_, _) => s_Test1_Data2);
             Assert.That(res.TryLoad(SrcSpec, Console.WriteLine), Is.True);
             Assert.That(res.TryGetStructure("main", out Structure structure), Is.True);
             Assert.That(structure, Is.Not.Null);

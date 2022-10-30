@@ -45,6 +45,17 @@ public class ArrayAccessExpression : ExpressionDefinition
             throw new InvalidCastException($"Could not cast object of type {source?.GetType().FullName} to {nameof(Array)}");
         }
 
+        public override object? Evaluate(StructureEvaluationContext context, ReadOnlyMemory<byte> memory)
+        {
+            object? source = Source.Evaluate(context, memory);
+            object index = Index.Evaluate(context, memory) ?? throw new NullReferenceException();
+            if (source is Array sourceValue)
+            {
+                return sourceValue.GetValue(CastUtil.CastInt(index));
+            }
+            throw new InvalidCastException($"Could not cast object of type {source?.GetType().FullName} to {nameof(Array)}");
+        }
+
         public override object? Evaluate(StructureEvaluationContext context, ReadOnlySpan<byte> span)
         {
             object? source = Source.Evaluate(context, span);

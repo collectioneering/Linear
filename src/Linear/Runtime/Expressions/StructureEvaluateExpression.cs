@@ -39,6 +39,8 @@ public class StructureEvaluateExpression<T> : ExpressionDefinition
     {
         public override object? Evaluate(StructureEvaluationContext context, Stream stream) => Delegate(context.Structure);
 
+        public override object? Evaluate(StructureEvaluationContext context, ReadOnlyMemory<byte> memory) => Delegate(context.Structure);
+
         public override object? Evaluate(StructureEvaluationContext context, ReadOnlySpan<byte> span) => Delegate(context.Structure);
     }
 }

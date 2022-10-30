@@ -71,6 +71,22 @@ public class OutputElement : Element
             InitializeInternal(context, format, range, name, exporterParams);
         }
 
+        public override void Initialize(StructureEvaluationContext context, ReadOnlyMemory<byte> memory)
+        {
+            object? format = Format.Evaluate(context, memory);
+            object? range = Range.Evaluate(context, memory);
+            object? name = Name.Evaluate(context, memory);
+            Dictionary<string, object>? exporterParams = ExporterParamsCompact == null ? null : new Dictionary<string, object>();
+            if (ExporterParamsCompact != null)
+            {
+                foreach (var kvp in ExporterParamsCompact)
+                {
+                    exporterParams![kvp.Key] = kvp.Value.Evaluate(context, memory) ?? throw new NullReferenceException();
+                }
+            }
+            InitializeInternal(context, format, range, name, exporterParams);
+        }
+
         public override void Initialize(StructureEvaluationContext context, ReadOnlySpan<byte> span)
         {
             object? format = Format.Evaluate(context, span);

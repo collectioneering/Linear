@@ -13,6 +13,13 @@ internal record OperatorDualAddExpressionInstance(ExpressionInstance Left, Expre
         return EvaluateInternal(left, right);
     }
 
+    public override object Evaluate(StructureEvaluationContext context, ReadOnlyMemory<byte> memory)
+    {
+        object? left = Left.Evaluate(context, memory);
+        object? right = Right.Evaluate(context, memory);
+        return EvaluateInternal(left, right);
+    }
+
     public override object Evaluate(StructureEvaluationContext context, ReadOnlySpan<byte> span)
     {
         object? left = Left.Evaluate(context, span);

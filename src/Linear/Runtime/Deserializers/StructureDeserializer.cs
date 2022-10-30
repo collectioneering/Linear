@@ -36,6 +36,14 @@ public class StructureDeserializer : IDeserializer
     }
 
     /// <inheritdoc />
+    public DeserializeResult Deserialize(StructureInstance instance, ReadOnlyMemory<byte> memory,
+        long offset, bool littleEndian, Dictionary<StandardProperty, object>? standardProperties,
+        Dictionary<string, object>? parameters, long? length = null, int index = 0)
+    {
+        return Deserialize(instance, memory.Span, offset, littleEndian, standardProperties, parameters, length, index);
+    }
+
+    /// <inheritdoc />
     public DeserializeResult Deserialize(StructureInstance instance, ReadOnlySpan<byte> span,
         long offset, bool littleEndian, Dictionary<StandardProperty, object>? standardProperties,
         Dictionary<string, object>? parameters, long? length = null, int index = 0)

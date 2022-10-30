@@ -62,4 +62,22 @@ public class Structure
 
         return instance;
     }
+
+    /// <summary>
+    /// Parses structure from span.
+    /// </summary>
+    /// <param name="registry">Structure registry.</param>
+    /// <param name="memory">Buffer to read from.</param>
+    /// <param name="parseState">Current parse state.</param>
+    /// <returns>Parsed structure.</returns>
+    public StructureInstance Parse(IReadOnlyDictionary<string, Structure> registry, ReadOnlyMemory<byte> memory, ParseState parseState)
+    {
+        StructureInstance instance = new(registry, parseState.Parent, parseState.Offset, parseState.Length ?? DefaultLength, parseState.Index);
+        foreach (var member in _members)
+        {
+            member.Initializer.Initialize(new StructureEvaluationContext(instance), memory);
+        }
+
+        return instance;
+    }
 }

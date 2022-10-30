@@ -64,6 +64,13 @@ public class RangeExpression : ExpressionDefinition
             return new LongRange(start, end - start);
         }
 
+        public override object Evaluate(StructureEvaluationContext context, ReadOnlyMemory<byte> memory)
+        {
+            long start = CastLong(Start.Evaluate(context, memory));
+            long end = CastLong(End.Evaluate(context, memory));
+            return new LongRange(start, end - start);
+        }
+
         public override object Evaluate(StructureEvaluationContext context, ReadOnlySpan<byte> span)
         {
             long start = CastLong(Start.Evaluate(context, span));
@@ -78,6 +85,13 @@ public class RangeExpression : ExpressionDefinition
         {
             long start = CastLong(Start.Evaluate(context, stream));
             long length = CastLong(Length.Evaluate(context, stream));
+            return new LongRange(start, length);
+        }
+
+        public override object Evaluate(StructureEvaluationContext context, ReadOnlyMemory<byte> memory)
+        {
+            long start = CastLong(Start.Evaluate(context, memory));
+            long length = CastLong(Length.Evaluate(context, memory));
             return new LongRange(start, length);
         }
 

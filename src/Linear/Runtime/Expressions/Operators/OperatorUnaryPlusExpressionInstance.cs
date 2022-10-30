@@ -11,6 +11,12 @@ internal record OperatorUnaryPlusExpressionInstance(ExpressionInstance Expressio
         return EvaluateInternal(value);
     }
 
+    public override object Evaluate(StructureEvaluationContext context, ReadOnlyMemory<byte> memory)
+    {
+        object value = Expression.Evaluate(context, memory) ?? throw new NullReferenceException("Expr value null");
+        return EvaluateInternal(value);
+    }
+
     public override object Evaluate(StructureEvaluationContext context, ReadOnlySpan<byte> span)
     {
         object value = Expression.Evaluate(context, span) ?? throw new NullReferenceException("Expr value null");

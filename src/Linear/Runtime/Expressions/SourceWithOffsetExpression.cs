@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Linear.Utility;
 
 namespace Linear.Runtime.Expressions;
 
@@ -43,6 +42,13 @@ public class SourceWithOffsetExpression : ExpressionDefinition
         {
             object source = Source.Evaluate(context, stream) ?? throw new InvalidOperationException($"{nameof(SourceWithOffset)} source is null");
             object offset = Offset.Evaluate(context, stream) ?? throw new InvalidOperationException($"{nameof(SourceWithOffset)} offset is null");
+            return new SourceWithOffset(source, offset);
+        }
+
+        public override object Evaluate(StructureEvaluationContext context, ReadOnlyMemory<byte> memory)
+        {
+            object source = Source.Evaluate(context, memory) ?? throw new InvalidOperationException($"{nameof(SourceWithOffset)} source is null");
+            object offset = Offset.Evaluate(context, memory) ?? throw new InvalidOperationException($"{nameof(SourceWithOffset)} offset is null");
             return new SourceWithOffset(source, offset);
         }
 

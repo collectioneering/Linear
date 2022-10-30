@@ -19,6 +19,13 @@ public abstract record ElementInitializer
     /// Initializes element.
     /// </summary>
     /// <param name="context">Structure evaluation context.</param>
+    /// <param name="memory">Memory.</param>
+    public abstract void Initialize(StructureEvaluationContext context, ReadOnlyMemory<byte> memory);
+
+    /// <summary>
+    /// Initializes element.
+    /// </summary>
+    /// <param name="context">Structure evaluation context.</param>
     /// <param name="span">Span.</param>
     public abstract void Initialize(StructureEvaluationContext context, ReadOnlySpan<byte> span);
 }

@@ -34,6 +34,11 @@ public class ConstantExpression<T> : ExpressionDefinition
             return Value;
         }
 
+        public override object? Evaluate(StructureEvaluationContext context, ReadOnlyMemory<byte> memory)
+        {
+            return Value;
+        }
+
         public override object? Evaluate(StructureEvaluationContext context, ReadOnlySpan<byte> span)
         {
             return Value;
@@ -95,6 +100,11 @@ public class ConstantNumberExpression<T> : ConstantNumberExpression
 #endif
 
         public override object Evaluate(StructureEvaluationContext context, Stream stream)
+        {
+            return Value;
+        }
+
+        public override object Evaluate(StructureEvaluationContext context, ReadOnlyMemory<byte> memory)
         {
             return Value;
         }

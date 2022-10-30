@@ -40,6 +40,12 @@ public class ValueElement : Element
             context.Structure.SetMember(Name, expression);
         }
 
+        public override void Initialize(StructureEvaluationContext context, ReadOnlyMemory<byte> memory)
+        {
+            object expression = Expression.Evaluate(context, memory) ?? throw new NullReferenceException();
+            context.Structure.SetMember(Name, expression);
+        }
+
         public override void Initialize(StructureEvaluationContext context, ReadOnlySpan<byte> span)
         {
             object expression = Expression.Evaluate(context, span) ?? throw new NullReferenceException();

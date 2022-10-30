@@ -37,6 +37,11 @@ public class LengthElement : Element
             context.Structure.Length = CastUtil.CastLong(Expression.Evaluate(context, stream));
         }
 
+        public override void Initialize(StructureEvaluationContext context, ReadOnlyMemory<byte> memory)
+        {
+            context.Structure.Length = CastUtil.CastLong(Expression.Evaluate(context, memory));
+        }
+
         public override void Initialize(StructureEvaluationContext context, ReadOnlySpan<byte> span)
         {
             context.Structure.Length = CastUtil.CastLong(Expression.Evaluate(context, span));

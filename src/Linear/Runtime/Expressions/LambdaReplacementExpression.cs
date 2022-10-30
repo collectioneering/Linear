@@ -45,6 +45,19 @@ public class LambdaReplacementExpression : ExpressionDefinition
             throw new InvalidOperationException($"Could not find lambda replacement {Name}");
         }
 
+        public override object Evaluate(StructureEvaluationContext context, ReadOnlyMemory<byte> memory)
+        {
+            if (context.LambdaReplacements == null)
+            {
+                throw new InvalidOperationException("No lambda replacements available");
+            }
+            if (context.LambdaReplacements.TryGetValue(Name, out object? obj))
+            {
+                return obj;
+            }
+            throw new InvalidOperationException($"Could not find lambda replacement {Name}");
+        }
+
         public override object Evaluate(StructureEvaluationContext context, ReadOnlySpan<byte> span)
         {
             if (context.LambdaReplacements == null)

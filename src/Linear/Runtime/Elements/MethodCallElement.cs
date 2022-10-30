@@ -36,6 +36,11 @@ public class MethodCallElement : Element
             Expression.Evaluate(context, stream);
         }
 
+        public override void Initialize(StructureEvaluationContext context, ReadOnlyMemory<byte> memory)
+        {
+            Expression.Evaluate(context, memory);
+        }
+
         public override void Initialize(StructureEvaluationContext context, ReadOnlySpan<byte> span)
         {
             Expression.Evaluate(context, span);

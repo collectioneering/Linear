@@ -48,6 +48,16 @@ public class MethodCallExpression : ExpressionDefinition
             return Delegate(context, args.ToArray());
         }
 
+        public override object? Evaluate(StructureEvaluationContext context, ReadOnlyMemory<byte> memory)
+        {
+            List<object?> args = new();
+            foreach (var arg in ArgsCompact)
+            {
+                args.Add(arg.Evaluate(context, memory));
+            }
+            return Delegate(context, args.ToArray());
+        }
+
         public override object? Evaluate(StructureEvaluationContext context, ReadOnlySpan<byte> span)
         {
             List<object?> args = new();

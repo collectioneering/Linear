@@ -37,6 +37,11 @@ public class MemberExpression : ExpressionDefinition
             return context.Structure[Name];
         }
 
+        public override object Evaluate(StructureEvaluationContext context, ReadOnlyMemory<byte> memory)
+        {
+            return context.Structure[Name];
+        }
+
         public override object Evaluate(StructureEvaluationContext context, ReadOnlySpan<byte> span)
         {
             return context.Structure[Name];

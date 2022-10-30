@@ -47,6 +47,16 @@ public class ProxyMemberExpression : ExpressionDefinition
             throw new InvalidCastException($"Could not cast object of type {val?.GetType().FullName} to {nameof(StructureInstance)}");
         }
 
+        public override object Evaluate(StructureEvaluationContext context, ReadOnlyMemory<byte> memory)
+        {
+            object? val = Delegate.Evaluate(context, memory);
+            if (val is StructureInstance i2)
+            {
+                return i2[Name];
+            }
+            throw new InvalidCastException($"Could not cast object of type {val?.GetType().FullName} to {nameof(StructureInstance)}");
+        }
+
         public override object Evaluate(StructureEvaluationContext context, ReadOnlySpan<byte> span)
         {
             object? val = Delegate.Evaluate(context, span);

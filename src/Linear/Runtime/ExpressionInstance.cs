@@ -20,6 +20,14 @@ public abstract record ExpressionInstance
     /// Evaluates expression.
     /// </summary>
     /// <param name="context">Structure evaluation context.</param>
+    /// <param name="memory">Memory.</param>
+    /// <returns>Result of evaluation.</returns>
+    public abstract object? Evaluate(StructureEvaluationContext context, ReadOnlyMemory<byte> memory);
+
+    /// <summary>
+    /// Evaluates expression.
+    /// </summary>
+    /// <param name="context">Structure evaluation context.</param>
     /// <param name="span">Span.</param>
     /// <returns>Result of evaluation.</returns>
     public abstract object? Evaluate(StructureEvaluationContext context, ReadOnlySpan<byte> span);
