@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using static Linear.Utility.CastUtil;
 
@@ -41,9 +40,9 @@ public class PointerArrayDeserializer : IDeserializer
 
     /// <inheritdoc />
     public DeserializeResult Deserialize(DeserializerContext context, Stream stream,
-        long offset, bool littleEndian, Dictionary<string, object>? parameters, long? length = null, int index = 0)
+        long offset, bool littleEndian, long? length = null, int index = 0)
     {
-        (object src, _) = _mainDeserializer.Deserialize(context, stream, offset, littleEndian, parameters);
+        (object src, _) = _mainDeserializer.Deserialize(context with { Parameters = null }, stream, offset, littleEndian);
         Array baseArray = (Array)src;
         int pointerArrayLength;
         checked
@@ -57,7 +56,7 @@ public class PointerArrayDeserializer : IDeserializer
         {
             long vI = CastLong(baseArray.GetValue(i));
             long preElemLength = _lenFinder ? CastLong(baseArray.GetValue(i + 1)) - vI : 0;
-            (object value, long? elemLength) = _elementDeserializer.Deserialize(context, stream, pointerOffset + vI, littleEndian, parameters, preElemLength, i);
+            (object value, long? elemLength) = _elementDeserializer.Deserialize(context, stream, pointerOffset + vI, littleEndian, preElemLength, i);
             tarArray.SetValue(value, i);
             if (curOffset is { } curOffsetValue)
             {
@@ -77,9 +76,9 @@ public class PointerArrayDeserializer : IDeserializer
 
     /// <inheritdoc />
     public DeserializeResult Deserialize(DeserializerContext context, ReadOnlyMemory<byte> memory,
-        long offset, bool littleEndian, Dictionary<string, object>? parameters, long? length = null, int index = 0)
+        long offset, bool littleEndian, long? length = null, int index = 0)
     {
-        (object src, _) = _mainDeserializer.Deserialize(context, memory, offset, littleEndian, parameters);
+        (object src, _) = _mainDeserializer.Deserialize(context with { Parameters = null }, memory, offset, littleEndian);
         Array baseArray = (Array)src;
         int pointerArrayLength;
         checked
@@ -93,7 +92,7 @@ public class PointerArrayDeserializer : IDeserializer
         {
             long vI = CastLong(baseArray.GetValue(i));
             long preElemLength = _lenFinder ? CastLong(baseArray.GetValue(i + 1)) - vI : 0;
-            (object value, long? elemLength) = _elementDeserializer.Deserialize(context, memory, pointerOffset + vI, littleEndian, parameters, preElemLength, i);
+            (object value, long? elemLength) = _elementDeserializer.Deserialize(context, memory, pointerOffset + vI, littleEndian, preElemLength, i);
             tarArray.SetValue(value, i);
             if (curOffset is { } curOffsetValue)
             {
@@ -113,9 +112,9 @@ public class PointerArrayDeserializer : IDeserializer
 
     /// <inheritdoc />
     public DeserializeResult Deserialize(DeserializerContext context, ReadOnlySpan<byte> span,
-        long offset, bool littleEndian, Dictionary<string, object>? parameters, long? length = null, int index = 0)
+        long offset, bool littleEndian, long? length = null, int index = 0)
     {
-        (object src, _) = _mainDeserializer.Deserialize(context, span, offset, littleEndian, parameters);
+        (object src, _) = _mainDeserializer.Deserialize(context with { Parameters = null }, span, offset, littleEndian);
         Array baseArray = (Array)src;
         int pointerArrayLength;
         checked
@@ -129,7 +128,7 @@ public class PointerArrayDeserializer : IDeserializer
         {
             long vI = CastLong(baseArray.GetValue(i));
             long preElemLength = _lenFinder ? CastLong(baseArray.GetValue(i + 1)) - vI : 0;
-            (object value, long? elemLength) = _elementDeserializer.Deserialize(context, span, pointerOffset + vI, littleEndian, parameters, preElemLength, i);
+            (object value, long? elemLength) = _elementDeserializer.Deserialize(context, span, pointerOffset + vI, littleEndian, preElemLength, i);
             tarArray.SetValue(value, i);
             if (curOffset is { } curOffsetValue)
             {

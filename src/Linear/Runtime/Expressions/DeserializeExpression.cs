@@ -74,7 +74,7 @@ public class DeserializeExpression : ExpressionDefinition
             if (deserializerParamsGen != null)
                 foreach (var kvp in DeserializerParamsCompact)
                     deserializerParamsGen[kvp.Key] = kvp.Value.Evaluate(context, stream) ?? throw new NullReferenceException();
-            var deserializerContext = new DeserializerContext(context.Structure);
+            var deserializerContext = new DeserializerContext(context.Structure, deserializerParamsGen);
             deserializerContext = StandardPropertiesCompact.Augment(deserializerContext, context, stream);
             object? littleEndian = LittleEndian.Evaluate(context, stream);
             if (littleEndian is not bool littleEndianValue)
@@ -84,7 +84,7 @@ public class DeserializeExpression : ExpressionDefinition
             object? source = Source.Evaluate(context, stream);
             if (source is SourceWithOffset swo)
             {
-                return Extract(deserializerContext, swo, littleEndianValue, deserializerParamsGen);
+                return Extract(deserializerContext, swo, littleEndianValue);
             }
             LongRange range;
             if (TryCastLong(source, out long offsetValue))
@@ -97,7 +97,7 @@ public class DeserializeExpression : ExpressionDefinition
             {
                 throw new InvalidCastException("Cannot find offset or range type for source delegate");
             }
-            return Deserializer.Deserialize(deserializerContext, stream, range.Offset, littleEndianValue, deserializerParamsGen, range.Length).Value;
+            return Deserializer.Deserialize(deserializerContext, stream, range.Offset, littleEndianValue, range.Length).Value;
         }
 
         public override object Evaluate(StructureEvaluationContext context, ReadOnlyMemory<byte> memory)
@@ -106,7 +106,7 @@ public class DeserializeExpression : ExpressionDefinition
             if (deserializerParamsGen != null)
                 foreach (var kvp in DeserializerParamsCompact)
                     deserializerParamsGen[kvp.Key] = kvp.Value.Evaluate(context, memory) ?? throw new NullReferenceException();
-            var deserializerContext = new DeserializerContext(context.Structure);
+            var deserializerContext = new DeserializerContext(context.Structure, deserializerParamsGen);
             deserializerContext = StandardPropertiesCompact.Augment(deserializerContext, context, memory);
             object? littleEndian = LittleEndian.Evaluate(context, memory);
             if (littleEndian is not bool littleEndianValue)
@@ -116,7 +116,7 @@ public class DeserializeExpression : ExpressionDefinition
             object? source = Source.Evaluate(context, memory);
             if (source is SourceWithOffset swo)
             {
-                return Extract(deserializerContext, swo, littleEndianValue, deserializerParamsGen);
+                return Extract(deserializerContext, swo, littleEndianValue);
             }
             LongRange range;
             if (TryCastLong(source, out long offsetValue))
@@ -129,7 +129,7 @@ public class DeserializeExpression : ExpressionDefinition
             {
                 throw new InvalidCastException("Cannot find offset or range type for source delegate");
             }
-            return Deserializer.Deserialize(deserializerContext, memory, range.Offset, littleEndianValue, deserializerParamsGen, range.Length).Value;
+            return Deserializer.Deserialize(deserializerContext, memory, range.Offset, littleEndianValue, range.Length).Value;
         }
 
         public override object Evaluate(StructureEvaluationContext context, ReadOnlySpan<byte> span)
@@ -138,7 +138,7 @@ public class DeserializeExpression : ExpressionDefinition
             if (deserializerParamsGen != null)
                 foreach (var kvp in DeserializerParamsCompact)
                     deserializerParamsGen[kvp.Key] = kvp.Value.Evaluate(context, span) ?? throw new NullReferenceException();
-            var deserializerContext = new DeserializerContext(context.Structure);
+            var deserializerContext = new DeserializerContext(context.Structure, deserializerParamsGen);
             deserializerContext = StandardPropertiesCompact.Augment(deserializerContext, context, span);
             object? littleEndian = LittleEndian.Evaluate(context, span);
             if (littleEndian is not bool littleEndianValue)
@@ -148,7 +148,7 @@ public class DeserializeExpression : ExpressionDefinition
             object? source = Source.Evaluate(context, span);
             if (source is SourceWithOffset swo)
             {
-                return Extract(deserializerContext, swo, littleEndianValue, deserializerParamsGen);
+                return Extract(deserializerContext, swo, littleEndianValue);
             }
             LongRange range;
             if (TryCastLong(source, out long offsetValue))
@@ -161,10 +161,10 @@ public class DeserializeExpression : ExpressionDefinition
             {
                 throw new InvalidCastException("Cannot find offset or range type for source delegate");
             }
-            return Deserializer.Deserialize(deserializerContext, span, range.Offset, littleEndianValue, deserializerParamsGen, range.Length).Value;
+            return Deserializer.Deserialize(deserializerContext, span, range.Offset, littleEndianValue, range.Length).Value;
         }
 
-        private object Extract(DeserializerContext context, SourceWithOffset swo, bool littleEndianValue, Dictionary<string, object>? deserializerParamsGen)
+        private object Extract(DeserializerContext context, SourceWithOffset swo, bool littleEndianValue)
         {
             LongRange range;
             if (TryCastLong(swo.Offset, out long offsetValue))
@@ -181,7 +181,7 @@ public class DeserializeExpression : ExpressionDefinition
             }
             if (LinearUtil.TryGetReadOnlyMemoryFromPossibleBuffer(swo.Source, out var altMemory))
             {
-                return Deserializer.Deserialize(context, altMemory, range.Offset, littleEndianValue, deserializerParamsGen, range.Length).Value;
+                return Deserializer.Deserialize(context, altMemory, range.Offset, littleEndianValue, range.Length).Value;
             }
             throw new InvalidOperationException($"Could not extract memory buffer for {nameof(SourceWithOffset)}");
         }

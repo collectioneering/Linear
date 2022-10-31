@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 
 namespace Linear.Runtime.Deserializers;
@@ -28,7 +27,7 @@ public class StructureDeserializer : IDeserializer
 
     /// <inheritdoc />
     public DeserializeResult Deserialize(DeserializerContext context, Stream stream,
-        long offset, bool littleEndian, Dictionary<string, object>? parameters, long? length = null, int index = 0)
+        long offset, bool littleEndian, long? length = null, int index = 0)
     {
         StructureInstance i = context.Structure.Registry[_name].Parse(context.Structure.Registry, stream, new ParseState(_name, offset, context.Structure, length, index));
         return new DeserializeResult(i, i.Length);
@@ -36,7 +35,7 @@ public class StructureDeserializer : IDeserializer
 
     /// <inheritdoc />
     public DeserializeResult Deserialize(DeserializerContext context, ReadOnlyMemory<byte> memory,
-        long offset, bool littleEndian, Dictionary<string, object>? parameters, long? length = null, int index = 0)
+        long offset, bool littleEndian, long? length = null, int index = 0)
     {
         StructureInstance i = context.Structure.Registry[_name].Parse(context.Structure.Registry, memory, new ParseState(_name, offset, context.Structure, length, index));
         return new DeserializeResult(i, i.Length);
@@ -44,7 +43,7 @@ public class StructureDeserializer : IDeserializer
 
     /// <inheritdoc />
     public DeserializeResult Deserialize(DeserializerContext context, ReadOnlySpan<byte> span,
-        long offset, bool littleEndian, Dictionary<string, object>? parameters, long? length = null, int index = 0)
+        long offset, bool littleEndian, long? length = null, int index = 0)
     {
         StructureInstance i = context.Structure.Registry[_name].Parse(context.Structure.Registry, span, new ParseState(_name, offset, context.Structure, length, index));
         return new DeserializeResult(i, i.Length);

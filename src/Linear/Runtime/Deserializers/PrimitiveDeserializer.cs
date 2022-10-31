@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using Fp;
 using Linear.Utility;
@@ -30,7 +29,7 @@ public class PrimitiveDeserializer : IDeserializer
 
     /// <inheritdoc />
     public DeserializeResult Deserialize(DeserializerContext context, Stream stream,
-        long offset, bool littleEndian, Dictionary<string, object>? parameters, long? length = null, int index = 0)
+        long offset, bool littleEndian, long? length = null, int index = 0)
     {
         // Possible addition: property group support little endian (requires boolean expressions)
         offset += context.Structure.AbsoluteOffset;
@@ -60,14 +59,14 @@ public class PrimitiveDeserializer : IDeserializer
 
     /// <inheritdoc />
     public DeserializeResult Deserialize(DeserializerContext context, ReadOnlyMemory<byte> memory,
-        long offset, bool littleEndian, Dictionary<string, object>? parameters, long? length = null, int index = 0)
+        long offset, bool littleEndian, long? length = null, int index = 0)
     {
-        return Deserialize(context, memory.Span, offset, littleEndian, parameters, length, index);
+        return Deserialize(context, memory.Span, offset, littleEndian, length, index);
     }
 
     /// <inheritdoc />
     public DeserializeResult Deserialize(DeserializerContext context, ReadOnlySpan<byte> span,
-        long offset, bool littleEndian, Dictionary<string, object>? parameters, long? length = null, int index = 0)
+        long offset, bool littleEndian, long? length = null, int index = 0)
     {
         // Possible addition: property group support little endian (requires boolean expressions)
         LinearUtil.TrimStart(ref span, context.Structure, offset);

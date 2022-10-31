@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Fp;
@@ -70,7 +69,7 @@ public class StringDeserializer : IDeserializer
 
     /// <inheritdoc />
     public DeserializeResult Deserialize(DeserializerContext context, Stream stream,
-        long offset, bool littleEndian, Dictionary<string, object>? parameters, long? length = null, int index = 0)
+        long offset, bool littleEndian, long? length = null, int index = 0)
     {
         offset += context.Structure.AbsoluteOffset;
         stream.Position = offset;
@@ -109,14 +108,14 @@ public class StringDeserializer : IDeserializer
 
     /// <inheritdoc />
     public DeserializeResult Deserialize(DeserializerContext context, ReadOnlyMemory<byte> memory,
-        long offset, bool littleEndian, Dictionary<string, object>? parameters, long? length = null, int index = 0)
+        long offset, bool littleEndian, long? length = null, int index = 0)
     {
-        return Deserialize(context, memory.Span, offset, littleEndian, parameters, length, index);
+        return Deserialize(context, memory.Span, offset, littleEndian, length, index);
     }
 
     /// <inheritdoc />
     public DeserializeResult Deserialize(DeserializerContext context, ReadOnlySpan<byte> span,
-        long offset, bool littleEndian, Dictionary<string, object>? parameters, long? length = null, int index = 0)
+        long offset, bool littleEndian, long? length = null, int index = 0)
     {
         offset += context.Structure.AbsoluteOffset;
         checked

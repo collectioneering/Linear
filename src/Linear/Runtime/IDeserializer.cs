@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 
 namespace Linear.Runtime;
@@ -31,12 +30,10 @@ public interface IDeserializer
     /// <param name="stream">Stream to read from.</param>
     /// <param name="offset">Offset in stream.</param>
     /// <param name="littleEndian">Endianness.</param>
-    /// <param name="parameters">Deserializer parameters.</param>
     /// <param name="length">Length of structure.</param>
     /// <param name="index">Array index.</param>
     /// <returns>Deserialized object.</returns>
-    DeserializeResult Deserialize(DeserializerContext context, Stream stream, long offset, bool littleEndian,
-        Dictionary<string, object>? parameters, long? length = null, int index = 0);
+    DeserializeResult Deserialize(DeserializerContext context, Stream stream, long offset, bool littleEndian, long? length = null, int index = 0);
 
     /// <summary>
     /// Deserializes object.
@@ -45,12 +42,10 @@ public interface IDeserializer
     /// <param name="memory">Buffer to read from.</param>
     /// <param name="offset">Offset in stream.</param>
     /// <param name="littleEndian">Endianness.</param>
-    /// <param name="parameters">Deserializer parameters.</param>
     /// <param name="length">Length of structure.</param>
     /// <param name="index">Array index.</param>
     /// <returns>Deserialized object.</returns>
-    DeserializeResult Deserialize(DeserializerContext context, ReadOnlyMemory<byte> memory, long offset,
-        bool littleEndian, Dictionary<string, object>? parameters, long? length = null, int index = 0);
+    DeserializeResult Deserialize(DeserializerContext context, ReadOnlyMemory<byte> memory, long offset, bool littleEndian, long? length = null, int index = 0);
 
     /// <summary>
     /// Deserializes object.
@@ -59,10 +54,8 @@ public interface IDeserializer
     /// <param name="span">Buffer to read from.</param>
     /// <param name="offset">Offset in stream.</param>
     /// <param name="littleEndian">Endianness.</param>
-    /// <param name="parameters">Deserializer parameters.</param>
     /// <param name="length">Length of structure.</param>
     /// <param name="index">Array index.</param>
     /// <returns>Deserialized object.</returns>
-    DeserializeResult Deserialize(DeserializerContext context, ReadOnlySpan<byte> span, long offset, bool littleEndian,
-        Dictionary<string, object>? parameters, long? length = null, int index = 0);
+    DeserializeResult Deserialize(DeserializerContext context, ReadOnlySpan<byte> span, long offset, bool littleEndian, long? length = null, int index = 0);
 }

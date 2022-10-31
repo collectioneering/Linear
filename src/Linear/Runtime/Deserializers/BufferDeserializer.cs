@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using Fp;
 using Linear.Utility;
@@ -18,8 +17,7 @@ public class BufferDeserializer : IDeserializer
     public Type GetTargetType() => typeof(ReadOnlyMemory<byte>);
 
     /// <inheritdoc />
-    public DeserializeResult Deserialize(DeserializerContext context, Stream stream, long offset, bool littleEndian,
-        Dictionary<string, object>? parameters, long? length = null, int index = 0)
+    public DeserializeResult Deserialize(DeserializerContext context, Stream stream, long offset, bool littleEndian, long? length = null, int index = 0)
     {
         if (length == null) throw new ArgumentException("Length required for buffer deserializer");
         LinearUtil.TrimRange(stream, context.Structure, new LongRange(offset, length.Value));
@@ -30,7 +28,7 @@ public class BufferDeserializer : IDeserializer
 
     /// <inheritdoc />
     public DeserializeResult Deserialize(DeserializerContext context, ReadOnlyMemory<byte> memory,
-        long offset, bool littleEndian, Dictionary<string, object>? parameters, long? length = null, int index = 0)
+        long offset, bool littleEndian, long? length = null, int index = 0)
     {
         if (length == null) throw new ArgumentException("Length required for buffer deserializer");
         LinearUtil.TrimRange(ref memory, context.Structure, new LongRange(offset, length.Value));
@@ -39,7 +37,7 @@ public class BufferDeserializer : IDeserializer
 
     /// <inheritdoc />
     public DeserializeResult Deserialize(DeserializerContext context, ReadOnlySpan<byte> span, long offset,
-        bool littleEndian, Dictionary<string, object>? parameters, long? length = null, int index = 0)
+        bool littleEndian, long? length = null, int index = 0)
     {
         if (length == null) throw new ArgumentException("Length required for buffer deserializer");
         LinearUtil.TrimRange(ref span, context.Structure, new LongRange(offset, length.Value));
