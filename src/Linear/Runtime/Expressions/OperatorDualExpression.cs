@@ -53,8 +53,8 @@ public class OperatorDualExpression : ExpressionDefinition
             BinaryOperator.And => new OperatorDualAndExpressionInstance(_left.GetInstance(), _right.GetInstance()),
             BinaryOperator.Or => new OperatorDualOrExpressionInstance(_left.GetInstance(), _right.GetInstance()),
             BinaryOperator.Xor => new OperatorDualXorExpressionInstance(_left.GetInstance(), _right.GetInstance()),
-            BinaryOperator.CondAnd => throw new NotImplementedException(),
-            BinaryOperator.CondOr => throw new NotImplementedException(),
+            BinaryOperator.CondAnd => new OperatorCondAndExpressionInstance(_left.GetInstance(), _right.GetInstance()),
+            BinaryOperator.CondOr => new OperatorCondOrExpressionInstance(_left.GetInstance(), _right.GetInstance()),
             _ => throw new ArgumentOutOfRangeException()
         };
     }

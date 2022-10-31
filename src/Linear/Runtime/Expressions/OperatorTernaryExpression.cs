@@ -34,6 +34,6 @@ public class OperatorTernaryExpression : ExpressionDefinition
     /// <inheritdoc />
     public override ExpressionInstance GetInstance()
     {
-        throw new NotImplementedException();
+        return new OperatorTernaryExpressionInstance(_expression.GetInstance(), _expressionTrue.GetInstance(), _expressionFalse.GetInstance());
     }
 }

@@ -34,7 +34,7 @@ public class OperatorUnaryExpression : ExpressionDefinition
         {
             UnaryOperator.Plus => new OperatorUnaryPlusExpressionInstance(_expression.GetInstance()),
             UnaryOperator.Minus => new OperatorUnaryMinusExpressionInstance(_expression.GetInstance()),
-            UnaryOperator.Not => throw new NotImplementedException(),
+            UnaryOperator.Not => new OperatorUnaryNotExpressionInstance(_expression.GetInstance()),
             UnaryOperator.Tilde => new OperatorUnaryTildeExpressionInstance(_expression.GetInstance()),
             _ => throw new ArgumentOutOfRangeException()
         };
