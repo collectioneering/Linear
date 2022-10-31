@@ -1,12 +1,40 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using Fp;
 
 namespace Linear.Runtime.Deserializers;
 
 /// <summary>
-/// Generic string deserializer
+/// Generic string deserializer.
+/// </summary>
+public class StringDeserializerDefinition : DeserializerDefinition
+{
+    private readonly StringDeserializerMode _mode;
+
+    /// <summary>
+    /// Initializes an instance of <see cref="StringDeserializerDefinition"/>.
+    /// </summary>
+    /// <param name="mode">Deserializer mode.</param>
+    public StringDeserializerDefinition(StringDeserializerMode mode)
+    {
+        _mode = mode;
+    }
+
+    /// <inheritdoc />
+    public override IEnumerable<Element> GetDependencies(StructureDefinition definition)
+    {
+        return Enumerable.Empty<Element>();
+    }
+
+    /// <inheritdoc />
+    public override IDeserializer GetInstance() => new StringDeserializer(_mode);
+}
+
+/// <summary>
+/// Generic string deserializer.
 /// </summary>
 public class StringDeserializer : IDeserializer
 {
@@ -24,39 +52,13 @@ public class StringDeserializer : IDeserializer
     private MemoryStream? _tempMs;
 
 
-    /// <summary>
-    /// Deserializer mode
-    /// </summary>
-    public enum Mode
-    {
-        /// <summary>
-        /// Fixed-length UTF-8
-        /// </summary>
-        Utf8Fixed,
-
-        /// <summary>
-        /// Null-terminated UTF-8
-        /// </summary>
-        Utf8Null,
-
-        /// <summary>
-        /// Fixed-length UTF-16
-        /// </summary>
-        Utf16Fixed,
-
-        /// <summary>
-        /// Null-terminated UTF-16
-        /// </summary>
-        Utf16Null
-    }
-
-    private readonly Mode _mode;
+    private readonly StringDeserializerMode _mode;
 
     /// <summary>
-    /// Create new instance of <see cref="StringDeserializer"/>
+    /// Initializes an instance of <see cref="StringDeserializer"/>.
     /// </summary>
-    /// <param name="mode">Deserializer mode</param>
-    public StringDeserializer(Mode mode)
+    /// <param name="mode">Deserializer mode.</param>
+    public StringDeserializer(StringDeserializerMode mode)
     {
         _mode = mode;
     }
@@ -74,7 +76,7 @@ public class StringDeserializer : IDeserializer
         stream.Position = offset;
         switch (_mode)
         {
-            case Mode.Utf8Fixed:
+            case StringDeserializerMode.Utf8Fixed:
                 {
                     if (length is not { } l) throw new InvalidOperationException("No length specified for fixed-length UTF-8 string");
                     var result = ReadUtf8String(stream, (int)l);
@@ -82,12 +84,12 @@ public class StringDeserializer : IDeserializer
                         throw new Exception($"UTF-8 fixed length mismatch between specified length {l} and result length {result.ByteLength}");
                     return new DeserializeResult(result.Text, result.ByteLength);
                 }
-            case Mode.Utf8Null:
+            case StringDeserializerMode.Utf8Null:
                 {
                     var result = ReadUtf8String(stream);
                     return new DeserializeResult(result.Text, result.ByteLength + 1);
                 }
-            case Mode.Utf16Fixed:
+            case StringDeserializerMode.Utf16Fixed:
                 {
                     if (length is not { } l) throw new InvalidOperationException("No length specified for fixed-length UTF-16 string");
                     var result = ReadUtf16String(stream, (int)l);
@@ -95,7 +97,7 @@ public class StringDeserializer : IDeserializer
                         throw new Exception($"UTF-16 fixed length mismatch between specified length {l} and result length {result.ByteLength}");
                     return new DeserializeResult(result.Text, result.ByteLength);
                 }
-            case Mode.Utf16Null:
+            case StringDeserializerMode.Utf16Null:
                 {
                     var result = ReadUtf16String(stream);
                     return new DeserializeResult(result.Text, result.ByteLength + 2);
@@ -121,7 +123,7 @@ public class StringDeserializer : IDeserializer
         }
         switch (_mode)
         {
-            case Mode.Utf8Fixed:
+            case StringDeserializerMode.Utf8Fixed:
                 {
                     if (length is not { } l) throw new InvalidOperationException("No length specified for fixed-length UTF-8 string");
                     string result = Processor.ReadUtf8String(span, out _, out int numBytes, (int)l);
@@ -129,12 +131,12 @@ public class StringDeserializer : IDeserializer
                         throw new Exception($"UTF-8 fixed length mismatch between specified length {l} and result length {numBytes}");
                     return new DeserializeResult(result, numBytes);
                 }
-            case Mode.Utf8Null:
+            case StringDeserializerMode.Utf8Null:
                 {
                     string result = Processor.ReadUtf8String(span, out int read, out _);
                     return new DeserializeResult(result, read);
                 }
-            case Mode.Utf16Fixed:
+            case StringDeserializerMode.Utf16Fixed:
                 {
                     if (length is not { } l) throw new InvalidOperationException("No length specified for fixed-length UTF-16 string");
                     string result = Processor.ReadUtf16String(span, out _, out int numBytes, (int)l);
@@ -142,7 +144,7 @@ public class StringDeserializer : IDeserializer
                         throw new Exception($"UTF-16 fixed length mismatch between specified length {l} and result length {numBytes}");
                     return new DeserializeResult(result, numBytes);
                 }
-            case Mode.Utf16Null:
+            case StringDeserializerMode.Utf16Null:
                 {
                     string result = Processor.ReadUtf16String(span, out int read, out _);
                     return new DeserializeResult(result, read);
@@ -293,4 +295,30 @@ public class StringDeserializer : IDeserializer
     }
 
     private readonly record struct TextResult(string Text, int ByteLength);
+}
+
+/// <summary>
+/// Deserializer mode
+/// </summary>
+public enum StringDeserializerMode
+{
+    /// <summary>
+    /// Fixed-length UTF-8
+    /// </summary>
+    Utf8Fixed,
+
+    /// <summary>
+    /// Null-terminated UTF-8
+    /// </summary>
+    Utf8Null,
+
+    /// <summary>
+    /// Fixed-length UTF-16
+    /// </summary>
+    Utf16Fixed,
+
+    /// <summary>
+    /// Null-terminated UTF-16
+    /// </summary>
+    Utf16Null
 }

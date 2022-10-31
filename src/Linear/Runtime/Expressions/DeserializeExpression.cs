@@ -13,7 +13,7 @@ namespace Linear.Runtime.Expressions;
 public class DeserializeExpression : ExpressionDefinition
 {
     private readonly ExpressionDefinition _offsetDefinition;
-    private readonly IDeserializer _deserializer;
+    private readonly DeserializerDefinition _deserializer;
     private readonly DeserializerStandardProperties _standardProperties;
     private readonly Dictionary<string, ExpressionDefinition> _deserializerParams;
 
@@ -24,7 +24,7 @@ public class DeserializeExpression : ExpressionDefinition
     /// <param name="deserializer">Custom deserializer.</param>
     /// <param name="deserializerParams">Deserializer parameters.</param>
     /// <param name="standardProperties">Standard property expressions.</param>
-    public DeserializeExpression(ExpressionDefinition offsetDefinition, IDeserializer deserializer,
+    public DeserializeExpression(ExpressionDefinition offsetDefinition, DeserializerDefinition deserializer,
         DeserializerStandardProperties standardProperties, Dictionary<string, ExpressionDefinition> deserializerParams)
     {
         _offsetDefinition = offsetDefinition;
@@ -38,7 +38,8 @@ public class DeserializeExpression : ExpressionDefinition
     {
         return _offsetDefinition.GetDependencies(definition)
             .Union(_deserializerParams.SelectMany(kvp => kvp.Value.GetDependencies(definition)))
-            .Union(_standardProperties.GetDependencies(definition));
+            .Union(_standardProperties.GetDependencies(definition))
+            .Union(_deserializer.GetDependencies(definition));
     }
 
     /// <inheritdoc />
@@ -46,7 +47,7 @@ public class DeserializeExpression : ExpressionDefinition
         CreateDelegate(_offsetDefinition, _deserializer, _standardProperties, _deserializerParams);
 
     internal static ExpressionInstance CreateDelegate(
-        ExpressionDefinition offsetDefinition, IDeserializer deserializer,
+        ExpressionDefinition offsetDefinition, DeserializerDefinition deserializer,
         DeserializerStandardProperties standardProperties,
         Dictionary<string, ExpressionDefinition> deserializerParams)
     {
@@ -54,7 +55,7 @@ public class DeserializeExpression : ExpressionDefinition
         Dictionary<string, ExpressionInstance> deserializerParamsCompact = new();
         foreach (var kvp in deserializerParams)
             deserializerParamsCompact[kvp.Key] = kvp.Value.GetInstance();
-        return new DeserializeExpressionInstance(standardProperties.ToInstance(), deserializerParamsCompact, srcDelegate, deserializer);
+        return new DeserializeExpressionInstance(standardProperties.ToInstance(), deserializerParamsCompact, srcDelegate, deserializer.GetInstance());
     }
 
     private record DeserializeExpressionInstance(
@@ -142,6 +143,8 @@ public class DeserializeExpression : ExpressionDefinition
             }
             return Deserializer.Deserialize(deserializerContext, span, range.Offset, range.Length).Value;
         }
+
+        // TODO create alt type that processes pointers and targets in separate steps
 
         private object Extract(DeserializerContext context, SourceWithOffset swo)
         {

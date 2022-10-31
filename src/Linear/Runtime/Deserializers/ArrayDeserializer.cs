@@ -1,10 +1,34 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Linear.Runtime.Deserializers;
 
 /// <summary>
-/// Deserializes raw array
+/// Deserializes raw array.
+/// </summary>
+public class ArrayDeserializerDefinition : DeserializerDefinition
+{
+    private readonly DeserializerDefinition _elementDeserializer;
+
+    /// <summary>
+    /// Initializes an instance of <see cref="ArrayDeserializer"/>.
+    /// </summary>
+    /// <param name="elementDeserializer">Element deserializer.</param>
+    public ArrayDeserializerDefinition(DeserializerDefinition elementDeserializer)
+    {
+        _elementDeserializer = elementDeserializer;
+    }
+
+    /// <inheritdoc />
+    public override IEnumerable<Element> GetDependencies(StructureDefinition definition) => _elementDeserializer.GetDependencies(definition);
+
+    /// <inheritdoc />
+    public override IDeserializer GetInstance() => new ArrayDeserializer(_elementDeserializer.GetInstance());
+}
+
+/// <summary>
+/// Deserializes raw array.
 /// </summary>
 public class ArrayDeserializer : IDeserializer
 {
@@ -13,9 +37,9 @@ public class ArrayDeserializer : IDeserializer
     private readonly Type _type;
 
     /// <summary>
-    /// Create new instance of <see cref="ArrayDeserializer"/>
+    /// Initializes an instance of <see cref="ArrayDeserializer"/>.
     /// </summary>
-    /// <param name="elementDeserializer">Element deserializer</param>
+    /// <param name="elementDeserializer">Element deserializer.</param>
     public ArrayDeserializer(IDeserializer elementDeserializer)
     {
         _elementDeserializer = elementDeserializer;

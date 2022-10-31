@@ -21,7 +21,7 @@ public class FormatStore : IEnumerable<string>
     /// <summary>
     /// Deserializers.
     /// </summary>
-    public IReadOnlyDictionary<string, IDeserializer> Deserializers => _registry.Deserializers;
+    public IReadOnlyDictionary<string, DeserializerDefinition> Deserializers => _registry.Deserializers;
 
     /// <summary>
     /// Methods.
@@ -46,7 +46,7 @@ public class FormatStore : IEnumerable<string>
     /// </summary>
     /// <param name="deserializers">Deserializers.</param>
     /// <param name="methods">Methods.</param>
-    public FormatStore(IEnumerable<KeyValuePair<string, IDeserializer>> deserializers, IEnumerable<KeyValuePair<string, MethodCallDelegate>> methods)
+    public FormatStore(IEnumerable<KeyValuePair<string, DeserializerDefinition>> deserializers, IEnumerable<KeyValuePair<string, MethodCallDelegate>> methods)
     {
         _registry = new StructureRegistry();
         foreach (var pair in deserializers)
@@ -71,7 +71,7 @@ public class FormatStore : IEnumerable<string>
     /// </summary>
     /// <param name="name">Target name.</param>
     /// <param name="deserializer">Deserializer to add.</param>
-    public void AddDeserializer(string name, IDeserializer deserializer)
+    public void AddDeserializer(string name, DeserializerDefinition deserializer)
     {
         _registry.AddDeserializer(name, deserializer);
     }

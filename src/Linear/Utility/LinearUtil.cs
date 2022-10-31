@@ -153,40 +153,40 @@ public static class LinearUtil
         return new Dictionary<string, MethodCallDelegate>(s_defaultMethods);
     }
 
-    private static readonly Dictionary<string, IDeserializer> s_defaultDeserializers = new()
+    private static readonly Dictionary<string, DeserializerDefinition> s_defaultDeserializers = new()
     {
-        { "buf", new BufferDeserializer() },
-        { "byte", new PrimitiveDeserializer(typeof(byte)) },
-        { "sbyte", new PrimitiveDeserializer(typeof(sbyte)) },
-        { "ushort", new PrimitiveDeserializer(typeof(ushort)) },
-        { "short", new PrimitiveDeserializer(typeof(short)) },
-        { "uint", new PrimitiveDeserializer(typeof(uint)) },
-        { "int", new PrimitiveDeserializer(typeof(int)) },
-        { "ulong", new PrimitiveDeserializer(typeof(ulong)) },
-        { "long", new PrimitiveDeserializer(typeof(long)) },
-        { "byteb", new PrimitiveDeserializer(typeof(byte)) },
-        { "sbyteb", new PrimitiveDeserializer(typeof(sbyte)) },
-        { "ushortb", new PrimitiveDeserializer(typeof(ushort)) },
-        { "shortb", new PrimitiveDeserializer(typeof(short)) },
-        { "uintb", new PrimitiveDeserializer(typeof(uint)) },
-        { "intb", new PrimitiveDeserializer(typeof(int)) },
-        { "ulongb", new PrimitiveDeserializer(typeof(ulong)) },
-        { "longb", new PrimitiveDeserializer(typeof(long)) },
-        { "float", new PrimitiveDeserializer(typeof(float)) },
-        { "double", new PrimitiveDeserializer(typeof(double)) },
-        { "string", new StringDeserializer(StringDeserializer.Mode.Utf8Fixed) },
-        { "cstring", new StringDeserializer(StringDeserializer.Mode.Utf8Null) },
-        { "string16", new StringDeserializer(StringDeserializer.Mode.Utf16Fixed) },
-        { "cstring16", new StringDeserializer(StringDeserializer.Mode.Utf16Null) },
+        { "buf", new BufferDeserializerDefinition() },
+        { "byte", new PrimitiveDeserializerDefinition(typeof(byte)) },
+        { "sbyte", new PrimitiveDeserializerDefinition(typeof(sbyte)) },
+        { "ushort", new PrimitiveDeserializerDefinition(typeof(ushort)) },
+        { "short", new PrimitiveDeserializerDefinition(typeof(short)) },
+        { "uint", new PrimitiveDeserializerDefinition(typeof(uint)) },
+        { "int", new PrimitiveDeserializerDefinition(typeof(int)) },
+        { "ulong", new PrimitiveDeserializerDefinition(typeof(ulong)) },
+        { "long", new PrimitiveDeserializerDefinition(typeof(long)) },
+        { "byteb", new PrimitiveDeserializerDefinition(typeof(byte)) },
+        { "sbyteb", new PrimitiveDeserializerDefinition(typeof(sbyte)) },
+        { "ushortb", new PrimitiveDeserializerDefinition(typeof(ushort)) },
+        { "shortb", new PrimitiveDeserializerDefinition(typeof(short)) },
+        { "uintb", new PrimitiveDeserializerDefinition(typeof(uint)) },
+        { "intb", new PrimitiveDeserializerDefinition(typeof(int)) },
+        { "ulongb", new PrimitiveDeserializerDefinition(typeof(ulong)) },
+        { "longb", new PrimitiveDeserializerDefinition(typeof(long)) },
+        { "float", new PrimitiveDeserializerDefinition(typeof(float)) },
+        { "double", new PrimitiveDeserializerDefinition(typeof(double)) },
+        { "string", new StringDeserializerDefinition(StringDeserializerMode.Utf8Fixed) },
+        { "cstring", new StringDeserializerDefinition(StringDeserializerMode.Utf8Null) },
+        { "string16", new StringDeserializerDefinition(StringDeserializerMode.Utf16Fixed) },
+        { "cstring16", new StringDeserializerDefinition(StringDeserializerMode.Utf16Null) },
     };
 
     /// <summary>
     /// Create default deserializer registry with standard deserializers
     /// </summary>
     /// <returns>Default registry</returns>
-    public static Dictionary<string, IDeserializer> CreateDefaultDeserializerRegistry()
+    public static Dictionary<string, DeserializerDefinition> CreateDefaultDeserializerRegistry()
     {
-        return new Dictionary<string, IDeserializer>(s_defaultDeserializers);
+        return new Dictionary<string, DeserializerDefinition>(s_defaultDeserializers);
     }
 
     private static readonly Dictionary<string, IExporter> s_defaultExporters = new() { { DataExporter.ExporterName, new DataExporter() }, { DecompressExporter.ExporterName, new DecompressExporter() } };

@@ -25,7 +25,7 @@ public class StructureRegistry
     /// <summary>
     /// Deserializers.
     /// </summary>
-    public IReadOnlyDictionary<string, IDeserializer> Deserializers => _deserializers;
+    public IReadOnlyDictionary<string, DeserializerDefinition> Deserializers => _deserializers;
 
     /// <summary>
     /// Methods.
@@ -33,7 +33,7 @@ public class StructureRegistry
     public IReadOnlyDictionary<string, MethodCallDelegate> Methods => _methods;
 
     private readonly Dictionary<string, Structure> _structures;
-    private readonly Dictionary<string, IDeserializer> _deserializers;
+    private readonly Dictionary<string, DeserializerDefinition> _deserializers;
     private readonly Dictionary<string, MethodCallDelegate> _methods;
 
     /// <summary>
@@ -62,7 +62,7 @@ public class StructureRegistry
             throw new InvalidOperationException($"Cannot add a structure with the name \"{name}\" - a deserializer using that name already exists");
         }
         _structures.Add(name, structure);
-        _deserializers.Add(name, new StructureDeserializer(name));
+        _deserializers.Add(name, new StructureDeserializerDefinition(name));
     }
 
     /// <summary>
@@ -70,7 +70,7 @@ public class StructureRegistry
     /// </summary>
     /// <param name="name">Target name.</param>
     /// <param name="deserializer">Deserializer to add.</param>
-    public void AddDeserializer(string name, IDeserializer deserializer)
+    public void AddDeserializer(string name, DeserializerDefinition deserializer)
     {
         if (Deserializers.ContainsKey(name))
         {
@@ -272,7 +272,7 @@ public class StructureRegistry
         return true;
     }
 
-    private void Add(List<KeyValuePair<string, IDeserializer>> createdDeserializers, List<KeyValuePair<string, Structure>> structures)
+    private void Add(List<KeyValuePair<string, DeserializerDefinition>> createdDeserializers, List<KeyValuePair<string, Structure>> structures)
     {
         List<string> existingDeserializers = Deserializers.Keys.Intersect(createdDeserializers.Select(v => v.Key)).ToList();
         if (existingDeserializers.Count != 0)

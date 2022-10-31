@@ -1,21 +1,52 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Fp;
 using Linear.Utility;
 
 namespace Linear.Runtime.Deserializers;
 
 /// <summary>
-/// Deserializes primitive
+/// Deserializes primitives.
+/// </summary>
+public class PrimitiveDeserializerDefinition : DeserializerDefinition
+{
+    private readonly Type _type;
+
+    /// <summary>
+    /// Initializes an instance of <see cref="PrimitiveDeserializerDefinition"/>.
+    /// </summary>
+    /// <param name="type">Target type.</param>
+    public PrimitiveDeserializerDefinition(Type type)
+    {
+        _type = type;
+    }
+
+    /// <inheritdoc />
+    public override IEnumerable<Element> GetDependencies(StructureDefinition definition)
+    {
+        return Enumerable.Empty<Element>();
+    }
+
+    /// <inheritdoc />
+    public override IDeserializer GetInstance()
+    {
+        return new PrimitiveDeserializer(_type);
+    }
+}
+
+/// <summary>
+/// Deserializes primitives.
 /// </summary>
 public class PrimitiveDeserializer : IDeserializer
 {
     private readonly Type _type;
 
     /// <summary>
-    /// Create new instance of <see cref="PrimitiveDeserializer"/>
+    /// Initializes an instance of <see cref="PrimitiveDeserializer"/>.
     /// </summary>
-    /// <param name="type">Target type</param>
+    /// <param name="type">Target type.</param>
     public PrimitiveDeserializer(Type type)
     {
         _type = type;

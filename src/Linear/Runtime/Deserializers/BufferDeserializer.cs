@@ -1,9 +1,26 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Fp;
 using Linear.Utility;
 
 namespace Linear.Runtime.Deserializers;
+
+/// <summary>
+/// Deserializer that retrieves memory buffer.
+/// </summary>
+public class BufferDeserializerDefinition : DeserializerDefinition
+{
+    /// <inheritdoc />
+    public override IEnumerable<Element> GetDependencies(StructureDefinition definition)
+    {
+        return Enumerable.Empty<Element>();
+    }
+
+    /// <inheritdoc />
+    public override IDeserializer GetInstance() => new BufferDeserializer();
+}
 
 /// <summary>
 /// Deserializer that retrieves memory buffer.

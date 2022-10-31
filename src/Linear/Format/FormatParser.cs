@@ -27,8 +27,8 @@ public static class FormatParser
     /// <param name="structures">Generated structures.</param>
     /// <exception cref="LynFormatException">Thrown for a parse error.</exception>
     public static void Load(string input, string? filenameHint, IAntlrErrorStrategy? errorHandler,
-        IReadOnlyDictionary<string, IDeserializer> deserializers, IReadOnlyDictionary<string, MethodCallDelegate> methods,
-        out List<KeyValuePair<string, IDeserializer>> createdDeserializers,
+        IReadOnlyDictionary<string, DeserializerDefinition> deserializers, IReadOnlyDictionary<string, MethodCallDelegate> methods,
+        out List<KeyValuePair<string, DeserializerDefinition>> createdDeserializers,
         out List<KeyValuePair<string, Structure>> structures)
     {
         var inputStream = new AntlrInputStream(input);
@@ -50,8 +50,8 @@ public static class FormatParser
     /// <param name="structures">Generated structures.</param>
     /// <exception cref="LynFormatException">Thrown for a parse error.</exception>
     public static void Load(TextReader input, string? filenameHint, IAntlrErrorStrategy? errorHandler,
-        IReadOnlyDictionary<string, IDeserializer> deserializers, IReadOnlyDictionary<string, MethodCallDelegate> methods,
-        out List<KeyValuePair<string, IDeserializer>> createdDeserializers,
+        IReadOnlyDictionary<string, DeserializerDefinition> deserializers, IReadOnlyDictionary<string, MethodCallDelegate> methods,
+        out List<KeyValuePair<string, DeserializerDefinition>> createdDeserializers,
         out List<KeyValuePair<string, Structure>> structures)
     {
         var inputStream = new AntlrInputStream(input);
@@ -73,8 +73,8 @@ public static class FormatParser
     /// <param name="structures">Generated structures.</param>
     /// <exception cref="LynFormatException">Thrown for a parse error.</exception>
     public static void Load(LinearParser parser, string? filenameHint, IAntlrErrorStrategy? errorHandler,
-        IReadOnlyDictionary<string, IDeserializer> deserializers, IReadOnlyDictionary<string, MethodCallDelegate> methods,
-        out List<KeyValuePair<string, IDeserializer>> createdDeserializers,
+        IReadOnlyDictionary<string, DeserializerDefinition> deserializers, IReadOnlyDictionary<string, MethodCallDelegate> methods,
+        out List<KeyValuePair<string, DeserializerDefinition>> createdDeserializers,
         out List<KeyValuePair<string, Structure>> structures)
     {
         var listenerPre = new LinearPreListener();
@@ -85,8 +85,8 @@ public static class FormatParser
         {
             throw new LynFormatException("Failed to parse structure", Array.Empty<ParseError>());
         }
-        createdDeserializers = listenerPre.GetStructureNames().Select(v => new KeyValuePair<string, IDeserializer>(v, new StructureDeserializer(v))).ToList();
-        Dictionary<string, IDeserializer> deserializersTmp = new(deserializers.Concat(createdDeserializers));
+        createdDeserializers = listenerPre.GetStructureNames().Select(v => new KeyValuePair<string, DeserializerDefinition>(v, new StructureDeserializerDefinition(v))).ToList();
+        Dictionary<string, DeserializerDefinition> deserializersTmp = new(deserializers.Concat(createdDeserializers));
         var listener = new LinearListener(deserializersTmp, methods, filenameHint);
         parser.Reset();
         ParseTreeWalker.Default.Walk(listener, parser.compilation_unit());

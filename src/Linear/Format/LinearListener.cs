@@ -19,7 +19,7 @@ internal class LinearListener : LinearBaseListener
 {
     internal bool Fail { get; private set; }
 
-    private readonly IReadOnlyDictionary<string, IDeserializer> _deserializers;
+    private readonly IReadOnlyDictionary<string, DeserializerDefinition> _deserializers;
     private readonly IReadOnlyDictionary<string, MethodCallDelegate> _methods;
     private readonly string? _filenameHint;
     private readonly List<StructureDefinition> _structures;
@@ -30,7 +30,7 @@ internal class LinearListener : LinearBaseListener
     /// <summary>
     /// Create new instance of <see cref="LinearListener"/>
     /// </summary>
-    public LinearListener(IReadOnlyDictionary<string, IDeserializer> deserializers, IReadOnlyDictionary<string, MethodCallDelegate> methods, string? filenameHint = null)
+    public LinearListener(IReadOnlyDictionary<string, DeserializerDefinition> deserializers, IReadOnlyDictionary<string, MethodCallDelegate> methods, string? filenameHint = null)
     {
         _deserializers = deserializers;
         _methods = methods;
@@ -122,7 +122,7 @@ internal class LinearListener : LinearBaseListener
         string typeName = ids[0].GetText();
         string dataName = ids[1].GetText();
         (int size, bool littleEndian) = StringToPrimitiveInfo(typeName);
-        IDeserializer? deserializer = StringToDeserializer(typeName, context);
+        DeserializerDefinition? deserializer = StringToDeserializer(typeName, context);
         var propGroup = GetPropertyGroup(context.property_group());
         if (!_currentNames.Add(dataName))
         {
@@ -148,7 +148,7 @@ internal class LinearListener : LinearBaseListener
         DeserializerStandardProperties standardProperties = new(ArrayLength: countExpression, LittleEndian: size != 0 ? new ConstantExpression<bool>(littleEndian) : null);
         // "Should" add some other way for length instead of routing through a dictionary...
         // "Should" add efficient primitive array deserialization...
-        Element dataElement = new ValueElement(dataName, new DeserializeExpression(offsetExpression, new ArrayDeserializer(deserializer), standardProperties, propGroup));
+        Element dataElement = new ValueElement(dataName, new DeserializeExpression(offsetExpression, new ArrayDeserializerDefinition(deserializer), standardProperties, propGroup));
         _currentDefinition!.Members.Add(new StructureDefinitionMember(dataName, dataElement));
     }
 
@@ -163,8 +163,8 @@ internal class LinearListener : LinearBaseListener
         string typeName = ids[0].GetText();
         string targetTypeName = ids[1].GetText();
         string dataName = ids[2].GetText();
-        IDeserializer? deserializer = StringToDeserializer(typeName, context);
-        IDeserializer? targetDeserializer = StringToDeserializer(targetTypeName, context);
+        DeserializerDefinition? deserializer = StringToDeserializer(typeName, context);
+        DeserializerDefinition? targetDeserializer = StringToDeserializer(targetTypeName, context);
         var propGroup = GetPropertyGroup(context.property_group());
         if (!_currentNames.Add(dataName))
         {
@@ -200,10 +200,10 @@ internal class LinearListener : LinearBaseListener
         var arrayLength = lenFinder
             ? new OperatorDualExpression(countExpression, new ConstantExpression<int>(1), BinaryOperator.Add)
             : countExpression;
-        DeserializerStandardProperties standardProperties = new(arrayLength, countExpression, pointerOffsetExpression, size != 0 ? new ConstantExpression<bool>(littleEndian) : null);
-        ArrayDeserializer arrayDeserializer = new(deserializer);
-        Element dataElement = new ValueElement(dataName,
-            new DeserializeExpression(offsetExpression, new PointerArrayDeserializer(arrayDeserializer, targetDeserializer, lenFinder), standardProperties, propGroup));
+        DeserializerStandardProperties standardProperties = new(arrayLength, countExpression, size != 0 ? new ConstantExpression<bool>(littleEndian) : null);
+        ArrayDeserializerDefinition arrayDeserializer = new(deserializer);
+        var arrayExpression = new DeserializeExpression(offsetExpression, arrayDeserializer, standardProperties, propGroup);
+        Element dataElement = new ValueElement(dataName, new DeserializeExpression(pointerOffsetExpression, new PointerArrayDeserializerDefinition(arrayExpression, targetDeserializer, lenFinder), standardProperties, propGroup));
         _currentDefinition!.Members.Add(new StructureDefinitionMember(dataName, dataElement));
     }
 
@@ -319,9 +319,9 @@ internal class LinearListener : LinearBaseListener
         _ => (0, false)
     };
 
-    private IDeserializer? StringToDeserializer(string identifier, ParserRuleContext context)
+    private DeserializerDefinition? StringToDeserializer(string identifier, ParserRuleContext context)
     {
-        if (_deserializers.TryGetValue(identifier, out IDeserializer? deserializer))
+        if (_deserializers.TryGetValue(identifier, out DeserializerDefinition? deserializer))
             return deserializer;
         AddError($"Failed to find deserializer for type {identifier}", context.Start);
         return null;
@@ -499,7 +499,7 @@ internal class LinearListener : LinearBaseListener
         {
             standardProperties = standardProperties with { LittleEndian = new ConstantExpression<bool>(littleEndian) };
         }
-        IDeserializer? deserializer = StringToDeserializer(typeName, context);
+        DeserializerDefinition? deserializer = StringToDeserializer(typeName, context);
         if (deserializer == null)
         {
             return null;

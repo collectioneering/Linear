@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using Linear.Runtime;
+using Linear.Runtime.Expressions;
 using NUnit.Framework;
 
 namespace Linear.Test
@@ -100,6 +102,69 @@ main {
             Assert.That(((ReadOnlyMemory<byte>)si["bu"]).ToArray(), Is.EqualTo(new byte[] { 0x02, 0x03 }));
             Assert.That(((ReadOnlyMemory<byte>)si["bu2"]).ToArray(), Is.EqualTo(new byte[] { 0x01, 0x02, 0x03, 0x04 }));
             Assert.That(si.Contains("discarded"), Is.EqualTo(false));
+        }
+
+        private static readonly byte[] Array_Redirected_Arr1 =
+        {
+            0x01, 0x00, 0x00, 0x00, //
+            0x02, 0x00, 0x00, 0x00, //
+            0x03, 0x00, 0x00, 0x00, //
+            0x04, 0x00, 0x00, 0x00, //
+        };
+
+        private static readonly int[] Array_Redirected_Expected = { 0x01, 0x02, 0x03, 0x04 };
+
+        [Test]
+        public void Array_Redirected_Correct()
+        {
+            Dictionary<string, MethodCallDelegate> methods = new();
+            methods["getbuf"] = (_, _) => Array_Redirected_Arr1;
+            var store = new FormatStore(ImmutableDictionary<string, DeserializerDefinition>.Empty, methods)
+            {
+                """
+main {
+    int[4] arr getbuf()!0;
+}
+"""
+            };
+            var res = store.Parse("main", ReadOnlySpan<byte>.Empty);
+            Assert.That(res["arr"], Is.EqualTo(Array_Redirected_Expected));
+        }
+
+        private static readonly byte[] PointerArray_BaseRedirected_Arr1 =
+        {
+            0x04, 0x00, 0x00, 0x00, //
+            0x08, 0x00, 0x00, 0x00, //
+            0x0C, 0x00, 0x00, 0x00, //
+            0x10, 0x00, 0x00, 0x00, //
+        };
+
+        private static readonly byte[] PointerArray_BaseRedirected_Arr2 =
+        {
+            0x05, 0x00, 0x00, 0x00, //
+            0x06, 0x00, 0x00, 0x00, //
+            0x07, 0x00, 0x00, 0x00, //
+            0x08, 0x00, 0x00, 0x00, //
+            0x09, 0x00, 0x00, 0x00, //
+        };
+
+        private static readonly int[] PointerArray_BaseRedirected_Expected = { 0x06, 0x07, 0x08, 0x09 };
+
+        [Test]
+        public void PointerArray_BaseRedirected_Correct()
+        {
+            Dictionary<string, MethodCallDelegate> methods = new();
+            methods["getbuf"] = (_, _) => PointerArray_BaseRedirected_Arr1;
+            var store = new FormatStore(ImmutableDictionary<string, DeserializerDefinition>.Empty, methods)
+            {
+                """
+main {
+    int[4] -> int[] arr getbuf()!0,0;
+}
+"""
+            };
+            var res = store.Parse("main", PointerArray_BaseRedirected_Arr2);
+            Assert.That(res["arr"], Is.EqualTo(PointerArray_BaseRedirected_Expected));
         }
     }
 }
