@@ -5,7 +5,7 @@ main {
 }
 
 entry {
-    $output compressed [short`0x0, end: $length] $i+".dat" {
+    $output compressed [short`0x0..$length] $i+".dat" {
         format="gzip";
     };
 }
