@@ -89,7 +89,12 @@ expr:
 	| un_op WS? expr												# ExprUnOp
 	| expr WS? op_mul_div WS? expr									# ExprOpMulDiv
 	| expr WS? op_add_sub WS? expr									# ExprOpAddSub
+	| expr WS? op_shift WS? expr									# ExprOpShift
+	| expr WS? op_rel WS? expr										# ExprOpRel
+	| expr WS? op_eq WS? expr										# ExprOpEq
 	| expr WS? AMP WS? expr											# ExprOpAmp
+	| expr WS? op_cond_and WS? expr									# ExprOpCondAnd
+	| expr WS? op_cond_or WS? expr									# ExprOpCondOr
 	| expr WS? CARET WS? expr										# ExprOpCaret
 	| expr WS? BITWISE_OR WS? expr									# ExprOpBitwiseOr;
 //	| expr WS? bool_op WS? expr # ExprBoolOp
@@ -100,9 +105,14 @@ OPENSQ: '[';
 CLOSESQ: ']';
 ENDL: ';';
 
+un_op: PLUS | MINUS | BANG | TILDE;
 op_mul_div: STAR | DIV | PERCENT;
 op_add_sub: PLUS | MINUS;
-un_op: PLUS | MINUS | BANG | TILDE;
+op_shift: RSHIFT | URSHIFT | LSHIFT;
+op_rel: LT | GT | OP_LE | OP_GE;
+op_eq: OP_EQ | OP_NE;
+op_cond_and: OP_AND;
+op_cond_or: OP_OR;
 bool_op:
 	LT
 	| GT
@@ -133,6 +143,10 @@ term:
 
 IDENTIFIER: '@'? IdentifierOrKeyword;
 WS: (Whitespace | NewLine)+;
+
+RSHIFT: '>>';
+URSHIFT: '>>>';
+LSHIFT: '<<';
 
 PLUS: '+';
 MINUS: '-';
