@@ -37,6 +37,9 @@ public class PointerArrayDeserializer : IDeserializer
     /// <inheritdoc />
     public Type GetTargetType() => _type;
 
+    // TODO support using SourceWithOffset for index array source and SourceWithOffset for target region
+    // TODO switch deserializers to having a specific deserializer context record to supply standard properties
+
     /// <inheritdoc />
     public DeserializeResult Deserialize(StructureInstance instance, Stream stream,
         long offset, bool littleEndian, Dictionary<StandardProperty, object>? standardProperties,
