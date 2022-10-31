@@ -68,8 +68,7 @@ public class StringDeserializer : IDeserializer
     public Type GetTargetType() => typeof(string);
 
     /// <inheritdoc />
-    public DeserializeResult Deserialize(DeserializerContext context, Stream stream,
-        long offset, bool littleEndian, long? length = null, int index = 0)
+    public DeserializeResult Deserialize(DeserializerContext context, Stream stream, long offset, long? length = null, int index = 0)
     {
         offset += context.Structure.AbsoluteOffset;
         stream.Position = offset;
@@ -107,15 +106,13 @@ public class StringDeserializer : IDeserializer
     }
 
     /// <inheritdoc />
-    public DeserializeResult Deserialize(DeserializerContext context, ReadOnlyMemory<byte> memory,
-        long offset, bool littleEndian, long? length = null, int index = 0)
+    public DeserializeResult Deserialize(DeserializerContext context, ReadOnlyMemory<byte> memory, long offset, long? length = null, int index = 0)
     {
-        return Deserialize(context, memory.Span, offset, littleEndian, length, index);
+        return Deserialize(context, memory.Span, offset, length, index);
     }
 
     /// <inheritdoc />
-    public DeserializeResult Deserialize(DeserializerContext context, ReadOnlySpan<byte> span,
-        long offset, bool littleEndian, long? length = null, int index = 0)
+    public DeserializeResult Deserialize(DeserializerContext context, ReadOnlySpan<byte> span, long offset, long? length = null, int index = 0)
     {
         offset += context.Structure.AbsoluteOffset;
         checked

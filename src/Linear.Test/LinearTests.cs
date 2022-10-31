@@ -16,7 +16,8 @@ main {
     var d 9*7/3;
     var e 0xff&0x11;
     ushort f `0;
-    var f2 ushort`2;
+    ushortb f2 `0;
+    var f3 ushort`2;
     byte g `5;
 
     var tmp 10;
@@ -74,7 +75,8 @@ main {
             Assert.That(si["d"], Is.EqualTo(9 * 7 / 3));
             Assert.That(si["e"], Is.EqualTo(0xff & 0x11));
             Assert.That(si["f"], Is.EqualTo(0x100));
-            Assert.That(si["f2"], Is.EqualTo(0x0302));
+            Assert.That(si["f2"], Is.EqualTo(0x1));
+            Assert.That(si["f3"], Is.EqualTo(0x0302));
             Assert.That(si["g"], Is.EqualTo(0x5));
             Assert.That(si["l1_result"], Is.EqualTo(200));
             Assert.That(si["vvv"], Is.EqualTo("lol"));
@@ -89,7 +91,8 @@ main {
             Assert.That(si["d"], Is.EqualTo(9 * 7 / 3));
             Assert.That(si["e"], Is.EqualTo(0xff & 0x11));
             Assert.That(si["f"], Is.EqualTo(0x100));
-            Assert.That(si["f2"], Is.EqualTo(0x0302));
+            Assert.That(si["f2"], Is.EqualTo(0x1));
+            Assert.That(si["f3"], Is.EqualTo(0x0302));
             Assert.That(si["g"], Is.EqualTo(0x5));
             Assert.That(si["l1_result"], Is.EqualTo(200));
             Assert.That(si["vvv"], Is.EqualTo("lol"));

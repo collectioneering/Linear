@@ -12,7 +12,8 @@ namespace Linear.Runtime;
 /// <param name="ArrayLength">Array length.</param>
 /// <param name="PointerArrayLength">Pointer array length.</param>
 /// <param name="PointerOffset">Pointer offset.</param>
-public readonly record struct DeserializerStandardProperties(ExpressionDefinition? ArrayLength = null, ExpressionDefinition? PointerArrayLength = null, ExpressionDefinition? PointerOffset = null)
+/// <param name="LittleEndian">Little-endian.</param>
+public readonly record struct DeserializerStandardProperties(ExpressionDefinition? ArrayLength = null, ExpressionDefinition? PointerArrayLength = null, ExpressionDefinition? PointerOffset = null, ExpressionDefinition? LittleEndian = null)
 {
     /// <summary>
     /// Creates <see cref="DeserializerStandardPropertiesInstance"/>.
@@ -20,7 +21,7 @@ public readonly record struct DeserializerStandardProperties(ExpressionDefinitio
     /// <returns>Instance of <see cref="DeserializerStandardPropertiesInstance"/>.</returns>
     public DeserializerStandardPropertiesInstance ToInstance()
     {
-        return new DeserializerStandardPropertiesInstance(ArrayLength?.GetInstance(), PointerArrayLength?.GetInstance(), PointerOffset?.GetInstance());
+        return new DeserializerStandardPropertiesInstance(ArrayLength?.GetInstance(), PointerArrayLength?.GetInstance(), PointerOffset?.GetInstance(), LittleEndian?.GetInstance());
     }
 
     /// <summary>
@@ -34,6 +35,7 @@ public readonly record struct DeserializerStandardProperties(ExpressionDefinitio
         if (ArrayLength is { } arrayLength) res = res.Union(arrayLength.GetDependencies(definition));
         if (PointerArrayLength is { } pointerArrayLength) res = res.Union(pointerArrayLength.GetDependencies(definition));
         if (PointerOffset is { } pointerOffset) res = res.Union(pointerOffset.GetDependencies(definition));
+        if (LittleEndian is { } littleEndian) res = res.Union(littleEndian.GetDependencies(definition));
         return res;
     }
 }
@@ -44,7 +46,8 @@ public readonly record struct DeserializerStandardProperties(ExpressionDefinitio
 /// <param name="ArrayLength">Array length.</param>
 /// <param name="PointerArrayLength">Pointer array length.</param>
 /// <param name="PointerOffset">Pointer offset.</param>
-public record DeserializerStandardPropertiesInstance(ExpressionInstance? ArrayLength = null, ExpressionInstance? PointerArrayLength = null, ExpressionInstance? PointerOffset = null)
+/// <param name="LittleEndian">Little-endian.</param>
+public record DeserializerStandardPropertiesInstance(ExpressionInstance? ArrayLength = null, ExpressionInstance? PointerArrayLength = null, ExpressionInstance? PointerOffset = null, ExpressionInstance? LittleEndian = null)
 {
     /// <summary>
     /// Augments existing context.
@@ -58,7 +61,8 @@ public record DeserializerStandardPropertiesInstance(ExpressionInstance? ArrayLe
         object? arrayLength = ArrayLength?.Evaluate(structureEvaluationContext, stream);
         object? pointerArrayLength = PointerArrayLength?.Evaluate(structureEvaluationContext, stream);
         object? pointerOffset = PointerOffset?.Evaluate(structureEvaluationContext, stream);
-        return Augment(context, arrayLength, pointerArrayLength, pointerOffset);
+        object? littleEndian = LittleEndian?.Evaluate(structureEvaluationContext, stream);
+        return Augment(context, arrayLength, pointerArrayLength, pointerOffset, littleEndian);
     }
 
     /// <summary>
@@ -73,7 +77,8 @@ public record DeserializerStandardPropertiesInstance(ExpressionInstance? ArrayLe
         object? arrayLength = ArrayLength?.Evaluate(structureEvaluationContext, memory);
         object? pointerArrayLength = PointerArrayLength?.Evaluate(structureEvaluationContext, memory);
         object? pointerOffset = PointerOffset?.Evaluate(structureEvaluationContext, memory);
-        return Augment(context, arrayLength, pointerArrayLength, pointerOffset);
+        object? littleEndian = LittleEndian?.Evaluate(structureEvaluationContext, memory);
+        return Augment(context, arrayLength, pointerArrayLength, pointerOffset, littleEndian);
     }
 
     /// <summary>
@@ -88,14 +93,16 @@ public record DeserializerStandardPropertiesInstance(ExpressionInstance? ArrayLe
         object? arrayLength = ArrayLength?.Evaluate(structureEvaluationContext, span);
         object? pointerArrayLength = PointerArrayLength?.Evaluate(structureEvaluationContext, span);
         object? pointerOffset = PointerOffset?.Evaluate(structureEvaluationContext, span);
-        return Augment(context, arrayLength, pointerArrayLength, pointerOffset);
+        object? littleEndian = LittleEndian?.Evaluate(structureEvaluationContext, span);
+        return Augment(context, arrayLength, pointerArrayLength, pointerOffset, littleEndian);
     }
 
-    private static DeserializerContext Augment(DeserializerContext context, object? arrayLength, object? pointerArrayLength, object? pointerOffset)
+    private static DeserializerContext Augment(DeserializerContext context, object? arrayLength, object? pointerArrayLength, object? pointerOffset, object? littleEndian)
     {
         if (arrayLength != null) context = context with { ArrayLength = CastUtil.CastLong(arrayLength) };
         if (pointerArrayLength != null) context = context with { PointerArrayLength = CastUtil.CastLong(pointerArrayLength) };
         if (pointerOffset != null) context = context with { PointerOffset = CastUtil.CastLong(pointerOffset) };
+        if (littleEndian != null) context = context with { LittleEndian = CastUtil.CastBool(littleEndian) };
         return context;
     }
 }

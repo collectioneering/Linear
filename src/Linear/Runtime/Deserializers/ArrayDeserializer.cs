@@ -30,8 +30,7 @@ public class ArrayDeserializer : IDeserializer
     public Type GetTargetType() => _type;
 
     /// <inheritdoc />
-    public DeserializeResult Deserialize(DeserializerContext context, Stream stream,
-        long offset, bool littleEndian, long? length = null, int index = 0)
+    public DeserializeResult Deserialize(DeserializerContext context, Stream stream, long offset, long? length = null, int index = 0)
     {
         int arrayLength;
         checked
@@ -43,7 +42,7 @@ public class ArrayDeserializer : IDeserializer
         var elementContext = context with { Parameters = null };
         for (int i = 0; i < arrayLength; i++)
         {
-            (object value, long? elemLength) = _elementDeserializer.Deserialize(elementContext, stream, curOffset, littleEndian, 0, i);
+            (object value, long? elemLength) = _elementDeserializer.Deserialize(elementContext, stream, curOffset, 0, i);
             res.SetValue(value, i);
             if (elemLength is { } elemLengthValue)
             {
@@ -59,8 +58,7 @@ public class ArrayDeserializer : IDeserializer
     }
 
     /// <inheritdoc />
-    public DeserializeResult Deserialize(DeserializerContext context, ReadOnlyMemory<byte> memory,
-        long offset, bool littleEndian, long? length = null, int index = 0)
+    public DeserializeResult Deserialize(DeserializerContext context, ReadOnlyMemory<byte> memory, long offset, long? length = null, int index = 0)
     {
         int arrayLength;
         checked
@@ -72,7 +70,7 @@ public class ArrayDeserializer : IDeserializer
         var elementContext = context with { Parameters = null };
         for (int i = 0; i < arrayLength; i++)
         {
-            (object value, long? elemLength) = _elementDeserializer.Deserialize(elementContext, memory, curOffset, littleEndian, 0, i);
+            (object value, long? elemLength) = _elementDeserializer.Deserialize(elementContext, memory, curOffset, 0, i);
             res.SetValue(value, i);
             if (elemLength is { } elemLengthValue)
             {
@@ -88,8 +86,7 @@ public class ArrayDeserializer : IDeserializer
     }
 
     /// <inheritdoc />
-    public DeserializeResult Deserialize(DeserializerContext context, ReadOnlySpan<byte> span,
-        long offset, bool littleEndian, long? length = null, int index = 0)
+    public DeserializeResult Deserialize(DeserializerContext context, ReadOnlySpan<byte> span, long offset, long? length = null, int index = 0)
     {
         int arrayLength;
         checked
@@ -101,7 +98,7 @@ public class ArrayDeserializer : IDeserializer
         var elementContext = context with { Parameters = null };
         for (int i = 0; i < arrayLength; i++)
         {
-            (object value, long? elemLength) = _elementDeserializer.Deserialize(elementContext, span, curOffset, littleEndian, 0, i);
+            (object value, long? elemLength) = _elementDeserializer.Deserialize(elementContext, span, curOffset, 0, i);
             res.SetValue(value, i);
             if (elemLength is { } elemLengthValue)
             {

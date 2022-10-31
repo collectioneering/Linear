@@ -33,7 +33,7 @@ public interface IDeserializer
     /// <param name="length">Length of structure.</param>
     /// <param name="index">Array index.</param>
     /// <returns>Deserialized object.</returns>
-    DeserializeResult Deserialize(DeserializerContext context, Stream stream, long offset, bool littleEndian, long? length = null, int index = 0);
+    DeserializeResult Deserialize(DeserializerContext context, Stream stream, long offset, long? length = null, int index = 0);
 
     /// <summary>
     /// Deserializes object.
@@ -45,7 +45,7 @@ public interface IDeserializer
     /// <param name="length">Length of structure.</param>
     /// <param name="index">Array index.</param>
     /// <returns>Deserialized object.</returns>
-    DeserializeResult Deserialize(DeserializerContext context, ReadOnlyMemory<byte> memory, long offset, bool littleEndian, long? length = null, int index = 0);
+    DeserializeResult Deserialize(DeserializerContext context, ReadOnlyMemory<byte> memory, long offset, long? length = null, int index = 0);
 
     /// <summary>
     /// Deserializes object.
@@ -57,5 +57,5 @@ public interface IDeserializer
     /// <param name="length">Length of structure.</param>
     /// <param name="index">Array index.</param>
     /// <returns>Deserialized object.</returns>
-    DeserializeResult Deserialize(DeserializerContext context, ReadOnlySpan<byte> span, long offset, bool littleEndian, long? length = null, int index = 0);
+    DeserializeResult Deserialize(DeserializerContext context, ReadOnlySpan<byte> span, long offset, long? length = null, int index = 0);
 }
