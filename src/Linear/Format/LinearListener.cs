@@ -145,10 +145,13 @@ internal class LinearListener : LinearBaseListener
         {
             return;
         }
-        DeserializerStandardProperties standardProperties = new(ArrayLength: countExpression, LittleEndian: size != 0 ? new ConstantExpression<bool>(littleEndian) : null);
+        DeserializerStandardProperties standardProperties = new(LittleEndian: size != 0 ? new ConstantExpression<bool>(littleEndian) : null);
         // "Should" add some other way for length instead of routing through a dictionary...
         // "Should" add efficient primitive array deserialization...
-        Element dataElement = new ValueElement(dataName, new DeserializeExpression(offsetExpression, new ArrayDeserializerDefinition(deserializer), standardProperties, propGroup));
+        string genNameArrayLength = $"${dataName}_g_array_length_{Guid.NewGuid():N}";
+        Element dataElementArrayLength = new ValueElement(genNameArrayLength, countExpression);
+        _currentDefinition!.Members.Add(new StructureDefinitionMember(genNameArrayLength, dataElementArrayLength));
+        Element dataElement = new ValueElement(dataName, new DeserializeExpression(offsetExpression, new ArrayDeserializerDefinition(deserializer, new MemberExpression(genNameArrayLength)), standardProperties, propGroup));
         _currentDefinition!.Members.Add(new StructureDefinitionMember(dataName, dataElement));
     }
 
@@ -197,17 +200,24 @@ internal class LinearListener : LinearBaseListener
         }
         (int size, bool littleEndian) = StringToPrimitiveInfo(typeName);
         bool lenFinder = context.PLUS() != null;
+        // TODO move expressions to specific definitions
         var arrayLength = lenFinder
             ? new OperatorDualExpression(countExpression, new ConstantExpression<int>(1), BinaryOperator.Add)
             : countExpression;
-        DeserializerStandardProperties standardProperties = new(arrayLength, countExpression, size != 0 ? new ConstantExpression<bool>(littleEndian) : null);
-        ArrayDeserializerDefinition arrayDeserializer = new(deserializer);
+        DeserializerStandardProperties standardProperties = new(size != 0 ? new ConstantExpression<bool>(littleEndian) : null);
+        string genNameArrayLength = $"${dataName}_g_array_length_{Guid.NewGuid():N}";
+        Element dataElementArrayLength = new ValueElement(genNameArrayLength, arrayLength);
+        _currentDefinition!.Members.Add(new StructureDefinitionMember(genNameArrayLength, dataElementArrayLength));
+        ArrayDeserializerDefinition arrayDeserializer = new(deserializer, new MemberExpression(genNameArrayLength));
         var arrayExpression = new DeserializeExpression(offsetExpression, arrayDeserializer, standardProperties, propGroup);
-        string genName = $"${dataName}_g_{Guid.NewGuid():N}";
-        Element dataElement1 = new ValueElement(genName, arrayExpression);
-        _currentDefinition!.Members.Add(new StructureDefinitionMember(genName, dataElement1));
-        Element dataElement2 = new ValueElement(dataName, new DeserializeExpression(pointerOffsetExpression, new PointerArrayDeserializerDefinition(new MemberExpression(genName), targetDeserializer, lenFinder), standardProperties, propGroup));
-        _currentDefinition!.Members.Add(new StructureDefinitionMember(dataName, dataElement2));
+        string genNameArray = $"${dataName}_g_array_{Guid.NewGuid():N}";
+        Element dataElementArray = new ValueElement(genNameArray, arrayExpression);
+        _currentDefinition!.Members.Add(new StructureDefinitionMember(genNameArray, dataElementArray));
+        string genNamePointerArrayLength = $"${dataName}_g_pointer_array_length_{Guid.NewGuid():N}";
+        Element dataElementPointerArrayLength = new ValueElement(genNamePointerArrayLength, countExpression);
+        _currentDefinition!.Members.Add(new StructureDefinitionMember(genNamePointerArrayLength, dataElementPointerArrayLength));
+        Element dataElement = new ValueElement(dataName, new DeserializeExpression(pointerOffsetExpression, new PointerArrayDeserializerDefinition(new MemberExpression(genNameArray), new MemberExpression(genNamePointerArrayLength), targetDeserializer, lenFinder), standardProperties, propGroup));
+        _currentDefinition!.Members.Add(new StructureDefinitionMember(dataName, dataElement));
     }
 
     public override void EnterStruct_statement_discard(LinearParser.Struct_statement_discardContext context)

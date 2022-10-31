@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using Linear.Runtime.Expressions;
+using static Linear.Utility.CastUtil;
 
 namespace Linear.Runtime.Deserializers;
 
@@ -10,21 +13,24 @@ namespace Linear.Runtime.Deserializers;
 public class ArrayDeserializerDefinition : DeserializerDefinition
 {
     private readonly DeserializerDefinition _elementDeserializer;
+    private readonly MemberExpression _countExpression;
 
     /// <summary>
     /// Initializes an instance of <see cref="ArrayDeserializer"/>.
     /// </summary>
     /// <param name="elementDeserializer">Element deserializer.</param>
-    public ArrayDeserializerDefinition(DeserializerDefinition elementDeserializer)
+    /// <param name="countExpression">Count expression.</param>
+    public ArrayDeserializerDefinition(DeserializerDefinition elementDeserializer, MemberExpression countExpression)
     {
         _elementDeserializer = elementDeserializer;
+        _countExpression = countExpression;
     }
 
     /// <inheritdoc />
-    public override IEnumerable<Element> GetDependencies(StructureDefinition definition) => _elementDeserializer.GetDependencies(definition);
+    public override IEnumerable<Element> GetDependencies(StructureDefinition definition) => _elementDeserializer.GetDependencies(definition).Union(_countExpression.GetDependencies(definition));
 
     /// <inheritdoc />
-    public override DeserializerInstance GetInstance() => new ArrayDeserializer(_elementDeserializer.GetInstance());
+    public override DeserializerInstance GetInstance() => new ArrayDeserializer(_elementDeserializer.GetInstance(), _countExpression.GetInstance());
 }
 
 /// <summary>
@@ -33,6 +39,7 @@ public class ArrayDeserializerDefinition : DeserializerDefinition
 public class ArrayDeserializer : DeserializerInstance
 {
     private readonly DeserializerInstance _elementDeserializer;
+    private readonly ExpressionInstance _countExpression;
     private readonly Type _elementType;
     private readonly Type _type;
 
@@ -40,9 +47,11 @@ public class ArrayDeserializer : DeserializerInstance
     /// Initializes an instance of <see cref="ArrayDeserializer"/>.
     /// </summary>
     /// <param name="elementDeserializer">Element deserializer.</param>
-    public ArrayDeserializer(DeserializerInstance elementDeserializer)
+    /// <param name="countExpression">Count expression.</param>
+    public ArrayDeserializer(DeserializerInstance elementDeserializer, ExpressionInstance countExpression)
     {
         _elementDeserializer = elementDeserializer;
+        _countExpression = countExpression;
         _elementType = _elementDeserializer.GetTargetType();
         _type = _elementType.MakeArrayType();
     }
@@ -53,11 +62,8 @@ public class ArrayDeserializer : DeserializerInstance
     /// <inheritdoc />
     public override DeserializeResult Deserialize(DeserializerContext context, Stream stream, long offset, long? length = null, int index = 0)
     {
-        int arrayLength;
-        checked
-        {
-            arrayLength = (int)(context.ArrayLength ?? throw new InvalidOperationException("No array length specified"));
-        }
+        var structureContext = new StructureEvaluationContext(context.Structure);
+        int arrayLength = CastInt(_countExpression.Evaluate(structureContext, ReadOnlySpan<byte>.Empty));
         Array res = Array.CreateInstance(_elementType, arrayLength);
         long curOffset = offset;
         var elementContext = context with { Parameters = null };
@@ -81,11 +87,8 @@ public class ArrayDeserializer : DeserializerInstance
     /// <inheritdoc />
     public override DeserializeResult Deserialize(DeserializerContext context, ReadOnlyMemory<byte> memory, long offset, long? length = null, int index = 0)
     {
-        int arrayLength;
-        checked
-        {
-            arrayLength = (int)(context.ArrayLength ?? throw new InvalidOperationException("No array length specified"));
-        }
+        var structureContext = new StructureEvaluationContext(context.Structure);
+        int arrayLength = CastInt(_countExpression.Evaluate(structureContext, ReadOnlySpan<byte>.Empty));
         Array res = Array.CreateInstance(_elementType, arrayLength);
         long curOffset = offset;
         var elementContext = context with { Parameters = null };
@@ -109,11 +112,8 @@ public class ArrayDeserializer : DeserializerInstance
     /// <inheritdoc />
     public override DeserializeResult Deserialize(DeserializerContext context, ReadOnlySpan<byte> span, long offset, long? length = null, int index = 0)
     {
-        int arrayLength;
-        checked
-        {
-            arrayLength = (int)(context.ArrayLength ?? throw new InvalidOperationException("No array length specified"));
-        }
+        var structureContext = new StructureEvaluationContext(context.Structure);
+        int arrayLength = CastInt(_countExpression.Evaluate(structureContext, ReadOnlySpan<byte>.Empty));
         Array res = Array.CreateInstance(_elementType, arrayLength);
         long curOffset = offset;
         var elementContext = context with { Parameters = null };

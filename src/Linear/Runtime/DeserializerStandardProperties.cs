@@ -9,10 +9,8 @@ namespace Linear.Runtime;
 /// <summary>
 /// Standard properties for deserializer.
 /// </summary>
-/// <param name="ArrayLength">Array length.</param>
-/// <param name="PointerArrayLength">Pointer array length.</param>
 /// <param name="LittleEndian">Little-endian.</param>
-public readonly record struct DeserializerStandardProperties(ExpressionDefinition? ArrayLength = null, ExpressionDefinition? PointerArrayLength = null, ExpressionDefinition? LittleEndian = null)
+public readonly record struct DeserializerStandardProperties(ExpressionDefinition? LittleEndian = null)
 {
     /// <summary>
     /// Creates <see cref="DeserializerStandardPropertiesInstance"/>.
@@ -20,7 +18,7 @@ public readonly record struct DeserializerStandardProperties(ExpressionDefinitio
     /// <returns>Instance of <see cref="DeserializerStandardPropertiesInstance"/>.</returns>
     public DeserializerStandardPropertiesInstance ToInstance()
     {
-        return new DeserializerStandardPropertiesInstance(ArrayLength?.GetInstance(), PointerArrayLength?.GetInstance(), LittleEndian?.GetInstance());
+        return new DeserializerStandardPropertiesInstance(LittleEndian?.GetInstance());
     }
 
     /// <summary>
@@ -31,8 +29,6 @@ public readonly record struct DeserializerStandardProperties(ExpressionDefinitio
     public IEnumerable<Element> GetDependencies(StructureDefinition definition)
     {
         var res = Enumerable.Empty<Element>();
-        if (ArrayLength is { } arrayLength) res = res.Union(arrayLength.GetDependencies(definition));
-        if (PointerArrayLength is { } pointerArrayLength) res = res.Union(pointerArrayLength.GetDependencies(definition));
         if (LittleEndian is { } littleEndian) res = res.Union(littleEndian.GetDependencies(definition));
         return res;
     }
@@ -41,10 +37,8 @@ public readonly record struct DeserializerStandardProperties(ExpressionDefinitio
 /// <summary>
 /// Standard properties for deserializer.
 /// </summary>
-/// <param name="ArrayLength">Array length.</param>
-/// <param name="PointerArrayLength">Pointer array length.</param>
 /// <param name="LittleEndian">Little-endian.</param>
-public record DeserializerStandardPropertiesInstance(ExpressionInstance? ArrayLength = null, ExpressionInstance? PointerArrayLength = null, ExpressionInstance? LittleEndian = null)
+public record DeserializerStandardPropertiesInstance(ExpressionInstance? LittleEndian = null)
 {
     /// <summary>
     /// Augments existing context.
@@ -55,10 +49,8 @@ public record DeserializerStandardPropertiesInstance(ExpressionInstance? ArrayLe
     /// <returns>Augmented context.</returns>
     public DeserializerContext Augment(DeserializerContext context, StructureEvaluationContext structureEvaluationContext, Stream stream)
     {
-        object? arrayLength = ArrayLength?.Evaluate(structureEvaluationContext, stream);
-        object? pointerArrayLength = PointerArrayLength?.Evaluate(structureEvaluationContext, stream);
         object? littleEndian = LittleEndian?.Evaluate(structureEvaluationContext, stream);
-        return Augment(context, arrayLength, pointerArrayLength, littleEndian);
+        return Augment(context, littleEndian);
     }
 
     /// <summary>
@@ -70,10 +62,8 @@ public record DeserializerStandardPropertiesInstance(ExpressionInstance? ArrayLe
     /// <returns>Augmented context.</returns>
     public DeserializerContext Augment(DeserializerContext context, StructureEvaluationContext structureEvaluationContext, ReadOnlyMemory<byte> memory)
     {
-        object? arrayLength = ArrayLength?.Evaluate(structureEvaluationContext, memory);
-        object? pointerArrayLength = PointerArrayLength?.Evaluate(structureEvaluationContext, memory);
         object? littleEndian = LittleEndian?.Evaluate(structureEvaluationContext, memory);
-        return Augment(context, arrayLength, pointerArrayLength, littleEndian);
+        return Augment(context, littleEndian);
     }
 
     /// <summary>
@@ -85,16 +75,12 @@ public record DeserializerStandardPropertiesInstance(ExpressionInstance? ArrayLe
     /// <returns>Augmented context.</returns>
     public DeserializerContext Augment(DeserializerContext context, StructureEvaluationContext structureEvaluationContext, ReadOnlySpan<byte> span)
     {
-        object? arrayLength = ArrayLength?.Evaluate(structureEvaluationContext, span);
-        object? pointerArrayLength = PointerArrayLength?.Evaluate(structureEvaluationContext, span);
         object? littleEndian = LittleEndian?.Evaluate(structureEvaluationContext, span);
-        return Augment(context, arrayLength, pointerArrayLength, littleEndian);
+        return Augment(context, littleEndian);
     }
 
-    private static DeserializerContext Augment(DeserializerContext context, object? arrayLength, object? pointerArrayLength, object? littleEndian)
+    private static DeserializerContext Augment(DeserializerContext context, object? littleEndian)
     {
-        if (arrayLength != null) context = context with { ArrayLength = CastUtil.CastLong(arrayLength) };
-        if (pointerArrayLength != null) context = context with { PointerArrayLength = CastUtil.CastLong(pointerArrayLength) };
         if (littleEndian != null) context = context with { LittleEndian = CastUtil.CastBool(littleEndian) };
         return context;
     }

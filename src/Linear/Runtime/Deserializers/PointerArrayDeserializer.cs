@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Linear.Runtime.Expressions;
 using static Linear.Utility.CastUtil;
 
 namespace Linear.Runtime.Deserializers;
@@ -11,7 +12,8 @@ namespace Linear.Runtime.Deserializers;
 /// </summary>
 public class PointerArrayDeserializerDefinition : DeserializerDefinition
 {
-    private readonly ExpressionDefinition _mainExpression;
+    private readonly MemberExpression _mainExpression;
+    private readonly MemberExpression _countExpression;
     private readonly DeserializerDefinition _elementDeserializer;
     private readonly bool _lenFinder;
 
@@ -19,11 +21,13 @@ public class PointerArrayDeserializerDefinition : DeserializerDefinition
     /// Initializes an instance of <see cref="PointerArrayDeserializerDefinition"/>.
     /// </summary>
     /// <param name="mainExpression">Main array expression.</param>
+    /// <param name="countExpression">Count expression.</param>
     /// <param name="elementDeserializer">Element deserializer.</param>
     /// <param name="lenFinder">If true, uses space to determine element length (and requires n+1 elements).</param>
-    public PointerArrayDeserializerDefinition(ExpressionDefinition mainExpression, DeserializerDefinition elementDeserializer, bool lenFinder)
+    public PointerArrayDeserializerDefinition(MemberExpression mainExpression, MemberExpression countExpression, DeserializerDefinition elementDeserializer, bool lenFinder)
     {
         _mainExpression = mainExpression;
+        _countExpression = countExpression;
         _elementDeserializer = elementDeserializer;
         _lenFinder = lenFinder;
     }
@@ -31,11 +35,11 @@ public class PointerArrayDeserializerDefinition : DeserializerDefinition
     /// <inheritdoc />
     public override IEnumerable<Element> GetDependencies(StructureDefinition definition)
     {
-        return _mainExpression.GetDependencies(definition).Union(_elementDeserializer.GetDependencies(definition));
+        return _mainExpression.GetDependencies(definition).Union(_countExpression.GetDependencies(definition)).Union(_elementDeserializer.GetDependencies(definition));
     }
 
     /// <inheritdoc />
-    public override DeserializerInstance GetInstance() => new PointerArrayDeserializer(_mainExpression.GetInstance(), _elementDeserializer.GetInstance(), _lenFinder);
+    public override DeserializerInstance GetInstance() => new PointerArrayDeserializer(_mainExpression.GetInstance(), _countExpression.GetInstance(), _elementDeserializer.GetInstance(), _lenFinder);
 }
 
 /// <summary>
@@ -44,6 +48,7 @@ public class PointerArrayDeserializerDefinition : DeserializerDefinition
 public class PointerArrayDeserializer : DeserializerInstance
 {
     private readonly ExpressionInstance _mainExpression;
+    private readonly ExpressionInstance _countExpression;
     private readonly DeserializerInstance _elementDeserializer;
     private readonly Type _elementType;
     private readonly Type _type;
@@ -53,11 +58,13 @@ public class PointerArrayDeserializer : DeserializerInstance
     /// Initializes an instance of <see cref="PointerArrayDeserializer"/>.
     /// </summary>
     /// <param name="mainExpression">Main array expression.</param>
+    /// <param name="countExpression">Count expression.</param>
     /// <param name="elementDeserializer">Element deserializer.</param>
     /// <param name="lenFinder">If true, uses space to determine element length (and requires n+1 elements).</param>
-    public PointerArrayDeserializer(ExpressionInstance mainExpression, DeserializerInstance elementDeserializer, bool lenFinder)
+    public PointerArrayDeserializer(ExpressionInstance mainExpression, ExpressionInstance countExpression, DeserializerInstance elementDeserializer, bool lenFinder)
     {
         _mainExpression = mainExpression;
+        _countExpression = countExpression;
         _elementDeserializer = elementDeserializer;
         _elementType = elementDeserializer.GetTargetType();
         _type = _elementType.MakeArrayType();
@@ -70,13 +77,10 @@ public class PointerArrayDeserializer : DeserializerInstance
     /// <inheritdoc />
     public override DeserializeResult Deserialize(DeserializerContext context, Stream stream, long offset, long? length = null, int index = 0)
     {
-        object src = _mainExpression.Evaluate(new StructureEvaluationContext(context.Structure), stream) ?? throw new NullReferenceException();
+        var structureContext = new StructureEvaluationContext(context.Structure);
+        object src = _mainExpression.Evaluate(structureContext, stream) ?? throw new NullReferenceException();
         Array baseArray = (Array)src;
-        int pointerArrayLength;
-        checked
-        {
-            pointerArrayLength = (int)(context.PointerArrayLength ?? throw new InvalidOperationException("No pointer array length specified"));
-        }
+        int pointerArrayLength = CastInt(_countExpression.Evaluate(structureContext, ReadOnlySpan<byte>.Empty));
         Array tarArray = Array.CreateInstance(_elementType, pointerArrayLength);
         long? curOffset = offset;
         for (int i = 0; i < pointerArrayLength; i++)
@@ -104,13 +108,10 @@ public class PointerArrayDeserializer : DeserializerInstance
     /// <inheritdoc />
     public override DeserializeResult Deserialize(DeserializerContext context, ReadOnlyMemory<byte> memory, long offset, long? length = null, int index = 0)
     {
-        object src = _mainExpression.Evaluate(new StructureEvaluationContext(context.Structure), memory) ?? throw new NullReferenceException();
+        var structureContext = new StructureEvaluationContext(context.Structure);
+        object src = _mainExpression.Evaluate(structureContext, memory) ?? throw new NullReferenceException();
         Array baseArray = (Array)src;
-        int pointerArrayLength;
-        checked
-        {
-            pointerArrayLength = (int)(context.PointerArrayLength ?? throw new InvalidOperationException("No pointer array length specified"));
-        }
+        int pointerArrayLength = CastInt(_countExpression.Evaluate(structureContext, ReadOnlySpan<byte>.Empty));
         Array tarArray = Array.CreateInstance(_elementType, pointerArrayLength);
         long? curOffset = offset;
         for (int i = 0; i < pointerArrayLength; i++)
@@ -138,13 +139,10 @@ public class PointerArrayDeserializer : DeserializerInstance
     /// <inheritdoc />
     public override DeserializeResult Deserialize(DeserializerContext context, ReadOnlySpan<byte> span, long offset, long? length = null, int index = 0)
     {
-        object src = _mainExpression.Evaluate(new StructureEvaluationContext(context.Structure), span) ?? throw new NullReferenceException();
+        var structureContext = new StructureEvaluationContext(context.Structure);
+        object src = _mainExpression.Evaluate(structureContext, span) ?? throw new NullReferenceException();
         Array baseArray = (Array)src;
-        int pointerArrayLength;
-        checked
-        {
-            pointerArrayLength = (int)(context.PointerArrayLength ?? throw new InvalidOperationException("No pointer array length specified"));
-        }
+        int pointerArrayLength = CastInt(_countExpression.Evaluate(structureContext, ReadOnlySpan<byte>.Empty));
         Array tarArray = Array.CreateInstance(_elementType, pointerArrayLength);
         long? curOffset = offset;
         for (int i = 0; i < pointerArrayLength; i++)
