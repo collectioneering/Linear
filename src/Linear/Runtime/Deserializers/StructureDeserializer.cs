@@ -28,13 +28,13 @@ public class StructureDeserializerDefinition : DeserializerDefinition
     }
 
     /// <inheritdoc />
-    public override IDeserializer GetInstance() => new StructureDeserializer(_name);
+    public override DeserializerInstance GetInstance() => new StructureDeserializer(_name);
 }
 
 /// <summary>
 /// Deserializes structure.
 /// </summary>
-public class StructureDeserializer : IDeserializer
+public class StructureDeserializer : DeserializerInstance
 {
     private readonly string _name;
 
@@ -48,27 +48,24 @@ public class StructureDeserializer : IDeserializer
     }
 
     /// <inheritdoc />
-    public string GetTargetTypeName() => _name;
+    public override Type GetTargetType() => typeof(StructureInstance);
 
     /// <inheritdoc />
-    public Type GetTargetType() => typeof(StructureInstance);
-
-    /// <inheritdoc />
-    public DeserializeResult Deserialize(DeserializerContext context, Stream stream, long offset, long? length = null, int index = 0)
+    public override DeserializeResult Deserialize(DeserializerContext context, Stream stream, long offset, long? length = null, int index = 0)
     {
         StructureInstance i = context.Structure.Registry[_name].Parse(context.Structure.Registry, stream, new ParseState(_name, offset, context.Structure, length, index));
         return new DeserializeResult(i, i.Length);
     }
 
     /// <inheritdoc />
-    public DeserializeResult Deserialize(DeserializerContext context, ReadOnlyMemory<byte> memory, long offset, long? length = null, int index = 0)
+    public override DeserializeResult Deserialize(DeserializerContext context, ReadOnlyMemory<byte> memory, long offset, long? length = null, int index = 0)
     {
         StructureInstance i = context.Structure.Registry[_name].Parse(context.Structure.Registry, memory, new ParseState(_name, offset, context.Structure, length, index));
         return new DeserializeResult(i, i.Length);
     }
 
     /// <inheritdoc />
-    public DeserializeResult Deserialize(DeserializerContext context, ReadOnlySpan<byte> span, long offset, long? length = null, int index = 0)
+    public override DeserializeResult Deserialize(DeserializerContext context, ReadOnlySpan<byte> span, long offset, long? length = null, int index = 0)
     {
         StructureInstance i = context.Structure.Registry[_name].Parse(context.Structure.Registry, span, new ParseState(_name, offset, context.Structure, length, index));
         return new DeserializeResult(i, i.Length);

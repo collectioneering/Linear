@@ -30,13 +30,13 @@ public class StringDeserializerDefinition : DeserializerDefinition
     }
 
     /// <inheritdoc />
-    public override IDeserializer GetInstance() => new StringDeserializer(_mode);
+    public override DeserializerInstance GetInstance() => new StringDeserializer(_mode);
 }
 
 /// <summary>
 /// Generic string deserializer.
 /// </summary>
-public class StringDeserializer : IDeserializer
+public class StringDeserializer : DeserializerInstance
 {
     private const int StringDefaultCapacity = 4 * 1024;
     private const int StringExcessiveCapacity = 128 * 1024;
@@ -64,13 +64,10 @@ public class StringDeserializer : IDeserializer
     }
 
     /// <inheritdoc />
-    public string? GetTargetTypeName() => null;
+    public override Type GetTargetType() => typeof(string);
 
     /// <inheritdoc />
-    public Type GetTargetType() => typeof(string);
-
-    /// <inheritdoc />
-    public DeserializeResult Deserialize(DeserializerContext context, Stream stream, long offset, long? length = null, int index = 0)
+    public override DeserializeResult Deserialize(DeserializerContext context, Stream stream, long offset, long? length = null, int index = 0)
     {
         offset += context.Structure.AbsoluteOffset;
         stream.Position = offset;
@@ -108,13 +105,13 @@ public class StringDeserializer : IDeserializer
     }
 
     /// <inheritdoc />
-    public DeserializeResult Deserialize(DeserializerContext context, ReadOnlyMemory<byte> memory, long offset, long? length = null, int index = 0)
+    public override DeserializeResult Deserialize(DeserializerContext context, ReadOnlyMemory<byte> memory, long offset, long? length = null, int index = 0)
     {
         return Deserialize(context, memory.Span, offset, length, index);
     }
 
     /// <inheritdoc />
-    public DeserializeResult Deserialize(DeserializerContext context, ReadOnlySpan<byte> span, long offset, long? length = null, int index = 0)
+    public override DeserializeResult Deserialize(DeserializerContext context, ReadOnlySpan<byte> span, long offset, long? length = null, int index = 0)
     {
         offset += context.Structure.AbsoluteOffset;
         checked

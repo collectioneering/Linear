@@ -35,16 +35,16 @@ public class PointerArrayDeserializerDefinition : DeserializerDefinition
     }
 
     /// <inheritdoc />
-    public override IDeserializer GetInstance() => new PointerArrayDeserializer(_mainExpression.GetInstance(), _elementDeserializer.GetInstance(), _lenFinder);
+    public override DeserializerInstance GetInstance() => new PointerArrayDeserializer(_mainExpression.GetInstance(), _elementDeserializer.GetInstance(), _lenFinder);
 }
 
 /// <summary>
 /// Deserializes pointer array.
 /// </summary>
-public class PointerArrayDeserializer : IDeserializer
+public class PointerArrayDeserializer : DeserializerInstance
 {
     private readonly ExpressionInstance _mainExpression;
-    private readonly IDeserializer _elementDeserializer;
+    private readonly DeserializerInstance _elementDeserializer;
     private readonly Type _elementType;
     private readonly Type _type;
     private readonly bool _lenFinder;
@@ -55,7 +55,7 @@ public class PointerArrayDeserializer : IDeserializer
     /// <param name="mainExpression">Main array expression.</param>
     /// <param name="elementDeserializer">Element deserializer.</param>
     /// <param name="lenFinder">If true, uses space to determine element length (and requires n+1 elements).</param>
-    public PointerArrayDeserializer(ExpressionInstance mainExpression, IDeserializer elementDeserializer, bool lenFinder)
+    public PointerArrayDeserializer(ExpressionInstance mainExpression, DeserializerInstance elementDeserializer, bool lenFinder)
     {
         _mainExpression = mainExpression;
         _elementDeserializer = elementDeserializer;
@@ -65,13 +65,10 @@ public class PointerArrayDeserializer : IDeserializer
     }
 
     /// <inheritdoc />
-    public string GetTargetTypeName() => throw new NotSupportedException();
+    public override Type GetTargetType() => _type;
 
     /// <inheritdoc />
-    public Type GetTargetType() => _type;
-
-    /// <inheritdoc />
-    public DeserializeResult Deserialize(DeserializerContext context, Stream stream, long offset, long? length = null, int index = 0)
+    public override DeserializeResult Deserialize(DeserializerContext context, Stream stream, long offset, long? length = null, int index = 0)
     {
         object src = _mainExpression.Evaluate(new StructureEvaluationContext(context.Structure), stream) ?? throw new NullReferenceException();
         Array baseArray = (Array)src;
@@ -105,7 +102,7 @@ public class PointerArrayDeserializer : IDeserializer
     }
 
     /// <inheritdoc />
-    public DeserializeResult Deserialize(DeserializerContext context, ReadOnlyMemory<byte> memory, long offset, long? length = null, int index = 0)
+    public override DeserializeResult Deserialize(DeserializerContext context, ReadOnlyMemory<byte> memory, long offset, long? length = null, int index = 0)
     {
         object src = _mainExpression.Evaluate(new StructureEvaluationContext(context.Structure), memory) ?? throw new NullReferenceException();
         Array baseArray = (Array)src;
@@ -139,7 +136,7 @@ public class PointerArrayDeserializer : IDeserializer
     }
 
     /// <inheritdoc />
-    public DeserializeResult Deserialize(DeserializerContext context, ReadOnlySpan<byte> span, long offset, long? length = null, int index = 0)
+    public override DeserializeResult Deserialize(DeserializerContext context, ReadOnlySpan<byte> span, long offset, long? length = null, int index = 0)
     {
         object src = _mainExpression.Evaluate(new StructureEvaluationContext(context.Structure), span) ?? throw new NullReferenceException();
         Array baseArray = (Array)src;

@@ -24,15 +24,15 @@ public class ArrayDeserializerDefinition : DeserializerDefinition
     public override IEnumerable<Element> GetDependencies(StructureDefinition definition) => _elementDeserializer.GetDependencies(definition);
 
     /// <inheritdoc />
-    public override IDeserializer GetInstance() => new ArrayDeserializer(_elementDeserializer.GetInstance());
+    public override DeserializerInstance GetInstance() => new ArrayDeserializer(_elementDeserializer.GetInstance());
 }
 
 /// <summary>
 /// Deserializes raw array.
 /// </summary>
-public class ArrayDeserializer : IDeserializer
+public class ArrayDeserializer : DeserializerInstance
 {
-    private readonly IDeserializer _elementDeserializer;
+    private readonly DeserializerInstance _elementDeserializer;
     private readonly Type _elementType;
     private readonly Type _type;
 
@@ -40,7 +40,7 @@ public class ArrayDeserializer : IDeserializer
     /// Initializes an instance of <see cref="ArrayDeserializer"/>.
     /// </summary>
     /// <param name="elementDeserializer">Element deserializer.</param>
-    public ArrayDeserializer(IDeserializer elementDeserializer)
+    public ArrayDeserializer(DeserializerInstance elementDeserializer)
     {
         _elementDeserializer = elementDeserializer;
         _elementType = _elementDeserializer.GetTargetType();
@@ -48,13 +48,10 @@ public class ArrayDeserializer : IDeserializer
     }
 
     /// <inheritdoc />
-    public string GetTargetTypeName() => throw new NotSupportedException();
+    public override Type GetTargetType() => _type;
 
     /// <inheritdoc />
-    public Type GetTargetType() => _type;
-
-    /// <inheritdoc />
-    public DeserializeResult Deserialize(DeserializerContext context, Stream stream, long offset, long? length = null, int index = 0)
+    public override DeserializeResult Deserialize(DeserializerContext context, Stream stream, long offset, long? length = null, int index = 0)
     {
         int arrayLength;
         checked
@@ -82,7 +79,7 @@ public class ArrayDeserializer : IDeserializer
     }
 
     /// <inheritdoc />
-    public DeserializeResult Deserialize(DeserializerContext context, ReadOnlyMemory<byte> memory, long offset, long? length = null, int index = 0)
+    public override DeserializeResult Deserialize(DeserializerContext context, ReadOnlyMemory<byte> memory, long offset, long? length = null, int index = 0)
     {
         int arrayLength;
         checked
@@ -110,7 +107,7 @@ public class ArrayDeserializer : IDeserializer
     }
 
     /// <inheritdoc />
-    public DeserializeResult Deserialize(DeserializerContext context, ReadOnlySpan<byte> span, long offset, long? length = null, int index = 0)
+    public override DeserializeResult Deserialize(DeserializerContext context, ReadOnlySpan<byte> span, long offset, long? length = null, int index = 0)
     {
         int arrayLength;
         checked

@@ -30,7 +30,7 @@ public class PrimitiveDeserializerDefinition : DeserializerDefinition
     }
 
     /// <inheritdoc />
-    public override IDeserializer GetInstance()
+    public override DeserializerInstance GetInstance()
     {
         return new PrimitiveDeserializer(_type);
     }
@@ -39,7 +39,7 @@ public class PrimitiveDeserializerDefinition : DeserializerDefinition
 /// <summary>
 /// Deserializes primitives.
 /// </summary>
-public class PrimitiveDeserializer : IDeserializer
+public class PrimitiveDeserializer : DeserializerInstance
 {
     private readonly Type _type;
 
@@ -53,13 +53,10 @@ public class PrimitiveDeserializer : IDeserializer
     }
 
     /// <inheritdoc />
-    public string? GetTargetTypeName() => null;
+    public override Type GetTargetType() => _type;
 
     /// <inheritdoc />
-    public Type GetTargetType() => _type;
-
-    /// <inheritdoc />
-    public DeserializeResult Deserialize(DeserializerContext context, Stream stream, long offset, long? length = null, int index = 0)
+    public override DeserializeResult Deserialize(DeserializerContext context, Stream stream, long offset, long? length = null, int index = 0)
     {
         // Possible addition: property group support little endian (requires boolean expressions)
         offset += context.Structure.AbsoluteOffset;
@@ -88,13 +85,13 @@ public class PrimitiveDeserializer : IDeserializer
     }
 
     /// <inheritdoc />
-    public DeserializeResult Deserialize(DeserializerContext context, ReadOnlyMemory<byte> memory, long offset, long? length = null, int index = 0)
+    public override DeserializeResult Deserialize(DeserializerContext context, ReadOnlyMemory<byte> memory, long offset, long? length = null, int index = 0)
     {
         return Deserialize(context, memory.Span, offset, length, index);
     }
 
     /// <inheritdoc />
-    public DeserializeResult Deserialize(DeserializerContext context, ReadOnlySpan<byte> span, long offset, long? length = null, int index = 0)
+    public override DeserializeResult Deserialize(DeserializerContext context, ReadOnlySpan<byte> span, long offset, long? length = null, int index = 0)
     {
         // Possible addition: property group support little endian (requires boolean expressions)
         LinearUtil.TrimStart(ref span, context.Structure, offset);

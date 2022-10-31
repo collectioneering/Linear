@@ -4,24 +4,15 @@ using System.IO;
 namespace Linear.Runtime;
 
 /// <summary>
-/// Definition of custom deserializer
+/// Definition of custom deserializer.
 /// </summary>
-public interface IDeserializer
+public abstract class DeserializerInstance
 {
-    /// <summary>
-    /// Gets target type name of deserializer.
-    /// </summary>
-    /// <returns>Target type name.</returns>
-    /// <remarks>
-    /// Mandatory for user-defined deserializers.
-    /// </remarks>
-    string? GetTargetTypeName();
-
     /// <summary>
     /// Gets target type of deserializer.
     /// </summary>
     /// <returns>Target type.</returns>
-    Type GetTargetType();
+    public abstract Type GetTargetType();
 
     /// <summary>
     /// Deserializes object.
@@ -32,7 +23,7 @@ public interface IDeserializer
     /// <param name="length">Length of structure.</param>
     /// <param name="index">Array index.</param>
     /// <returns>Deserialized object.</returns>
-    DeserializeResult Deserialize(DeserializerContext context, Stream stream, long offset, long? length = null, int index = 0);
+    public abstract DeserializeResult Deserialize(DeserializerContext context, Stream stream, long offset, long? length = null, int index = 0);
 
     /// <summary>
     /// Deserializes object.
@@ -43,7 +34,7 @@ public interface IDeserializer
     /// <param name="length">Length of structure.</param>
     /// <param name="index">Array index.</param>
     /// <returns>Deserialized object.</returns>
-    DeserializeResult Deserialize(DeserializerContext context, ReadOnlyMemory<byte> memory, long offset, long? length = null, int index = 0);
+    public abstract DeserializeResult Deserialize(DeserializerContext context, ReadOnlyMemory<byte> memory, long offset, long? length = null, int index = 0);
 
     /// <summary>
     /// Deserializes object.
@@ -54,5 +45,5 @@ public interface IDeserializer
     /// <param name="length">Length of structure.</param>
     /// <param name="index">Array index.</param>
     /// <returns>Deserialized object.</returns>
-    DeserializeResult Deserialize(DeserializerContext context, ReadOnlySpan<byte> span, long offset, long? length = null, int index = 0);
+    public abstract DeserializeResult Deserialize(DeserializerContext context, ReadOnlySpan<byte> span, long offset, long? length = null, int index = 0);
 }

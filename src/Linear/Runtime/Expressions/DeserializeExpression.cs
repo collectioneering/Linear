@@ -61,7 +61,7 @@ public class DeserializeExpression : ExpressionDefinition
     private record DeserializeExpressionInstance(
         DeserializerStandardPropertiesInstance StandardPropertiesCompact,
         Dictionary<string, ExpressionInstance> DeserializerParamsCompact,
-        ExpressionInstance Source, IDeserializer Deserializer) : ExpressionInstance
+        ExpressionInstance Source, DeserializerInstance Deserializer) : ExpressionInstance
     {
         public override object Evaluate(StructureEvaluationContext context, Stream stream)
         {

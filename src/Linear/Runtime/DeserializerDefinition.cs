@@ -18,5 +18,5 @@ public abstract class DeserializerDefinition
     /// Gets deserializer instance.
     /// </summary>
     /// <returns>Deserializer.</returns>
-    public abstract IDeserializer GetInstance();
+    public abstract DeserializerInstance GetInstance();
 }
