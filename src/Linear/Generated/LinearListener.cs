@@ -469,17 +469,17 @@ public interface ILinearListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitExprOpShift([NotNull] LinearParser.ExprOpShiftContext context);
 	/// <summary>
-	/// Enter a parse tree produced by the <c>ExprOpCondAnd</c>
+	/// Enter a parse tree produced by the <c>ExprOpTernary</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterExprOpCondAnd([NotNull] LinearParser.ExprOpCondAndContext context);
+	void EnterExprOpTernary([NotNull] LinearParser.ExprOpTernaryContext context);
 	/// <summary>
-	/// Exit a parse tree produced by the <c>ExprOpCondAnd</c>
+	/// Exit a parse tree produced by the <c>ExprOpTernary</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitExprOpCondAnd([NotNull] LinearParser.ExprOpCondAndContext context);
+	void ExitExprOpTernary([NotNull] LinearParser.ExprOpTernaryContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>ExprOpCaret</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
@@ -492,6 +492,18 @@ public interface ILinearListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitExprOpCaret([NotNull] LinearParser.ExprOpCaretContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>ExprOpCondAnd</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterExprOpCondAnd([NotNull] LinearParser.ExprOpCondAndContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>ExprOpCondAnd</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitExprOpCondAnd([NotNull] LinearParser.ExprOpCondAndContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>ExprMember</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.

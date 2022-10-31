@@ -554,19 +554,19 @@ public partial class LinearBaseListener : ILinearListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitExprOpShift([NotNull] LinearParser.ExprOpShiftContext context) { }
 	/// <summary>
-	/// Enter a parse tree produced by the <c>ExprOpCondAnd</c>
+	/// Enter a parse tree produced by the <c>ExprOpTernary</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterExprOpCondAnd([NotNull] LinearParser.ExprOpCondAndContext context) { }
+	public virtual void EnterExprOpTernary([NotNull] LinearParser.ExprOpTernaryContext context) { }
 	/// <summary>
-	/// Exit a parse tree produced by the <c>ExprOpCondAnd</c>
+	/// Exit a parse tree produced by the <c>ExprOpTernary</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitExprOpCondAnd([NotNull] LinearParser.ExprOpCondAndContext context) { }
+	public virtual void ExitExprOpTernary([NotNull] LinearParser.ExprOpTernaryContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by the <c>ExprOpCaret</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
@@ -581,6 +581,20 @@ public partial class LinearBaseListener : ILinearListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitExprOpCaret([NotNull] LinearParser.ExprOpCaretContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by the <c>ExprOpCondAnd</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterExprOpCondAnd([NotNull] LinearParser.ExprOpCondAndContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>ExprOpCondAnd</c>
+	/// labeled alternative in <see cref="LinearParser.expr"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitExprOpCondAnd([NotNull] LinearParser.ExprOpCondAndContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by the <c>ExprMember</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
