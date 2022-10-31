@@ -91,6 +91,16 @@ public interface ILinearListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitStruct_statement_define_lambda([NotNull] LinearParser.Struct_statement_define_lambdaContext context);
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="LinearParser.struct_statement_discard"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterStruct_statement_discard([NotNull] LinearParser.Struct_statement_discardContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="LinearParser.struct_statement_discard"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitStruct_statement_discard([NotNull] LinearParser.Struct_statement_discardContext context);
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="LinearParser.struct_statement_call"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -210,6 +220,26 @@ public interface ILinearListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitTerm_replacement_u([NotNull] LinearParser.Term_replacement_uContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="LinearParser.term_literal_true"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterTerm_literal_true([NotNull] LinearParser.Term_literal_trueContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="LinearParser.term_literal_true"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitTerm_literal_true([NotNull] LinearParser.Term_literal_trueContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="LinearParser.term_literal_false"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterTerm_literal_false([NotNull] LinearParser.Term_literal_falseContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="LinearParser.term_literal_false"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitTerm_literal_false([NotNull] LinearParser.Term_literal_falseContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>ExprMethodCall</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
@@ -538,6 +568,30 @@ public interface ILinearListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitTermRepU([NotNull] LinearParser.TermRepUContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>TermLiteralTrue</c>
+	/// labeled alternative in <see cref="LinearParser.term"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterTermLiteralTrue([NotNull] LinearParser.TermLiteralTrueContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>TermLiteralTrue</c>
+	/// labeled alternative in <see cref="LinearParser.term"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitTermLiteralTrue([NotNull] LinearParser.TermLiteralTrueContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>TermLiteralFalse</c>
+	/// labeled alternative in <see cref="LinearParser.term"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterTermLiteralFalse([NotNull] LinearParser.TermLiteralFalseContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>TermLiteralFalse</c>
+	/// labeled alternative in <see cref="LinearParser.term"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitTermLiteralFalse([NotNull] LinearParser.TermLiteralFalseContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>TermIdentifier</c>
 	/// labeled alternative in <see cref="LinearParser.term"/>.

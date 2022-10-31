@@ -31,19 +31,22 @@ public class MethodCallElement : Element
 
     private record MethodCallElementInitializer(ExpressionInstance Expression) : ElementInitializer
     {
-        public override void Initialize(StructureEvaluationContext context, Stream stream)
+        public override ElementInitializeResult Initialize(StructureEvaluationContext context, Stream stream)
         {
             Expression.Evaluate(context, stream);
+            return ElementInitializeResult.Default;
         }
 
-        public override void Initialize(StructureEvaluationContext context, ReadOnlyMemory<byte> memory)
+        public override ElementInitializeResult Initialize(StructureEvaluationContext context, ReadOnlyMemory<byte> memory)
         {
             Expression.Evaluate(context, memory);
+            return ElementInitializeResult.Default;
         }
 
-        public override void Initialize(StructureEvaluationContext context, ReadOnlySpan<byte> span)
+        public override ElementInitializeResult Initialize(StructureEvaluationContext context, ReadOnlySpan<byte> span)
         {
             Expression.Evaluate(context, span);
+            return ElementInitializeResult.Default;
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Linear.Runtime.Elements;
 
 namespace Linear.Runtime;
 
@@ -47,12 +48,29 @@ public class StructureDefinition
         // Build members after organizing by dependencies
         while (sub.Count > 0)
         {
-            int removed = sub.RemoveAll(e =>
+            // Discards require that all following elements are gated behind them, so limit processing until discard comes first
+            // If first remaining is a discard, remove that
+            var v0 = sub[0];
+            if (v0.Element is DiscardElement)
             {
-                bool noDeps = !e.Element.GetDependencies(this).Intersect(sub.Select(x => x.Element)).Any();
-                if (noDeps) members.Add(new StructureMember(e.Name, e.Element.GetInitializer()));
-                return noDeps;
-            });
+                members.Add(new StructureMember(v0.Name, v0.Element.GetInitializer()));
+                sub.RemoveAt(0);
+            }
+            int discardIndex = sub.FindIndex(v => v.Element is DiscardElement);
+            // Remove everything before first remaining discard
+            int removed = 0;
+            for (int i = 0; i < sub.Count && (discardIndex == -1 || i < discardIndex); i++)
+            {
+                var e = sub[i];
+                bool remove = !e.Element.GetDependencies(this).Intersect(sub.Select(x => x.Element)).Any();
+                if (remove)
+                {
+                    members.Add(new StructureMember(e.Name, e.Element.GetInitializer()));
+                    sub.RemoveAt(i);
+                    removed++;
+                    discardIndex--;
+                }
+            }
             if (removed == 0) throw new Exception("Failed to reduce dependencies");
         }
 

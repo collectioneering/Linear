@@ -32,19 +32,22 @@ public class LengthElement : Element
 
     private record LengthElementInitializer(ExpressionInstance Expression) : ElementInitializer
     {
-        public override void Initialize(StructureEvaluationContext context, Stream stream)
+        public override ElementInitializeResult Initialize(StructureEvaluationContext context, Stream stream)
         {
             context.Structure.Length = CastUtil.CastLong(Expression.Evaluate(context, stream));
+            return ElementInitializeResult.Default;
         }
 
-        public override void Initialize(StructureEvaluationContext context, ReadOnlyMemory<byte> memory)
+        public override ElementInitializeResult Initialize(StructureEvaluationContext context, ReadOnlyMemory<byte> memory)
         {
             context.Structure.Length = CastUtil.CastLong(Expression.Evaluate(context, memory));
+            return ElementInitializeResult.Default;
         }
 
-        public override void Initialize(StructureEvaluationContext context, ReadOnlySpan<byte> span)
+        public override ElementInitializeResult Initialize(StructureEvaluationContext context, ReadOnlySpan<byte> span)
         {
             context.Structure.Length = CastUtil.CastLong(Expression.Evaluate(context, span));
+            return ElementInitializeResult.Default;
         }
     }
 }

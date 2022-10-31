@@ -16,4 +16,4 @@ public enum BinaryOperator
     Xor
 }
 
-// TODO rshift, urshift, lshift operators
+// TODO rshift, urshift, lshift, relational operators

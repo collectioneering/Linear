@@ -4,6 +4,15 @@ namespace Linear.Utility;
 
 internal static class CastUtil
 {
+    internal static bool CastBool(object? value)
+    {
+        return value switch
+        {
+            bool b => b,
+            _ => throw new InvalidCastException($"Could not cast from type {value?.GetType().FullName} to {typeof(bool)}")
+        };
+    }
+
     internal static byte CastByte(object? number)
     {
         return number switch
@@ -18,8 +27,7 @@ internal static class CastUtil
             long b => (byte)b,
             float b => (byte)b,
             double b => (byte)b,
-            _ => throw new InvalidCastException(
-                $"Could not cast from type {number?.GetType().FullName} to {typeof(long)}")
+            _ => throw new InvalidCastException($"Could not cast from type {number?.GetType().FullName} to {typeof(long)}")
         };
     }
 

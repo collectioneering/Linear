@@ -55,7 +55,7 @@ public class OutputElement : Element
     private record OutputElementInitializer(ExpressionInstance Format, ExpressionInstance Range, ExpressionInstance Name,
         Dictionary<string, ExpressionInstance>? ExporterParamsCompact) : ElementInitializer
     {
-        public override void Initialize(StructureEvaluationContext context, Stream stream)
+        public override ElementInitializeResult Initialize(StructureEvaluationContext context, Stream stream)
         {
             object? format = Format.Evaluate(context, stream);
             object? range = Range.Evaluate(context, stream);
@@ -69,9 +69,10 @@ public class OutputElement : Element
                 }
             }
             InitializeInternal(context, format, range, name, exporterParams);
+            return ElementInitializeResult.Default;
         }
 
-        public override void Initialize(StructureEvaluationContext context, ReadOnlyMemory<byte> memory)
+        public override ElementInitializeResult Initialize(StructureEvaluationContext context, ReadOnlyMemory<byte> memory)
         {
             object? format = Format.Evaluate(context, memory);
             object? range = Range.Evaluate(context, memory);
@@ -85,9 +86,10 @@ public class OutputElement : Element
                 }
             }
             InitializeInternal(context, format, range, name, exporterParams);
+            return ElementInitializeResult.Default;
         }
 
-        public override void Initialize(StructureEvaluationContext context, ReadOnlySpan<byte> span)
+        public override ElementInitializeResult Initialize(StructureEvaluationContext context, ReadOnlySpan<byte> span)
         {
             object? format = Format.Evaluate(context, span);
             object? range = Range.Evaluate(context, span);
@@ -101,6 +103,7 @@ public class OutputElement : Element
                 }
             }
             InitializeInternal(context, format, range, name, exporterParams);
+            return ElementInitializeResult.Default;
         }
 
         private static void InitializeInternal(StructureEvaluationContext context, object? format, object? range, object? name, Dictionary<string, object>? exporterParams)

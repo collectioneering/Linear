@@ -13,19 +13,22 @@ public abstract record ElementInitializer
     /// </summary>
     /// <param name="context">Structure evaluation context.</param>
     /// <param name="stream">Stream.</param>
-    public abstract void Initialize(StructureEvaluationContext context, Stream stream);
+    /// <returns>Initialization result.</returns>
+    public abstract ElementInitializeResult Initialize(StructureEvaluationContext context, Stream stream);
 
     /// <summary>
     /// Initializes element.
     /// </summary>
     /// <param name="context">Structure evaluation context.</param>
     /// <param name="memory">Memory.</param>
-    public abstract void Initialize(StructureEvaluationContext context, ReadOnlyMemory<byte> memory);
+    /// <returns>Initialization result.</returns>
+    public abstract ElementInitializeResult Initialize(StructureEvaluationContext context, ReadOnlyMemory<byte> memory);
 
     /// <summary>
     /// Initializes element.
     /// </summary>
     /// <param name="context">Structure evaluation context.</param>
     /// <param name="span">Span.</param>
-    public abstract void Initialize(StructureEvaluationContext context, ReadOnlySpan<byte> span);
+    /// <returns>Initialization result.</returns>
+    public abstract ElementInitializeResult Initialize(StructureEvaluationContext context, ReadOnlySpan<byte> span);
 }

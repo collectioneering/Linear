@@ -1,25 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Linear.Utility;
 
 namespace Linear.Runtime.Elements;
 
 /// <summary>
-/// Element defining lambda.
+/// Element that triggers stopping initialization of later elements.
 /// </summary>
-public class LambdaElement : Element
+public class DiscardElement : Element
 {
-    private readonly string _name;
     private readonly ExpressionDefinition _expression;
 
     /// <summary>
-    /// Create new instance of <see cref="ValueElement"/>
+    /// Initializes an instance of <see cref="MethodCallElement"/>.
     /// </summary>
-    /// <param name="name">Name of element</param>
-    /// <param name="expression">Value definition</param>
-    public LambdaElement(string name, ExpressionDefinition expression)
+    /// <param name="expression">Evaluation expression definition.</param>
+    public DiscardElement(ExpressionDefinition expression)
     {
-        _name = name;
         _expression = expression;
     }
 
@@ -29,27 +27,27 @@ public class LambdaElement : Element
     /// <inheritdoc />
     public override ElementInitializer GetInitializer()
     {
-        return new LambdaElementInitializer(_expression.GetInstance(), _name);
+        return new MethodCallElementInitializer(_expression.GetInstance());
     }
 
-    private record LambdaElementInitializer(ExpressionInstance Expression, string Name) : ElementInitializer
+    private record MethodCallElementInitializer(ExpressionInstance Expression) : ElementInitializer
     {
         public override ElementInitializeResult Initialize(StructureEvaluationContext context, Stream stream)
         {
-            context.Structure.SetMember(Name, Expression);
-            return ElementInitializeResult.Default;
+            bool discard = CastUtil.CastBool(Expression.Evaluate(context, stream));
+            return new ElementInitializeResult(discard);
         }
 
         public override ElementInitializeResult Initialize(StructureEvaluationContext context, ReadOnlyMemory<byte> memory)
         {
-            context.Structure.SetMember(Name, Expression);
-            return ElementInitializeResult.Default;
+            bool discard = CastUtil.CastBool(Expression.Evaluate(context, memory));
+            return new ElementInitializeResult(discard);
         }
 
         public override ElementInitializeResult Initialize(StructureEvaluationContext context, ReadOnlySpan<byte> span)
         {
-            context.Structure.SetMember(Name, Expression);
-            return ElementInitializeResult.Default;
+            bool discard = CastUtil.CastBool(Expression.Evaluate(context, span));
+            return new ElementInitializeResult(discard);
         }
     }
 }

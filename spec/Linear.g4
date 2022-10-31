@@ -13,6 +13,7 @@ struct:
 struct_statement:
 	struct_statement_define
 	| struct_statement_define_lambda
+	| struct_statement_discard
 	| struct_statement_call
 	| struct_statement_length
 //	| struct_statement_define_value
@@ -34,6 +35,9 @@ struct_statement_define_lambda:
 //struct_statement_define_value:
 	//	'value' WS IDENTIFIER WS IDENTIFIER WS expr WS? ENDL;
 //	'$value' WS IDENTIFIER WS expr WS? ENDL;
+
+// call evalExpr;
+struct_statement_discard: '$discard' WS expr WS? ENDL;
 
 // call methodExpr;
 struct_statement_call: '$call' WS expr WS? ENDL;
@@ -68,6 +72,8 @@ term_replacement_a: '$a';
 term_replacement_i: '$i';
 term_replacement_p: '$p' | '$parent';
 term_replacement_u: '$u' | '$unique';
+term_literal_true: 'true';
+term_literal_false: 'false';
 expr:
 	IDENTIFIER WS? '(' WS? expr? WS? (',' WS? expr WS?)* ')'		# ExprMethodCall
 	| '$$' IDENTIFIER												# ExprLambdaReplacement
@@ -115,6 +121,8 @@ term:
 	| term_replacement_i	# TermRepI
 	| term_replacement_p	# TermRepP
 	| term_replacement_u	# TermRepU
+	| term_literal_true		# TermLiteralTrue
+	| term_literal_false	# TermLiteralFalse
 	| IDENTIFIER			# TermIdentifier
 	| INTEGER_LITERAL		# TermInt
 	| HEX_INTEGER_LITERAL	# TermHex

@@ -101,6 +101,13 @@ namespace Linear.Runtime
         }
 
         /// <summary>
+        /// Checks if structure contains specified named member.
+        /// </summary>
+        /// <param name="member">Member name.</param>
+        /// <returns>True if member exists.</returns>
+        public bool Contains(string member) => _members.ContainsKey(member);
+
+        /// <summary>
         /// Get named member
         /// </summary>
         /// <param name="member">Member name</param>
