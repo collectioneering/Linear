@@ -121,7 +121,6 @@ internal class LinearListener : LinearBaseListener
         ITerminalNode[] ids = context.IDENTIFIER();
         string typeName = ids[0].GetText();
         string dataName = ids[1].GetText();
-        (int size, bool littleEndian) = StringToPrimitiveInfo(typeName);
         DeserializerDefinition? deserializer = StringToDeserializer(typeName, context);
         var propGroup = GetPropertyGroup(context.property_group());
         if (!_currentNames.Add(dataName))
@@ -145,13 +144,12 @@ internal class LinearListener : LinearBaseListener
         {
             return;
         }
-        DeserializerStandardProperties standardProperties = new(LittleEndian: size != 0 ? new ConstantExpression<bool>(littleEndian) : null);
         // "Should" add some other way for length instead of routing through a dictionary...
         // "Should" add efficient primitive array deserialization...
         string genNameArrayLength = $"${dataName}_g_array_length_{Guid.NewGuid():N}";
         Element dataElementArrayLength = new ValueElement(genNameArrayLength, countExpression);
         _currentDefinition!.Members.Add(new StructureDefinitionMember(genNameArrayLength, dataElementArrayLength));
-        Element dataElement = new ValueElement(dataName, new DeserializeExpression(offsetExpression, new ArrayDeserializerDefinition(deserializer, new MemberExpression(genNameArrayLength)), standardProperties, propGroup));
+        Element dataElement = new ValueElement(dataName, new DeserializeExpression(offsetExpression, new ArrayDeserializerDefinition(deserializer, new MemberExpression(genNameArrayLength)), propGroup));
         _currentDefinition!.Members.Add(new StructureDefinitionMember(dataName, dataElement));
     }
 
@@ -198,25 +196,23 @@ internal class LinearListener : LinearBaseListener
         {
             return;
         }
-        (int size, bool littleEndian) = StringToPrimitiveInfo(typeName);
         bool lenFinder = context.PLUS() != null;
         // TODO move expressions to specific definitions
         var arrayLength = lenFinder
             ? new OperatorDualExpression(countExpression, new ConstantExpression<int>(1), BinaryOperator.Add)
             : countExpression;
-        DeserializerStandardProperties standardProperties = new(size != 0 ? new ConstantExpression<bool>(littleEndian) : null);
         string genNameArrayLength = $"${dataName}_g_array_length_{Guid.NewGuid():N}";
         Element dataElementArrayLength = new ValueElement(genNameArrayLength, arrayLength);
         _currentDefinition!.Members.Add(new StructureDefinitionMember(genNameArrayLength, dataElementArrayLength));
         ArrayDeserializerDefinition arrayDeserializer = new(deserializer, new MemberExpression(genNameArrayLength));
-        var arrayExpression = new DeserializeExpression(offsetExpression, arrayDeserializer, standardProperties, propGroup);
+        var arrayExpression = new DeserializeExpression(offsetExpression, arrayDeserializer, propGroup);
         string genNameArray = $"${dataName}_g_array_{Guid.NewGuid():N}";
         Element dataElementArray = new ValueElement(genNameArray, arrayExpression);
         _currentDefinition!.Members.Add(new StructureDefinitionMember(genNameArray, dataElementArray));
         string genNamePointerArrayLength = $"${dataName}_g_pointer_array_length_{Guid.NewGuid():N}";
         Element dataElementPointerArrayLength = new ValueElement(genNamePointerArrayLength, countExpression);
         _currentDefinition!.Members.Add(new StructureDefinitionMember(genNamePointerArrayLength, dataElementPointerArrayLength));
-        Element dataElement = new ValueElement(dataName, new DeserializeExpression(pointerOffsetExpression, new PointerArrayDeserializerDefinition(new MemberExpression(genNameArray), new MemberExpression(genNamePointerArrayLength), targetDeserializer, lenFinder), standardProperties, propGroup));
+        Element dataElement = new ValueElement(dataName, new DeserializeExpression(pointerOffsetExpression, new PointerArrayDeserializerDefinition(new MemberExpression(genNameArray), new MemberExpression(genNamePointerArrayLength), targetDeserializer, lenFinder), propGroup));
         _currentDefinition!.Members.Add(new StructureDefinitionMember(dataName, dataElement));
     }
 
@@ -309,29 +305,6 @@ internal class LinearListener : LinearBaseListener
         return fail ? null : dict;
     }
 
-    private static (int size, bool littleEndian) StringToPrimitiveInfo(string identifier) => identifier switch
-    {
-        "byte" => (1, true),
-        "sbyte" => (1, true),
-        "ushort" => (2, true),
-        "short" => (2, true),
-        "uint" => (4, true),
-        "int" => (4, true),
-        "ulong" => (8, true),
-        "long" => (8, true),
-        "byteb" => (1, false),
-        "sbyteb" => (1, false),
-        "ushortb" => (2, false),
-        "shortb" => (2, false),
-        "uintb" => (4, false),
-        "intb" => (4, false),
-        "ulongb" => (8, false),
-        "longb" => (8, false),
-        "float" => (4, false),
-        "double" => (8, false),
-        _ => (0, false)
-    };
-
     private DeserializerDefinition? StringToDeserializer(string identifier, ParserRuleContext context)
     {
         if (_deserializers.TryGetValue(identifier, out DeserializerDefinition? deserializer))
@@ -386,11 +359,11 @@ internal class LinearListener : LinearBaseListener
             LinearParser.ExprTermContext exprTermContext => GetTerm(exprTermContext.term()),
             LinearParser.ExprDeserializeContext exprDeserializeContext =>
                 RequireNonNull(GetExpression(exprDeserializeContext.expr()), GetPropertyGroup(exprDeserializeContext.property_group()), out var e0, out var propGroup)
-                    ? GetDeserializeExpression(exprDeserializeContext.IDENTIFIER().GetText(), e0, new DeserializerStandardProperties(), propGroup, exprDeserializeContext)
+                    ? GetDeserializeExpression(exprDeserializeContext.IDENTIFIER().GetText(), e0, propGroup, exprDeserializeContext)
                     : null,
             LinearParser.ExprUnboundDeserializeContext exprUnboundDeserializeContext =>
                 RequireNonNull(GetActiveType(activeType, nameof(DeserializeExpression), exprUnboundDeserializeContext), GetExpression(exprUnboundDeserializeContext.expr()), GetPropertyGroup(exprUnboundDeserializeContext.property_group()), out var name, out var e0, out var propGroup)
-                    ? GetDeserializeExpression(name, e0, new DeserializerStandardProperties(), propGroup, exprUnboundDeserializeContext)
+                    ? GetDeserializeExpression(name, e0, propGroup, exprUnboundDeserializeContext)
                     : null,
             LinearParser.ExprUnOpContext exprUnOpContext => GetExpression(exprUnOpContext.expr()) is { } e0 ? new OperatorUnaryExpression(e0, OperatorUnaryExpression.GetOperator(exprUnOpContext.un_op().GetText())) : null,
             LinearParser.ExprWrappedContext exprWrappedContext => GetExpression(exprWrappedContext.expr()),
@@ -503,21 +476,14 @@ internal class LinearListener : LinearBaseListener
         return null;
     }
 
-    private ExpressionDefinition? GetDeserializeExpression(string typeName, ExpressionDefinition offsetDefinition,
-        DeserializerStandardProperties standardProperties, Dictionary<string, ExpressionDefinition> deserializerParams,
-        ParserRuleContext context)
+    private ExpressionDefinition? GetDeserializeExpression(string typeName, ExpressionDefinition offsetDefinition, Dictionary<string, ExpressionDefinition> deserializerParams, ParserRuleContext context)
     {
-        (int size, bool littleEndian) = StringToPrimitiveInfo(typeName);
-        if (size != 0)
-        {
-            standardProperties = standardProperties with { LittleEndian = new ConstantExpression<bool>(littleEndian) };
-        }
         DeserializerDefinition? deserializer = StringToDeserializer(typeName, context);
         if (deserializer == null)
         {
             return null;
         }
-        return new DeserializeExpression(offsetDefinition, deserializer, standardProperties, deserializerParams);
+        return new DeserializeExpression(offsetDefinition, deserializer, deserializerParams);
     }
 
     private static ExpressionDefinition GetTerm(LinearParser.TermContext context)

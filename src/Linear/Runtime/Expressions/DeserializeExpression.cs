@@ -14,7 +14,6 @@ public class DeserializeExpression : ExpressionDefinition
 {
     private readonly ExpressionDefinition _offsetDefinition;
     private readonly DeserializerDefinition _deserializer;
-    private readonly DeserializerStandardProperties _standardProperties;
     private readonly Dictionary<string, ExpressionDefinition> _deserializerParams;
 
     /// <summary>
@@ -23,13 +22,10 @@ public class DeserializeExpression : ExpressionDefinition
     /// <param name="offsetDefinition">Offset value definition.</param>
     /// <param name="deserializer">Custom deserializer.</param>
     /// <param name="deserializerParams">Deserializer parameters.</param>
-    /// <param name="standardProperties">Standard property expressions.</param>
-    public DeserializeExpression(ExpressionDefinition offsetDefinition, DeserializerDefinition deserializer,
-        DeserializerStandardProperties standardProperties, Dictionary<string, ExpressionDefinition> deserializerParams)
+    public DeserializeExpression(ExpressionDefinition offsetDefinition, DeserializerDefinition deserializer, Dictionary<string, ExpressionDefinition> deserializerParams)
     {
         _offsetDefinition = offsetDefinition;
         _deserializer = deserializer;
-        _standardProperties = standardProperties;
         _deserializerParams = deserializerParams;
     }
 
@@ -38,30 +34,22 @@ public class DeserializeExpression : ExpressionDefinition
     {
         return _offsetDefinition.GetDependencies(definition)
             .Union(_deserializerParams.SelectMany(kvp => kvp.Value.GetDependencies(definition)))
-            .Union(_standardProperties.GetDependencies(definition))
             .Union(_deserializer.GetDependencies(definition));
     }
 
     /// <inheritdoc />
-    public override ExpressionInstance GetInstance() =>
-        CreateDelegate(_offsetDefinition, _deserializer, _standardProperties, _deserializerParams);
+    public override ExpressionInstance GetInstance() => CreateDelegate(_offsetDefinition, _deserializer, _deserializerParams);
 
-    internal static ExpressionInstance CreateDelegate(
-        ExpressionDefinition offsetDefinition, DeserializerDefinition deserializer,
-        DeserializerStandardProperties standardProperties,
-        Dictionary<string, ExpressionDefinition> deserializerParams)
+    internal static ExpressionInstance CreateDelegate(ExpressionDefinition offsetDefinition, DeserializerDefinition deserializer, Dictionary<string, ExpressionDefinition> deserializerParams)
     {
         ExpressionInstance srcDelegate = offsetDefinition.GetInstance();
         Dictionary<string, ExpressionInstance> deserializerParamsCompact = new();
         foreach (var kvp in deserializerParams)
             deserializerParamsCompact[kvp.Key] = kvp.Value.GetInstance();
-        return new DeserializeExpressionInstance(standardProperties.ToInstance(), deserializerParamsCompact, srcDelegate, deserializer.GetInstance());
+        return new DeserializeExpressionInstance(deserializerParamsCompact, srcDelegate, deserializer.GetInstance());
     }
 
-    private record DeserializeExpressionInstance(
-        DeserializerStandardPropertiesInstance StandardPropertiesCompact,
-        Dictionary<string, ExpressionInstance> DeserializerParamsCompact,
-        ExpressionInstance Source, DeserializerInstance Deserializer) : ExpressionInstance
+    private record DeserializeExpressionInstance(Dictionary<string, ExpressionInstance> DeserializerParamsCompact, ExpressionInstance Source, DeserializerInstance Deserializer) : ExpressionInstance
     {
         public override object Evaluate(StructureEvaluationContext context, Stream stream)
         {
@@ -70,7 +58,6 @@ public class DeserializeExpression : ExpressionDefinition
                 foreach (var kvp in DeserializerParamsCompact)
                     deserializerParamsGen[kvp.Key] = kvp.Value.Evaluate(context, stream) ?? throw new NullReferenceException();
             var deserializerContext = new DeserializerContext(context.Structure, deserializerParamsGen);
-            deserializerContext = StandardPropertiesCompact.Augment(deserializerContext, context, stream);
             object? source = Source.Evaluate(context, stream);
             if (source is SourceWithOffset swo)
             {
@@ -97,7 +84,6 @@ public class DeserializeExpression : ExpressionDefinition
                 foreach (var kvp in DeserializerParamsCompact)
                     deserializerParamsGen[kvp.Key] = kvp.Value.Evaluate(context, memory) ?? throw new NullReferenceException();
             var deserializerContext = new DeserializerContext(context.Structure, deserializerParamsGen);
-            deserializerContext = StandardPropertiesCompact.Augment(deserializerContext, context, memory);
             object? source = Source.Evaluate(context, memory);
             if (source is SourceWithOffset swo)
             {
@@ -124,7 +110,6 @@ public class DeserializeExpression : ExpressionDefinition
                 foreach (var kvp in DeserializerParamsCompact)
                     deserializerParamsGen[kvp.Key] = kvp.Value.Evaluate(context, span) ?? throw new NullReferenceException();
             var deserializerContext = new DeserializerContext(context.Structure, deserializerParamsGen);
-            deserializerContext = StandardPropertiesCompact.Augment(deserializerContext, context, span);
             object? source = Source.Evaluate(context, span);
             if (source is SourceWithOffset swo)
             {

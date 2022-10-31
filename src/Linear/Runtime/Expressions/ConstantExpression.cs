@@ -6,9 +6,18 @@ using System.Linq;
 namespace Linear.Runtime.Expressions;
 
 /// <summary>
+/// Constant expression.
+/// </summary>
+public abstract class ConstantExpression : ExpressionDefinition
+{
+    /// <inheritdoc />
+    public sealed override IEnumerable<Element> GetDependencies(StructureDefinition definition) => Enumerable.Empty<Element>();
+}
+
+/// <summary>
 /// Constant expression
 /// </summary>
-public class ConstantExpression<T> : ExpressionDefinition
+public class ConstantExpression<T> : ConstantExpression
 {
     private readonly T _value;
 
@@ -20,9 +29,6 @@ public class ConstantExpression<T> : ExpressionDefinition
     {
         _value = value;
     }
-
-    /// <inheritdoc />
-    public override IEnumerable<Element> GetDependencies(StructureDefinition definition) => Enumerable.Empty<Element>();
 
     /// <inheritdoc />
     public override ExpressionInstance GetInstance() => new ConstantExpressionInstance(_value);

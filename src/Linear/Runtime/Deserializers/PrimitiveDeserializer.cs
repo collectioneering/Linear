@@ -12,15 +12,18 @@ namespace Linear.Runtime.Deserializers;
 /// </summary>
 public class PrimitiveDeserializerDefinition : DeserializerDefinition
 {
+    private readonly bool _littleEndian;
     private readonly Type _type;
 
     /// <summary>
     /// Initializes an instance of <see cref="PrimitiveDeserializerDefinition"/>.
     /// </summary>
     /// <param name="type">Target type.</param>
-    public PrimitiveDeserializerDefinition(Type type)
+    /// <param name="littleEndian">Little-endian.</param>
+    public PrimitiveDeserializerDefinition(Type type, bool littleEndian)
     {
         _type = type;
+        _littleEndian = littleEndian;
     }
 
     /// <inheritdoc />
@@ -32,7 +35,7 @@ public class PrimitiveDeserializerDefinition : DeserializerDefinition
     /// <inheritdoc />
     public override DeserializerInstance GetInstance()
     {
-        return new PrimitiveDeserializer(_type);
+        return new PrimitiveDeserializer(_type, _littleEndian);
     }
 }
 
@@ -41,15 +44,18 @@ public class PrimitiveDeserializerDefinition : DeserializerDefinition
 /// </summary>
 public class PrimitiveDeserializer : DeserializerInstance
 {
+    private readonly bool _littleEndian;
     private readonly Type _type;
 
     /// <summary>
     /// Initializes an instance of <see cref="PrimitiveDeserializer"/>.
     /// </summary>
     /// <param name="type">Target type.</param>
-    public PrimitiveDeserializer(Type type)
+    /// <param name="littleEndian">Little-endian.</param>
+    public PrimitiveDeserializer(Type type, bool littleEndian)
     {
         _type = type;
+        _littleEndian = littleEndian;
     }
 
     /// <inheritdoc />
@@ -64,22 +70,22 @@ public class PrimitiveDeserializer : DeserializerInstance
         {
             TypeCode.Boolean => new DeserializeResult(PrimitiveUtil.ReadBool(stream, offset), 1),
             TypeCode.Byte => new DeserializeResult(PrimitiveUtil.ReadU8(stream, offset), 1),
-            TypeCode.Char => new DeserializeResult(PrimitiveUtil.ReadU16(stream, offset, ExtractLittleEndianOrThrow(context)), 2),
+            TypeCode.Char => new DeserializeResult(PrimitiveUtil.ReadU16(stream, offset, _littleEndian), 2),
             TypeCode.DateTime => throw new NotSupportedException(),
             TypeCode.DBNull => throw new NotSupportedException(),
             TypeCode.Decimal => throw new NotSupportedException(),
             TypeCode.Double => new DeserializeResult(PrimitiveUtil.ReadDouble(stream, offset), 8),
             TypeCode.Empty => throw new NullReferenceException(),
-            TypeCode.Int16 => new DeserializeResult(PrimitiveUtil.ReadS16(stream, offset, ExtractLittleEndianOrThrow(context)), 2),
-            TypeCode.Int32 => new DeserializeResult(PrimitiveUtil.ReadS32(stream, offset, ExtractLittleEndianOrThrow(context)), 4),
-            TypeCode.Int64 => new DeserializeResult(PrimitiveUtil.ReadS64(stream, offset, ExtractLittleEndianOrThrow(context)), 8),
+            TypeCode.Int16 => new DeserializeResult(PrimitiveUtil.ReadS16(stream, offset, _littleEndian), 2),
+            TypeCode.Int32 => new DeserializeResult(PrimitiveUtil.ReadS32(stream, offset, _littleEndian), 4),
+            TypeCode.Int64 => new DeserializeResult(PrimitiveUtil.ReadS64(stream, offset, _littleEndian), 8),
             TypeCode.Object => throw new NotSupportedException(), // Not supporting direct
             TypeCode.SByte => new DeserializeResult(PrimitiveUtil.ReadS8(stream, offset), 1),
             TypeCode.Single => new DeserializeResult(PrimitiveUtil.ReadSingle(stream, offset), 4),
             TypeCode.String => throw new NotSupportedException(), // Not supporting direct
-            TypeCode.UInt16 => new DeserializeResult(PrimitiveUtil.ReadU16(stream, offset, ExtractLittleEndianOrThrow(context)), 2),
-            TypeCode.UInt32 => new DeserializeResult(PrimitiveUtil.ReadU32(stream, offset, ExtractLittleEndianOrThrow(context)), 4),
-            TypeCode.UInt64 => new DeserializeResult(PrimitiveUtil.ReadU64(stream, offset, ExtractLittleEndianOrThrow(context)), 8),
+            TypeCode.UInt16 => new DeserializeResult(PrimitiveUtil.ReadU16(stream, offset, _littleEndian), 2),
+            TypeCode.UInt32 => new DeserializeResult(PrimitiveUtil.ReadU32(stream, offset, _littleEndian), 4),
+            TypeCode.UInt64 => new DeserializeResult(PrimitiveUtil.ReadU64(stream, offset, _littleEndian), 8),
             _ => throw new ArgumentOutOfRangeException()
         };
     }
@@ -99,28 +105,23 @@ public class PrimitiveDeserializer : DeserializerInstance
         {
             TypeCode.Boolean => new DeserializeResult(span[0] != 0, 1),
             TypeCode.Byte => new DeserializeResult(span[0], 1),
-            TypeCode.Char => new DeserializeResult(Processor.GetU16(span, ExtractLittleEndianOrThrow(context)), 2),
+            TypeCode.Char => new DeserializeResult(Processor.GetU16(span, _littleEndian), 2),
             TypeCode.DateTime => throw new NotSupportedException(),
             TypeCode.DBNull => throw new NotSupportedException(),
             TypeCode.Decimal => throw new NotSupportedException(),
             TypeCode.Double => new DeserializeResult(Processor.GetDouble(span), 8),
             TypeCode.Empty => throw new NullReferenceException(),
-            TypeCode.Int16 => new DeserializeResult(Processor.GetS16(span, ExtractLittleEndianOrThrow(context)), 2),
-            TypeCode.Int32 => new DeserializeResult(Processor.GetS32(span, ExtractLittleEndianOrThrow(context)), 4),
-            TypeCode.Int64 => new DeserializeResult(Processor.GetS64(span, ExtractLittleEndianOrThrow(context)), 8),
+            TypeCode.Int16 => new DeserializeResult(Processor.GetS16(span, _littleEndian), 2),
+            TypeCode.Int32 => new DeserializeResult(Processor.GetS32(span, _littleEndian), 4),
+            TypeCode.Int64 => new DeserializeResult(Processor.GetS64(span, _littleEndian), 8),
             TypeCode.Object => throw new NotSupportedException(), // Not supporting direct
             TypeCode.SByte => new DeserializeResult((sbyte)span[0], 1),
             TypeCode.Single => new DeserializeResult(Processor.GetSingle(span), 4),
             TypeCode.String => throw new NotSupportedException(), // Not supporting direct
-            TypeCode.UInt16 => new DeserializeResult(Processor.GetU16(span, ExtractLittleEndianOrThrow(context)), 2),
-            TypeCode.UInt32 => new DeserializeResult(Processor.GetU32(span, ExtractLittleEndianOrThrow(context)), 4),
-            TypeCode.UInt64 => new DeserializeResult(Processor.GetU64(span, ExtractLittleEndianOrThrow(context)), 8),
+            TypeCode.UInt16 => new DeserializeResult(Processor.GetU16(span, _littleEndian), 2),
+            TypeCode.UInt32 => new DeserializeResult(Processor.GetU32(span, _littleEndian), 4),
+            TypeCode.UInt64 => new DeserializeResult(Processor.GetU64(span, _littleEndian), 8),
             _ => throw new ArgumentOutOfRangeException()
         };
-    }
-
-    private bool ExtractLittleEndianOrThrow(in DeserializerContext context)
-    {
-        return context.LittleEndian ?? throw new InvalidOperationException("Endianness not specified for deserializer");
     }
 }
