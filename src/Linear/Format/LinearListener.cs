@@ -146,11 +146,10 @@ internal class LinearListener : LinearBaseListener
         {
             return;
         }
-        Dictionary<StandardProperty, ExpressionDefinition> standardProperties = new();
-        standardProperties.Add(StandardProperty.ArrayLengthProperty, countExpression);
+        DeserializerStandardProperties standardProperties = new DeserializerStandardProperties(ArrayLength: countExpression);
         // "Should" add some other way for length instead of routing through a dictionary...
         // "Should" add efficient primitive array deserialization...
-        Element dataElement = new ValueElement(dataName, new DeserializeExpression(offsetExpression, littleEndianExpression, new ArrayDeserializer(deserializer), propGroup, standardProperties));
+        Element dataElement = new ValueElement(dataName, new DeserializeExpression(offsetExpression, littleEndianExpression, new ArrayDeserializer(deserializer), standardProperties, propGroup));
         _currentDefinition!.Members.Add(new StructureDefinitionMember(dataName, dataElement));
     }
 
@@ -199,18 +198,15 @@ internal class LinearListener : LinearBaseListener
         }
         (int _, bool littleEndian) = StringToPrimitiveInfo(typeName);
         ExpressionDefinition littleEndianExpression = new ConstantExpression<bool>(littleEndian);
-        Dictionary<StandardProperty, ExpressionDefinition> standardProperties = new();
         bool lenFinder = context.PLUS() != null;
-        standardProperties.Add(StandardProperty.ArrayLengthProperty,
-            lenFinder
-                ? new OperatorDualExpression(countExpression, new ConstantExpression<int>(1), BinaryOperator.Add)
-                : countExpression);
-        standardProperties.Add(StandardProperty.PointerOffsetProperty, pointerOffsetExpression);
-        standardProperties.Add(StandardProperty.PointerArrayLengthProperty, countExpression);
+        var arrayLength = lenFinder
+            ? new OperatorDualExpression(countExpression, new ConstantExpression<int>(1), BinaryOperator.Add)
+            : countExpression;
+        DeserializerStandardProperties standardProperties = new(arrayLength, countExpression, pointerOffsetExpression);
         ArrayDeserializer arrayDeserializer = new(deserializer);
         Element dataElement = new ValueElement(dataName,
             new DeserializeExpression(offsetExpression, littleEndianExpression,
-                new PointerArrayDeserializer(arrayDeserializer, targetDeserializer, lenFinder), propGroup, standardProperties));
+                new PointerArrayDeserializer(arrayDeserializer, targetDeserializer, lenFinder), standardProperties, propGroup));
         _currentDefinition!.Members.Add(new StructureDefinitionMember(dataName, dataElement));
     }
 
@@ -380,11 +376,11 @@ internal class LinearListener : LinearBaseListener
             LinearParser.ExprTermContext exprTermContext => GetTerm(exprTermContext.term()),
             LinearParser.ExprDeserializeContext exprDeserializeContext =>
                 RequireNonNull(GetExpression(exprDeserializeContext.expr()), GetPropertyGroup(exprDeserializeContext.property_group()), out var e0, out var propGroup)
-                    ? GetDeserializeExpression(exprDeserializeContext.IDENTIFIER().GetText(), e0, propGroup, new Dictionary<StandardProperty, ExpressionDefinition>(), exprDeserializeContext)
+                    ? GetDeserializeExpression(exprDeserializeContext.IDENTIFIER().GetText(), e0, new DeserializerStandardProperties(), propGroup, exprDeserializeContext)
                     : null,
             LinearParser.ExprUnboundDeserializeContext exprUnboundDeserializeContext =>
                 RequireNonNull(GetActiveType(activeType, nameof(DeserializeExpression), exprUnboundDeserializeContext), GetExpression(exprUnboundDeserializeContext.expr()), GetPropertyGroup(exprUnboundDeserializeContext.property_group()), out var name, out var e0, out var propGroup)
-                    ? GetDeserializeExpression(name, e0, propGroup, new Dictionary<StandardProperty, ExpressionDefinition>(), exprUnboundDeserializeContext)
+                    ? GetDeserializeExpression(name, e0, new DeserializerStandardProperties(), propGroup, exprUnboundDeserializeContext)
                     : null,
             LinearParser.ExprUnOpContext exprUnOpContext => GetExpression(exprUnOpContext.expr()) is { } e0 ? new OperatorUnaryExpression(e0, OperatorUnaryExpression.GetOperator(exprUnOpContext.un_op().GetText())) : null,
             LinearParser.ExprWrappedContext exprWrappedContext => GetExpression(exprWrappedContext.expr()),
@@ -498,8 +494,8 @@ internal class LinearListener : LinearBaseListener
     }
 
     private ExpressionDefinition? GetDeserializeExpression(string typeName, ExpressionDefinition offsetDefinition,
-        Dictionary<string, ExpressionDefinition> deserializerParams,
-        Dictionary<StandardProperty, ExpressionDefinition> standardProperties, ParserRuleContext context)
+        DeserializerStandardProperties standardProperties, Dictionary<string, ExpressionDefinition> deserializerParams,
+        ParserRuleContext context)
     {
         (int _, bool littleEndian) = StringToPrimitiveInfo(typeName);
         IDeserializer? deserializer = StringToDeserializer(typeName, context);
@@ -507,7 +503,7 @@ internal class LinearListener : LinearBaseListener
         {
             return null;
         }
-        return new DeserializeExpression(offsetDefinition, new ConstantExpression<bool>(littleEndian), deserializer, deserializerParams, standardProperties);
+        return new DeserializeExpression(offsetDefinition, new ConstantExpression<bool>(littleEndian), deserializer, standardProperties, deserializerParams);
     }
 
     private static ExpressionDefinition GetTerm(LinearParser.TermContext context)

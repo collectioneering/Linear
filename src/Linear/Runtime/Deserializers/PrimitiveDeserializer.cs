@@ -29,12 +29,11 @@ public class PrimitiveDeserializer : IDeserializer
     public Type GetTargetType() => _type;
 
     /// <inheritdoc />
-    public DeserializeResult Deserialize(StructureInstance instance, Stream stream,
-        long offset, bool littleEndian, Dictionary<StandardProperty, object>? standardProperties,
-        Dictionary<string, object>? parameters, long? length = null, int index = 0)
+    public DeserializeResult Deserialize(DeserializerContext context, Stream stream,
+        long offset, bool littleEndian, Dictionary<string, object>? parameters, long? length = null, int index = 0)
     {
         // Possible addition: property group support little endian (requires boolean expressions)
-        offset += instance.AbsoluteOffset;
+        offset += context.Structure.AbsoluteOffset;
         return Type.GetTypeCode(_type) switch
         {
             TypeCode.Boolean => new DeserializeResult(PrimitiveUtil.ReadBool(stream, offset), 1),
@@ -60,20 +59,18 @@ public class PrimitiveDeserializer : IDeserializer
     }
 
     /// <inheritdoc />
-    public DeserializeResult Deserialize(StructureInstance instance, ReadOnlyMemory<byte> memory,
-        long offset, bool littleEndian, Dictionary<StandardProperty, object>? standardProperties,
-        Dictionary<string, object>? parameters, long? length = null, int index = 0)
+    public DeserializeResult Deserialize(DeserializerContext context, ReadOnlyMemory<byte> memory,
+        long offset, bool littleEndian, Dictionary<string, object>? parameters, long? length = null, int index = 0)
     {
-        return Deserialize(instance, memory.Span, offset, littleEndian, standardProperties, parameters, length, index);
+        return Deserialize(context, memory.Span, offset, littleEndian, parameters, length, index);
     }
 
     /// <inheritdoc />
-    public DeserializeResult Deserialize(StructureInstance instance, ReadOnlySpan<byte> span,
-        long offset, bool littleEndian, Dictionary<StandardProperty, object>? standardProperties,
-        Dictionary<string, object>? parameters, long? length = null, int index = 0)
+    public DeserializeResult Deserialize(DeserializerContext context, ReadOnlySpan<byte> span,
+        long offset, bool littleEndian, Dictionary<string, object>? parameters, long? length = null, int index = 0)
     {
         // Possible addition: property group support little endian (requires boolean expressions)
-        LinearUtil.TrimStart(ref span, instance, offset);
+        LinearUtil.TrimStart(ref span, context.Structure, offset);
         return Type.GetTypeCode(_type) switch
         {
             TypeCode.Boolean => new DeserializeResult(span[0] != 0, 1),

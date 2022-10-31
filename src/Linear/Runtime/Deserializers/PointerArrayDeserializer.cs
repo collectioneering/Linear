@@ -38,25 +38,26 @@ public class PointerArrayDeserializer : IDeserializer
     public Type GetTargetType() => _type;
 
     // TODO support using SourceWithOffset for index array source and SourceWithOffset for target region
-    // TODO switch deserializers to having a specific deserializer context record to supply standard properties
 
     /// <inheritdoc />
-    public DeserializeResult Deserialize(StructureInstance instance, Stream stream,
-        long offset, bool littleEndian, Dictionary<StandardProperty, object>? standardProperties,
-        Dictionary<string, object>? parameters, long? length = null, int index = 0)
+    public DeserializeResult Deserialize(DeserializerContext context, Stream stream,
+        long offset, bool littleEndian, Dictionary<string, object>? parameters, long? length = null, int index = 0)
     {
-        if (standardProperties == null) throw new NullReferenceException();
-        (object src, _) = _mainDeserializer.Deserialize(instance, stream, offset, littleEndian, standardProperties, parameters);
+        (object src, _) = _mainDeserializer.Deserialize(context, stream, offset, littleEndian, parameters);
         Array baseArray = (Array)src;
-        int pointerArrayLength = CastInt(standardProperties[StandardProperty.PointerArrayLengthProperty]);
-        long pointerOffset = CastLong(standardProperties[StandardProperty.PointerOffsetProperty]);
+        int pointerArrayLength;
+        checked
+        {
+            pointerArrayLength = (int)(context.PointerArrayLength ?? throw new InvalidOperationException("No pointer array length specified"));
+        }
+        long pointerOffset = context.PointerOffset ?? throw new InvalidOperationException("No pointer offset specified");
         Array tarArray = Array.CreateInstance(_elementType, pointerArrayLength);
         long? curOffset = offset;
         for (int i = 0; i < pointerArrayLength; i++)
         {
             long vI = CastLong(baseArray.GetValue(i));
             long preElemLength = _lenFinder ? CastLong(baseArray.GetValue(i + 1)) - vI : 0;
-            (object value, long? elemLength) = _elementDeserializer.Deserialize(instance, stream, pointerOffset + vI, littleEndian, standardProperties, parameters, preElemLength, i);
+            (object value, long? elemLength) = _elementDeserializer.Deserialize(context, stream, pointerOffset + vI, littleEndian, parameters, preElemLength, i);
             tarArray.SetValue(value, i);
             if (curOffset is { } curOffsetValue)
             {
@@ -75,30 +76,60 @@ public class PointerArrayDeserializer : IDeserializer
     }
 
     /// <inheritdoc />
-    public DeserializeResult Deserialize(StructureInstance instance, ReadOnlyMemory<byte> memory,
-        long offset, bool littleEndian, Dictionary<StandardProperty, object>? standardProperties,
-        Dictionary<string, object>? parameters, long? length = null, int index = 0)
+    public DeserializeResult Deserialize(DeserializerContext context, ReadOnlyMemory<byte> memory,
+        long offset, bool littleEndian, Dictionary<string, object>? parameters, long? length = null, int index = 0)
     {
-        return Deserialize(instance, memory.Span, offset, littleEndian, standardProperties, parameters, length, index);
-    }
-
-    /// <inheritdoc />
-    public DeserializeResult Deserialize(StructureInstance instance, ReadOnlySpan<byte> span,
-        long offset, bool littleEndian, Dictionary<StandardProperty, object>? standardProperties,
-        Dictionary<string, object>? parameters, long? length = null, int index = 0)
-    {
-        if (standardProperties == null) throw new NullReferenceException();
-        (object src, _) = _mainDeserializer.Deserialize(instance, span, offset, littleEndian, standardProperties, parameters);
+        (object src, _) = _mainDeserializer.Deserialize(context, memory, offset, littleEndian, parameters);
         Array baseArray = (Array)src;
-        int pointerArrayLength = CastInt(standardProperties[StandardProperty.PointerArrayLengthProperty]);
-        long pointerOffset = CastLong(standardProperties[StandardProperty.PointerOffsetProperty]);
+        int pointerArrayLength;
+        checked
+        {
+            pointerArrayLength = (int)(context.PointerArrayLength ?? throw new InvalidOperationException("No pointer array length specified"));
+        }
+        long pointerOffset = context.PointerOffset ?? throw new InvalidOperationException("No pointer offset specified");
         Array tarArray = Array.CreateInstance(_elementType, pointerArrayLength);
         long? curOffset = offset;
         for (int i = 0; i < pointerArrayLength; i++)
         {
             long vI = CastLong(baseArray.GetValue(i));
             long preElemLength = _lenFinder ? CastLong(baseArray.GetValue(i + 1)) - vI : 0;
-            (object value, long? elemLength) = _elementDeserializer.Deserialize(instance, span, pointerOffset + vI, littleEndian, standardProperties, parameters, preElemLength, i);
+            (object value, long? elemLength) = _elementDeserializer.Deserialize(context, memory, pointerOffset + vI, littleEndian, parameters, preElemLength, i);
+            tarArray.SetValue(value, i);
+            if (curOffset is { } curOffsetValue)
+            {
+                if (elemLength is { } elemLengthValue)
+                {
+                    curOffset = curOffsetValue + elemLengthValue;
+                }
+                else
+                {
+                    curOffset = null;
+                }
+            }
+        }
+
+        return new DeserializeResult(tarArray, curOffset.HasValue ? curOffset.Value - offset : null);
+    }
+
+    /// <inheritdoc />
+    public DeserializeResult Deserialize(DeserializerContext context, ReadOnlySpan<byte> span,
+        long offset, bool littleEndian, Dictionary<string, object>? parameters, long? length = null, int index = 0)
+    {
+        (object src, _) = _mainDeserializer.Deserialize(context, span, offset, littleEndian, parameters);
+        Array baseArray = (Array)src;
+        int pointerArrayLength;
+        checked
+        {
+            pointerArrayLength = (int)(context.PointerArrayLength ?? throw new InvalidOperationException("No pointer array length specified"));
+        }
+        long pointerOffset = context.PointerOffset ?? throw new InvalidOperationException("No pointer offset specified");
+        Array tarArray = Array.CreateInstance(_elementType, pointerArrayLength);
+        long? curOffset = offset;
+        for (int i = 0; i < pointerArrayLength; i++)
+        {
+            long vI = CastLong(baseArray.GetValue(i));
+            long preElemLength = _lenFinder ? CastLong(baseArray.GetValue(i + 1)) - vI : 0;
+            (object value, long? elemLength) = _elementDeserializer.Deserialize(context, span, pointerOffset + vI, littleEndian, parameters, preElemLength, i);
             tarArray.SetValue(value, i);
             if (curOffset is { } curOffsetValue)
             {

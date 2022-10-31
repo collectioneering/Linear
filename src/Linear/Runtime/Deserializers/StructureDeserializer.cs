@@ -27,28 +27,26 @@ public class StructureDeserializer : IDeserializer
     public Type GetTargetType() => typeof(StructureInstance);
 
     /// <inheritdoc />
-    public DeserializeResult Deserialize(StructureInstance instance, Stream stream,
-        long offset, bool littleEndian, Dictionary<StandardProperty, object>? standardProperties,
-        Dictionary<string, object>? parameters, long? length = null, int index = 0)
+    public DeserializeResult Deserialize(DeserializerContext context, Stream stream,
+        long offset, bool littleEndian, Dictionary<string, object>? parameters, long? length = null, int index = 0)
     {
-        StructureInstance i = instance.Registry[_name].Parse(instance.Registry, stream, new ParseState(_name, offset, instance, length, index));
+        StructureInstance i = context.Structure.Registry[_name].Parse(context.Structure.Registry, stream, new ParseState(_name, offset, context.Structure, length, index));
         return new DeserializeResult(i, i.Length);
     }
 
     /// <inheritdoc />
-    public DeserializeResult Deserialize(StructureInstance instance, ReadOnlyMemory<byte> memory,
-        long offset, bool littleEndian, Dictionary<StandardProperty, object>? standardProperties,
-        Dictionary<string, object>? parameters, long? length = null, int index = 0)
+    public DeserializeResult Deserialize(DeserializerContext context, ReadOnlyMemory<byte> memory,
+        long offset, bool littleEndian, Dictionary<string, object>? parameters, long? length = null, int index = 0)
     {
-        return Deserialize(instance, memory.Span, offset, littleEndian, standardProperties, parameters, length, index);
+        StructureInstance i = context.Structure.Registry[_name].Parse(context.Structure.Registry, memory, new ParseState(_name, offset, context.Structure, length, index));
+        return new DeserializeResult(i, i.Length);
     }
 
     /// <inheritdoc />
-    public DeserializeResult Deserialize(StructureInstance instance, ReadOnlySpan<byte> span,
-        long offset, bool littleEndian, Dictionary<StandardProperty, object>? standardProperties,
-        Dictionary<string, object>? parameters, long? length = null, int index = 0)
+    public DeserializeResult Deserialize(DeserializerContext context, ReadOnlySpan<byte> span,
+        long offset, bool littleEndian, Dictionary<string, object>? parameters, long? length = null, int index = 0)
     {
-        StructureInstance i = instance.Registry[_name].Parse(instance.Registry, span, new ParseState(_name, offset, instance, length, index));
+        StructureInstance i = context.Structure.Registry[_name].Parse(context.Structure.Registry, span, new ParseState(_name, offset, context.Structure, length, index));
         return new DeserializeResult(i, i.Length);
     }
 }

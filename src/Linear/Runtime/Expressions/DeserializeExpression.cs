@@ -15,8 +15,8 @@ public class DeserializeExpression : ExpressionDefinition
     private readonly ExpressionDefinition _offsetDefinition;
     private readonly ExpressionDefinition _littleEndianDefinition;
     private readonly IDeserializer _deserializer;
+    private readonly DeserializerStandardProperties _standardProperties;
     private readonly Dictionary<string, ExpressionDefinition> _deserializerParams;
-    private readonly Dictionary<StandardProperty, ExpressionDefinition> _standardProperties;
 
     /// <summary>
     /// Create new instance of <see cref="DeserializeExpression"/>
@@ -27,14 +27,13 @@ public class DeserializeExpression : ExpressionDefinition
     /// <param name="deserializerParams">Deserializer parameters</param>
     /// <param name="standardProperties">Standard property expressions</param>
     public DeserializeExpression(ExpressionDefinition offsetDefinition, ExpressionDefinition littleEndianDefinition,
-        IDeserializer deserializer, Dictionary<string, ExpressionDefinition> deserializerParams,
-        Dictionary<StandardProperty, ExpressionDefinition> standardProperties)
+        IDeserializer deserializer, DeserializerStandardProperties standardProperties, Dictionary<string, ExpressionDefinition> deserializerParams)
     {
         _offsetDefinition = offsetDefinition;
         _littleEndianDefinition = littleEndianDefinition;
         _deserializer = deserializer;
-        _deserializerParams = deserializerParams;
         _standardProperties = standardProperties;
+        _deserializerParams = deserializerParams;
     }
 
     /// <inheritdoc />
@@ -43,34 +42,30 @@ public class DeserializeExpression : ExpressionDefinition
         return _offsetDefinition.GetDependencies(definition)
             .Union(_littleEndianDefinition.GetDependencies(definition))
             .Union(_deserializerParams.SelectMany(kvp => kvp.Value.GetDependencies(definition)))
-            .Union(_standardProperties.SelectMany(kvp => kvp.Value.GetDependencies(definition)));
+            .Union(_standardProperties.GetDependencies(definition));
     }
 
     /// <inheritdoc />
     public override ExpressionInstance GetInstance() =>
-        CreateDelegate(_offsetDefinition, _littleEndianDefinition, _deserializer, _deserializerParams, _standardProperties);
+        CreateDelegate(_offsetDefinition, _littleEndianDefinition, _deserializer, _standardProperties, _deserializerParams);
 
     internal static ExpressionInstance CreateDelegate(
         ExpressionDefinition offsetDefinition,
         ExpressionDefinition littleEndianDefinition, IDeserializer deserializer,
-        Dictionary<string, ExpressionDefinition> deserializerParams,
-        Dictionary<StandardProperty, ExpressionDefinition> standardProperties)
+        DeserializerStandardProperties standardProperties,
+        Dictionary<string, ExpressionDefinition> deserializerParams)
     {
         ExpressionInstance srcDelegate = offsetDefinition.GetInstance();
         ExpressionInstance littleEndianDelegate = littleEndianDefinition.GetInstance();
         Dictionary<string, ExpressionInstance> deserializerParamsCompact = new();
         foreach (var kvp in deserializerParams)
             deserializerParamsCompact[kvp.Key] = kvp.Value.GetInstance();
-        Dictionary<StandardProperty, ExpressionInstance>
-            standardPropertiesCompact = new();
-        foreach (var kvp in standardProperties)
-            standardPropertiesCompact[kvp.Key] = kvp.Value.GetInstance();
-        return new DeserializeExpressionInstance(deserializerParamsCompact, standardPropertiesCompact, srcDelegate, littleEndianDelegate, deserializer);
+        return new DeserializeExpressionInstance(standardProperties.ToInstance(), deserializerParamsCompact, srcDelegate, littleEndianDelegate, deserializer);
     }
 
     private record DeserializeExpressionInstance(
+        DeserializerStandardPropertiesInstance StandardPropertiesCompact,
         Dictionary<string, ExpressionInstance> DeserializerParamsCompact,
-        Dictionary<StandardProperty, ExpressionInstance> StandardPropertiesCompact,
         ExpressionInstance Source, ExpressionInstance LittleEndian, IDeserializer Deserializer) : ExpressionInstance
     {
         public override object Evaluate(StructureEvaluationContext context, Stream stream)
@@ -79,10 +74,8 @@ public class DeserializeExpression : ExpressionDefinition
             if (deserializerParamsGen != null)
                 foreach (var kvp in DeserializerParamsCompact)
                     deserializerParamsGen[kvp.Key] = kvp.Value.Evaluate(context, stream) ?? throw new NullReferenceException();
-            Dictionary<StandardProperty, object>? standardPropertiesGen = StandardPropertiesCompact.Count != 0 ? new Dictionary<StandardProperty, object>() : null;
-            if (standardPropertiesGen != null)
-                foreach (var kvp in StandardPropertiesCompact)
-                    standardPropertiesGen[kvp.Key] = kvp.Value.Evaluate(context, stream) ?? throw new NullReferenceException();
+            var deserializerContext = new DeserializerContext(context.Structure);
+            deserializerContext = StandardPropertiesCompact.Augment(deserializerContext, context, stream);
             object? littleEndian = LittleEndian.Evaluate(context, stream);
             if (littleEndian is not bool littleEndianValue)
             {
@@ -91,7 +84,7 @@ public class DeserializeExpression : ExpressionDefinition
             object? source = Source.Evaluate(context, stream);
             if (source is SourceWithOffset swo)
             {
-                return Extract(context, swo, littleEndianValue, deserializerParamsGen, standardPropertiesGen);
+                return Extract(deserializerContext, swo, littleEndianValue, deserializerParamsGen);
             }
             LongRange range;
             if (TryCastLong(source, out long offsetValue))
@@ -104,7 +97,7 @@ public class DeserializeExpression : ExpressionDefinition
             {
                 throw new InvalidCastException("Cannot find offset or range type for source delegate");
             }
-            return Deserializer.Deserialize(context.Structure, stream, range.Offset, littleEndianValue, standardPropertiesGen, deserializerParamsGen, range.Length).Value;
+            return Deserializer.Deserialize(deserializerContext, stream, range.Offset, littleEndianValue, deserializerParamsGen, range.Length).Value;
         }
 
         public override object Evaluate(StructureEvaluationContext context, ReadOnlyMemory<byte> memory)
@@ -113,10 +106,8 @@ public class DeserializeExpression : ExpressionDefinition
             if (deserializerParamsGen != null)
                 foreach (var kvp in DeserializerParamsCompact)
                     deserializerParamsGen[kvp.Key] = kvp.Value.Evaluate(context, memory) ?? throw new NullReferenceException();
-            Dictionary<StandardProperty, object>? standardPropertiesGen = StandardPropertiesCompact.Count != 0 ? new Dictionary<StandardProperty, object>() : null;
-            if (standardPropertiesGen != null)
-                foreach (var kvp in StandardPropertiesCompact)
-                    standardPropertiesGen[kvp.Key] = kvp.Value.Evaluate(context, memory) ?? throw new NullReferenceException();
+            var deserializerContext = new DeserializerContext(context.Structure);
+            deserializerContext = StandardPropertiesCompact.Augment(deserializerContext, context, memory);
             object? littleEndian = LittleEndian.Evaluate(context, memory);
             if (littleEndian is not bool littleEndianValue)
             {
@@ -125,7 +116,7 @@ public class DeserializeExpression : ExpressionDefinition
             object? source = Source.Evaluate(context, memory);
             if (source is SourceWithOffset swo)
             {
-                return Extract(context, swo, littleEndianValue, deserializerParamsGen, standardPropertiesGen);
+                return Extract(deserializerContext, swo, littleEndianValue, deserializerParamsGen);
             }
             LongRange range;
             if (TryCastLong(source, out long offsetValue))
@@ -138,7 +129,7 @@ public class DeserializeExpression : ExpressionDefinition
             {
                 throw new InvalidCastException("Cannot find offset or range type for source delegate");
             }
-            return Deserializer.Deserialize(context.Structure, memory, range.Offset, littleEndianValue, standardPropertiesGen, deserializerParamsGen, range.Length).Value;
+            return Deserializer.Deserialize(deserializerContext, memory, range.Offset, littleEndianValue, deserializerParamsGen, range.Length).Value;
         }
 
         public override object Evaluate(StructureEvaluationContext context, ReadOnlySpan<byte> span)
@@ -147,10 +138,8 @@ public class DeserializeExpression : ExpressionDefinition
             if (deserializerParamsGen != null)
                 foreach (var kvp in DeserializerParamsCompact)
                     deserializerParamsGen[kvp.Key] = kvp.Value.Evaluate(context, span) ?? throw new NullReferenceException();
-            Dictionary<StandardProperty, object>? standardPropertiesGen = StandardPropertiesCompact.Count != 0 ? new Dictionary<StandardProperty, object>() : null;
-            if (standardPropertiesGen != null)
-                foreach (var kvp in StandardPropertiesCompact)
-                    standardPropertiesGen[kvp.Key] = kvp.Value.Evaluate(context, span) ?? throw new NullReferenceException();
+            var deserializerContext = new DeserializerContext(context.Structure);
+            deserializerContext = StandardPropertiesCompact.Augment(deserializerContext, context, span);
             object? littleEndian = LittleEndian.Evaluate(context, span);
             if (littleEndian is not bool littleEndianValue)
             {
@@ -159,7 +148,7 @@ public class DeserializeExpression : ExpressionDefinition
             object? source = Source.Evaluate(context, span);
             if (source is SourceWithOffset swo)
             {
-                return Extract(context, swo, littleEndianValue, deserializerParamsGen, standardPropertiesGen);
+                return Extract(deserializerContext, swo, littleEndianValue, deserializerParamsGen);
             }
             LongRange range;
             if (TryCastLong(source, out long offsetValue))
@@ -172,10 +161,10 @@ public class DeserializeExpression : ExpressionDefinition
             {
                 throw new InvalidCastException("Cannot find offset or range type for source delegate");
             }
-            return Deserializer.Deserialize(context.Structure, span, range.Offset, littleEndianValue, standardPropertiesGen, deserializerParamsGen, range.Length).Value;
+            return Deserializer.Deserialize(deserializerContext, span, range.Offset, littleEndianValue, deserializerParamsGen, range.Length).Value;
         }
 
-        private object Extract(StructureEvaluationContext context, SourceWithOffset swo, bool littleEndianValue, Dictionary<string, object>? deserializerParamsGen, Dictionary<StandardProperty, object>? standardPropertiesGen)
+        private object Extract(DeserializerContext context, SourceWithOffset swo, bool littleEndianValue, Dictionary<string, object>? deserializerParamsGen)
         {
             LongRange range;
             if (TryCastLong(swo.Offset, out long offsetValue))
@@ -192,7 +181,7 @@ public class DeserializeExpression : ExpressionDefinition
             }
             if (LinearUtil.TryGetReadOnlyMemoryFromPossibleBuffer(swo.Source, out var altMemory))
             {
-                return Deserializer.Deserialize(context.Structure, altMemory, range.Offset, littleEndianValue, standardPropertiesGen, deserializerParamsGen, range.Length).Value;
+                return Deserializer.Deserialize(context, altMemory, range.Offset, littleEndianValue, deserializerParamsGen, range.Length).Value;
             }
             throw new InvalidOperationException($"Could not extract memory buffer for {nameof(SourceWithOffset)}");
         }

@@ -55,6 +55,7 @@ public class StructureDefinition
             {
                 members.Add(new StructureMember(v0.Name, v0.Element.GetInitializer()));
                 sub.RemoveAt(0);
+                continue;
             }
             int discardIndex = sub.FindIndex(v => v.Element is DiscardElement);
             // Remove everything before first remaining discard

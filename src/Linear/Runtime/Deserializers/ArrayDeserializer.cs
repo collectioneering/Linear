@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Linear.Utility;
 
 namespace Linear.Runtime.Deserializers;
 
@@ -32,17 +31,19 @@ public class ArrayDeserializer : IDeserializer
     public Type GetTargetType() => _type;
 
     /// <inheritdoc />
-    public DeserializeResult Deserialize(StructureInstance instance, Stream stream,
-        long offset, bool littleEndian, Dictionary<StandardProperty, object>? standardProperties,
-        Dictionary<string, object>? parameters, long? length = null, int index = 0)
+    public DeserializeResult Deserialize(DeserializerContext context, Stream stream,
+        long offset, bool littleEndian, Dictionary<string, object>? parameters, long? length = null, int index = 0)
     {
-        if (standardProperties == null) throw new NullReferenceException();
-        int arrayLength = CastUtil.CastInt(standardProperties[StandardProperty.ArrayLengthProperty]);
+        int arrayLength;
+        checked
+        {
+            arrayLength = (int)(context.ArrayLength ?? throw new InvalidOperationException("No array length specified"));
+        }
         Array res = Array.CreateInstance(_elementType, arrayLength);
         long curOffset = offset;
         for (int i = 0; i < arrayLength; i++)
         {
-            (object value, long? elemLength) = _elementDeserializer.Deserialize(instance, stream, curOffset, littleEndian, standardProperties, parameters, 0, i);
+            (object value, long? elemLength) = _elementDeserializer.Deserialize(context, stream, curOffset, littleEndian, parameters, 0, i);
             res.SetValue(value, i);
             if (elemLength is { } elemLengthValue)
             {
@@ -58,25 +59,47 @@ public class ArrayDeserializer : IDeserializer
     }
 
     /// <inheritdoc />
-    public DeserializeResult Deserialize(StructureInstance instance, ReadOnlyMemory<byte> memory,
-        long offset, bool littleEndian, Dictionary<StandardProperty, object>? standardProperties,
-        Dictionary<string, object>? parameters, long? length = null, int index = 0)
+    public DeserializeResult Deserialize(DeserializerContext context, ReadOnlyMemory<byte> memory,
+        long offset, bool littleEndian, Dictionary<string, object>? parameters, long? length = null, int index = 0)
     {
-        return Deserialize(instance, memory.Span, offset, littleEndian, standardProperties, parameters, length, index);
-    }
-
-    /// <inheritdoc />
-    public DeserializeResult Deserialize(StructureInstance instance, ReadOnlySpan<byte> span,
-        long offset, bool littleEndian, Dictionary<StandardProperty, object>? standardProperties,
-        Dictionary<string, object>? parameters, long? length = null, int index = 0)
-    {
-        if (standardProperties == null) throw new NullReferenceException();
-        int arrayLength = CastUtil.CastInt(standardProperties[StandardProperty.ArrayLengthProperty]);
+        int arrayLength;
+        checked
+        {
+            arrayLength = (int)(context.ArrayLength ?? throw new InvalidOperationException("No array length specified"));
+        }
         Array res = Array.CreateInstance(_elementType, arrayLength);
         long curOffset = offset;
         for (int i = 0; i < arrayLength; i++)
         {
-            (object value, long? elemLength) = _elementDeserializer.Deserialize(instance, span, curOffset, littleEndian, standardProperties, parameters, 0, i);
+            (object value, long? elemLength) = _elementDeserializer.Deserialize(context, memory, curOffset, littleEndian, parameters, 0, i);
+            res.SetValue(value, i);
+            if (elemLength is { } elemLengthValue)
+            {
+                curOffset += elemLengthValue;
+            }
+            else
+            {
+                throw new InvalidOperationException("Unknown length for deserialized element");
+            }
+        }
+
+        return new DeserializeResult(res, curOffset - offset);
+    }
+
+    /// <inheritdoc />
+    public DeserializeResult Deserialize(DeserializerContext context, ReadOnlySpan<byte> span,
+        long offset, bool littleEndian, Dictionary<string, object>? parameters, long? length = null, int index = 0)
+    {
+        int arrayLength;
+        checked
+        {
+            arrayLength = (int)(context.ArrayLength ?? throw new InvalidOperationException("No array length specified"));
+        }
+        Array res = Array.CreateInstance(_elementType, arrayLength);
+        long curOffset = offset;
+        for (int i = 0; i < arrayLength; i++)
+        {
+            (object value, long? elemLength) = _elementDeserializer.Deserialize(context, span, curOffset, littleEndian, parameters, 0, i);
             res.SetValue(value, i);
             if (elemLength is { } elemLengthValue)
             {

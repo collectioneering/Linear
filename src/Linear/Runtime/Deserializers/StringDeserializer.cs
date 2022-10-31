@@ -69,11 +69,10 @@ public class StringDeserializer : IDeserializer
     public Type GetTargetType() => typeof(string);
 
     /// <inheritdoc />
-    public DeserializeResult Deserialize(StructureInstance instance, Stream stream,
-        long offset, bool littleEndian, Dictionary<StandardProperty, object>? standardProperties,
-        Dictionary<string, object>? parameters, long? length = null, int index = 0)
+    public DeserializeResult Deserialize(DeserializerContext context, Stream stream,
+        long offset, bool littleEndian, Dictionary<string, object>? parameters, long? length = null, int index = 0)
     {
-        offset += instance.AbsoluteOffset;
+        offset += context.Structure.AbsoluteOffset;
         stream.Position = offset;
         switch (_mode)
         {
@@ -109,19 +108,17 @@ public class StringDeserializer : IDeserializer
     }
 
     /// <inheritdoc />
-    public DeserializeResult Deserialize(StructureInstance instance, ReadOnlyMemory<byte> memory,
-        long offset, bool littleEndian, Dictionary<StandardProperty, object>? standardProperties,
-        Dictionary<string, object>? parameters, long? length = null, int index = 0)
+    public DeserializeResult Deserialize(DeserializerContext context, ReadOnlyMemory<byte> memory,
+        long offset, bool littleEndian, Dictionary<string, object>? parameters, long? length = null, int index = 0)
     {
-        return Deserialize(instance, memory.Span, offset, littleEndian, standardProperties, parameters, length, index);
+        return Deserialize(context, memory.Span, offset, littleEndian, parameters, length, index);
     }
 
     /// <inheritdoc />
-    public DeserializeResult Deserialize(StructureInstance instance, ReadOnlySpan<byte> span,
-        long offset, bool littleEndian, Dictionary<StandardProperty, object>? standardProperties,
-        Dictionary<string, object>? parameters, long? length = null, int index = 0)
+    public DeserializeResult Deserialize(DeserializerContext context, ReadOnlySpan<byte> span,
+        long offset, bool littleEndian, Dictionary<string, object>? parameters, long? length = null, int index = 0)
     {
-        offset += instance.AbsoluteOffset;
+        offset += context.Structure.AbsoluteOffset;
         checked
         {
             span = span[(int)offset..];

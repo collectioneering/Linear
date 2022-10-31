@@ -18,34 +18,31 @@ public class BufferDeserializer : IDeserializer
     public Type GetTargetType() => typeof(ReadOnlyMemory<byte>);
 
     /// <inheritdoc />
-    public DeserializeResult Deserialize(StructureInstance instance, Stream stream, long offset, bool littleEndian,
-        Dictionary<StandardProperty, object>? standardProperties, Dictionary<string, object>? parameters,
-        long? length = null, int index = 0)
+    public DeserializeResult Deserialize(DeserializerContext context, Stream stream, long offset, bool littleEndian,
+        Dictionary<string, object>? parameters, long? length = null, int index = 0)
     {
         if (length == null) throw new ArgumentException("Length required for buffer deserializer");
-        LinearUtil.TrimRange(stream, instance, new LongRange(offset, length.Value));
+        LinearUtil.TrimRange(stream, context.Structure, new LongRange(offset, length.Value));
         byte[] result = new byte[length.Value];
         Processor.Read(stream, result, false);
         return new DeserializeResult(new ReadOnlyMemory<byte>(result), length.Value);
     }
 
     /// <inheritdoc />
-    public DeserializeResult Deserialize(StructureInstance instance, ReadOnlyMemory<byte> memory,
-        long offset, bool littleEndian, Dictionary<StandardProperty, object>? standardProperties,
-        Dictionary<string, object>? parameters, long? length = null, int index = 0)
+    public DeserializeResult Deserialize(DeserializerContext context, ReadOnlyMemory<byte> memory,
+        long offset, bool littleEndian, Dictionary<string, object>? parameters, long? length = null, int index = 0)
     {
         if (length == null) throw new ArgumentException("Length required for buffer deserializer");
-        LinearUtil.TrimRange(ref memory, instance, new LongRange(offset, length.Value));
+        LinearUtil.TrimRange(ref memory, context.Structure, new LongRange(offset, length.Value));
         return new DeserializeResult(memory, memory.Length);
     }
 
     /// <inheritdoc />
-    public DeserializeResult Deserialize(StructureInstance instance, ReadOnlySpan<byte> span, long offset,
-        bool littleEndian, Dictionary<StandardProperty, object>? standardProperties,
-        Dictionary<string, object>? parameters, long? length = null, int index = 0)
+    public DeserializeResult Deserialize(DeserializerContext context, ReadOnlySpan<byte> span, long offset,
+        bool littleEndian, Dictionary<string, object>? parameters, long? length = null, int index = 0)
     {
         if (length == null) throw new ArgumentException("Length required for buffer deserializer");
-        LinearUtil.TrimRange(ref span, instance, new LongRange(offset, length.Value));
+        LinearUtil.TrimRange(ref span, context.Structure, new LongRange(offset, length.Value));
         return new DeserializeResult(new ReadOnlyMemory<byte>(span.ToArray()), span.Length);
     }
 }
