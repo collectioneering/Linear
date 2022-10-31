@@ -15,11 +15,11 @@ public class OperatorDualExpression : ExpressionDefinition
     private readonly BinaryOperator _operator;
 
     /// <summary>
-    /// Create new instance of <see cref="OperatorDualExpression"/>
+    /// Initializes an instance of <see cref="OperatorDualExpression"/>.
     /// </summary>
-    /// <param name="left">Left expression</param>
-    /// <param name="right">Right expression</param>
-    /// <param name="op">Operator</param>
+    /// <param name="left">Left expression.</param>
+    /// <param name="right">Right expression.</param>
+    /// <param name="op">Operator.</param>
     public OperatorDualExpression(ExpressionDefinition left, ExpressionDefinition right, BinaryOperator op)
     {
         _left = left;
@@ -36,23 +36,34 @@ public class OperatorDualExpression : ExpressionDefinition
     {
         return _operator switch
         {
+            BinaryOperator.Mult => new OperatorDualMultExpressionInstance(_left.GetInstance(), _right.GetInstance()),
+            BinaryOperator.Div => new OperatorDualDivExpressionInstance(_left.GetInstance(), _right.GetInstance()),
+            BinaryOperator.Mod => new OperatorDualModExpressionInstance(_left.GetInstance(), _right.GetInstance()),
             BinaryOperator.Add => new OperatorDualAddExpressionInstance(_left.GetInstance(), _right.GetInstance()),
             BinaryOperator.Sub => new OperatorDualSubExpressionInstance(_left.GetInstance(), _right.GetInstance()),
-            BinaryOperator.Div => new OperatorDualDivExpressionInstance(_left.GetInstance(), _right.GetInstance()),
-            BinaryOperator.Mult => new OperatorDualMultExpressionInstance(_left.GetInstance(), _right.GetInstance()),
-            BinaryOperator.Mod => new OperatorDualModExpressionInstance(_left.GetInstance(), _right.GetInstance()),
+            BinaryOperator.Rshift => throw new NotImplementedException(),
+            BinaryOperator.Urshift => throw new NotImplementedException(),
+            BinaryOperator.Lshift => throw new NotImplementedException(),
+            BinaryOperator.Gt => throw new NotImplementedException(),
+            BinaryOperator.Lt => throw new NotImplementedException(),
+            BinaryOperator.Ge => throw new NotImplementedException(),
+            BinaryOperator.Le => throw new NotImplementedException(),
+            BinaryOperator.Eq => throw new NotImplementedException(),
+            BinaryOperator.Ne => throw new NotImplementedException(),
             BinaryOperator.And => new OperatorDualAndExpressionInstance(_left.GetInstance(), _right.GetInstance()),
             BinaryOperator.Or => new OperatorDualOrExpressionInstance(_left.GetInstance(), _right.GetInstance()),
             BinaryOperator.Xor => new OperatorDualXorExpressionInstance(_left.GetInstance(), _right.GetInstance()),
+            BinaryOperator.CondAnd => throw new NotImplementedException(),
+            BinaryOperator.CondOr => throw new NotImplementedException(),
             _ => throw new ArgumentOutOfRangeException()
         };
     }
 
     /// <summary>
-    /// Get operator
+    /// Gets operator.
     /// </summary>
-    /// <param name="op">String representation</param>
-    /// <returns>Enum value</returns>
+    /// <param name="op">String representation.</param>
+    /// <returns>Enum value.</returns>
     public static BinaryOperator GetOperator(string op)
     {
         return op switch

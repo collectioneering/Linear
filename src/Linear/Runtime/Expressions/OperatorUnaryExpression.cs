@@ -5,7 +5,7 @@ using Linear.Runtime.Expressions.Operators;
 namespace Linear.Runtime.Expressions;
 
 /// <summary>
-/// Unary operator expression
+/// Unary operator expression.
 /// </summary>
 public class OperatorUnaryExpression : ExpressionDefinition
 {
@@ -13,10 +13,10 @@ public class OperatorUnaryExpression : ExpressionDefinition
     private readonly UnaryOperator _operator;
 
     /// <summary>
-    /// Create new instance of <see cref="OperatorUnaryExpression"/>
+    /// Initializes an instance of <see cref="OperatorUnaryExpression"/>.
     /// </summary>
-    /// <param name="expression">Expression</param>
-    /// <param name="op">Operator</param>
+    /// <param name="expression">Expression.</param>
+    /// <param name="op">Operator.</param>
     public OperatorUnaryExpression(ExpressionDefinition expression, UnaryOperator op)
     {
         _expression = expression;
@@ -34,22 +34,24 @@ public class OperatorUnaryExpression : ExpressionDefinition
         {
             UnaryOperator.Plus => new OperatorUnaryPlusExpressionInstance(_expression.GetInstance()),
             UnaryOperator.Minus => new OperatorUnaryMinusExpressionInstance(_expression.GetInstance()),
+            UnaryOperator.Not => throw new NotImplementedException(),
             UnaryOperator.Tilde => new OperatorUnaryTildeExpressionInstance(_expression.GetInstance()),
             _ => throw new ArgumentOutOfRangeException()
         };
     }
 
     /// <summary>
-    /// Get operator
+    /// Gets operator.
     /// </summary>
-    /// <param name="op">String representation</param>
-    /// <returns>Enum value</returns>
+    /// <param name="op">String representation.</param>
+    /// <returns>Enum value.</returns>
     public static UnaryOperator GetOperator(string op)
     {
         return op switch
         {
             "+" => UnaryOperator.Plus,
             "-" => UnaryOperator.Minus,
+            "!" => UnaryOperator.Not,
             "~" => UnaryOperator.Tilde,
             _ => throw new ArgumentOutOfRangeException(nameof(op))
         };

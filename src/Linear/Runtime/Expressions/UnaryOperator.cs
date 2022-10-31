@@ -8,7 +8,6 @@ public enum UnaryOperator
 {
     Plus,
     Minus,
-
-    //Not,
+    Not,
     Tilde
 }

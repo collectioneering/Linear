@@ -367,6 +367,10 @@ internal class LinearListener : LinearBaseListener
                 RequireNonNull(GetExpression(exprOpCondOrContext.expr(0)), GetExpression(exprOpCondOrContext.expr(1)), out var e0, out var e1)
                     ? new OperatorDualExpression(e0, e1, OperatorDualExpression.GetOperator(exprOpCondOrContext.op_cond_or().GetText()))
                     : null,
+            LinearParser.ExprOpTernaryContext exprOpTernaryContext =>
+                RequireNonNull(GetExpression(exprOpTernaryContext.expr(0)), GetExpression(exprOpTernaryContext.expr(1)), GetExpression(exprOpTernaryContext.expr(2)), out var e0, out var e1, out var e2)
+                    ? new OperatorTernaryExpression(e0, e1, e2)
+                    : null,
             LinearParser.ExprRangeEndContext exprRangeEndContext =>
                 RequireNonNull(GetExpression(exprRangeEndContext.expr(0)), out var e0)
                     ? new RangeExpression(e0, GetExpression(exprRangeEndContext.expr(1)), null)
