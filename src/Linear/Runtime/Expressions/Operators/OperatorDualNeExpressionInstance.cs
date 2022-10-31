@@ -56,6 +56,9 @@ internal record OperatorDualNeExpressionInstance(ExpressionInstance Left, Expres
         if (left is byte byteLeft) return byteLeft != CastUtil.CastByte(right);
         if (right is byte byteRight) return CastUtil.CastByte(left) != byteRight;
 
+        if (left is bool boolLeft) return boolLeft != CastUtil.CastBool(right);
+        if (right is bool boolRight) return CastUtil.CastBool(left) != boolRight;
+
         return !left.Equals(right);
     }
 }

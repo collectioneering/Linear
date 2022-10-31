@@ -26,5 +26,3 @@ public enum BinaryOperator
     CondAnd,
     CondOr
 }
-
-// TODO rshift, urshift, lshift, relational operators
