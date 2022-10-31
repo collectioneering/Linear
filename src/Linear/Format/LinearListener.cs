@@ -203,8 +203,11 @@ internal class LinearListener : LinearBaseListener
         DeserializerStandardProperties standardProperties = new(arrayLength, countExpression, size != 0 ? new ConstantExpression<bool>(littleEndian) : null);
         ArrayDeserializerDefinition arrayDeserializer = new(deserializer);
         var arrayExpression = new DeserializeExpression(offsetExpression, arrayDeserializer, standardProperties, propGroup);
-        Element dataElement = new ValueElement(dataName, new DeserializeExpression(pointerOffsetExpression, new PointerArrayDeserializerDefinition(arrayExpression, targetDeserializer, lenFinder), standardProperties, propGroup));
-        _currentDefinition!.Members.Add(new StructureDefinitionMember(dataName, dataElement));
+        string genName = $"${dataName}_g_{Guid.NewGuid():N}";
+        Element dataElement1 = new ValueElement(genName, arrayExpression);
+        _currentDefinition!.Members.Add(new StructureDefinitionMember(genName, dataElement1));
+        Element dataElement2 = new ValueElement(dataName, new DeserializeExpression(pointerOffsetExpression, new PointerArrayDeserializerDefinition(new MemberExpression(genName), targetDeserializer, lenFinder), standardProperties, propGroup));
+        _currentDefinition!.Members.Add(new StructureDefinitionMember(dataName, dataElement2));
     }
 
     public override void EnterStruct_statement_discard(LinearParser.Struct_statement_discardContext context)
