@@ -197,7 +197,6 @@ internal class LinearListener : LinearBaseListener
             return;
         }
         bool lenFinder = context.PLUS() != null;
-        // TODO move expressions to specific definitions
         var arrayLength = lenFinder
             ? new OperatorDualExpression(countExpression, new ConstantExpression<int>(1), BinaryOperator.Add)
             : countExpression;

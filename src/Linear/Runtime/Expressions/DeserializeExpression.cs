@@ -129,8 +129,6 @@ public class DeserializeExpression : ExpressionDefinition
             return Deserializer.Deserialize(deserializerContext, span, range.Offset, range.Length).Value;
         }
 
-        // TODO create alt type that processes pointers and targets in separate steps
-
         private object Extract(DeserializerContext context, SourceWithOffset swo)
         {
             LongRange range;
