@@ -57,14 +57,25 @@ public class OperatorDualExpression : ExpressionDefinition
     {
         return op switch
         {
-            "+" => BinaryOperator.Add,
-            "-" => BinaryOperator.Sub,
             "*" => BinaryOperator.Mult,
             "/" => BinaryOperator.Div,
             "%" => BinaryOperator.Mod,
+            "+" => BinaryOperator.Add,
+            ">>" => BinaryOperator.Rshift,
+            ">>>" => BinaryOperator.Urshift,
+            "<<" => BinaryOperator.Lshift,
+            ">" => BinaryOperator.Gt,
+            "<" => BinaryOperator.Lt,
+            ">=" => BinaryOperator.Ge,
+            "<=" => BinaryOperator.Le,
+            "==" => BinaryOperator.Eq,
+            "!=" => BinaryOperator.Ne,
+            "-" => BinaryOperator.Sub,
             "&" => BinaryOperator.And,
             "|" => BinaryOperator.Or,
             "^" => BinaryOperator.Xor,
+            "&&" => BinaryOperator.CondAnd,
+            "||" => BinaryOperator.CondOr,
             _ => throw new ArgumentOutOfRangeException(nameof(op))
         };
     }

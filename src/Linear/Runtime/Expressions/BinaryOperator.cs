@@ -6,14 +6,25 @@ namespace Linear.Runtime.Expressions;
 public enum BinaryOperator
 #pragma warning disable 1591
 {
+    Mult,
+    Div,
+    Mod,
     Add,
     Sub,
-    Div,
-    Mult,
-    Mod,
+    Rshift,
+    Urshift,
+    Lshift,
+    Gt,
+    Lt,
+    Ge,
+    Le,
+    Eq,
+    Ne,
     And,
+    Xor,
     Or,
-    Xor
+    CondAnd,
+    CondOr
 }
 
 // TODO rshift, urshift, lshift, relational operators

@@ -347,6 +347,26 @@ internal class LinearListener : LinearBaseListener
                 RequireNonNull(GetExpression(exprOpMulDivContext.expr(0)), GetExpression(exprOpMulDivContext.expr(1)), out var e0, out var e1)
                     ? new OperatorDualExpression(e0, e1, OperatorDualExpression.GetOperator(exprOpMulDivContext.op_mul_div().GetText()))
                     : null,
+            LinearParser.ExprOpShiftContext exprOpShiftContext =>
+                RequireNonNull(GetExpression(exprOpShiftContext.expr(0)), GetExpression(exprOpShiftContext.expr(1)), out var e0, out var e1)
+                    ? new OperatorDualExpression(e0, e1, OperatorDualExpression.GetOperator(exprOpShiftContext.op_shift().GetText()))
+                    : null,
+            LinearParser.ExprOpRelContext exprOpRelContext =>
+                RequireNonNull(GetExpression(exprOpRelContext.expr(0)), GetExpression(exprOpRelContext.expr(1)), out var e0, out var e1)
+                    ? new OperatorDualExpression(e0, e1, OperatorDualExpression.GetOperator(exprOpRelContext.op_rel().GetText()))
+                    : null,
+            LinearParser.ExprOpEqContext exprOpEqContext =>
+                RequireNonNull(GetExpression(exprOpEqContext.expr(0)), GetExpression(exprOpEqContext.expr(1)), out var e0, out var e1)
+                    ? new OperatorDualExpression(e0, e1, OperatorDualExpression.GetOperator(exprOpEqContext.op_eq().GetText()))
+                    : null,
+            LinearParser.ExprOpCondAndContext exprOpCondAndContext =>
+                RequireNonNull(GetExpression(exprOpCondAndContext.expr(0)), GetExpression(exprOpCondAndContext.expr(1)), out var e0, out var e1)
+                    ? new OperatorDualExpression(e0, e1, OperatorDualExpression.GetOperator(exprOpCondAndContext.op_cond_and().GetText()))
+                    : null,
+            LinearParser.ExprOpCondOrContext exprOpCondOrContext =>
+                RequireNonNull(GetExpression(exprOpCondOrContext.expr(0)), GetExpression(exprOpCondOrContext.expr(1)), out var e0, out var e1)
+                    ? new OperatorDualExpression(e0, e1, OperatorDualExpression.GetOperator(exprOpCondOrContext.op_cond_or().GetText()))
+                    : null,
             LinearParser.ExprRangeEndContext exprRangeEndContext =>
                 RequireNonNull(GetExpression(exprRangeEndContext.expr(0)), out var e0)
                     ? new RangeExpression(e0, GetExpression(exprRangeEndContext.expr(1)), null)

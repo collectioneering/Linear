@@ -93,10 +93,12 @@ expr:
 	| expr WS? op_rel WS? expr										# ExprOpRel
 	| expr WS? op_eq WS? expr										# ExprOpEq
 	| expr WS? AMP WS? expr											# ExprOpAmp
+	| expr WS? CARET WS? expr										# ExprOpCaret
+	| expr WS? BITWISE_OR WS? expr									# ExprOpBitwiseOr
 	| expr WS? op_cond_and WS? expr									# ExprOpCondAnd
 	| expr WS? op_cond_or WS? expr									# ExprOpCondOr
-	| expr WS? CARET WS? expr										# ExprOpCaret
-	| expr WS? BITWISE_OR WS? expr									# ExprOpBitwiseOr;
+	| expr WS? '?' WS? expr WS? ':' WS? expr						# ExprOpTernary
+;
 //	| expr WS? bool_op WS? expr # ExprBoolOp
 
 OPEN: '{';
