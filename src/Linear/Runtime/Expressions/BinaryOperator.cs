@@ -15,3 +15,5 @@ public enum BinaryOperator
     Or,
     Xor
 }
+
+// TODO rshift, urshift, lshift operators

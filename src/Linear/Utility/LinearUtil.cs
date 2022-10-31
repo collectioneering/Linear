@@ -15,7 +15,14 @@ namespace Linear.Utility;
 /// </summary>
 public static class LinearUtil
 {
-    private static readonly Dictionary<string, MethodCallDelegate> s_defaultMethods = new() { { "log", Log }, { "format", Format } };
+    private static readonly Dictionary<string, MethodCallDelegate> s_defaultMethods = new()
+    {
+        { "log", Log }, //
+        { "format", Format }, //
+        { "and", And }, //
+        { "or", Or }, //
+        { "xor", Xor } //
+    };
 
     private static object? Log(StructureEvaluationContext context, params object?[] args)
     {
@@ -27,6 +34,114 @@ public static class LinearUtil
     private static object Format(StructureEvaluationContext context, params object?[] args)
     {
         return string.Format(CultureInfo.InvariantCulture, args[0]?.ToString() ?? "", args.Skip(1).ToArray());
+    }
+
+    private static object And(StructureEvaluationContext context, params object?[] args)
+    {
+        switch (args.Length)
+        {
+            case 2:
+                // <buf> <lambda|key>
+                if (TryGetReadOnlyMemoryFromPossibleBuffer(args[0], out var buf))
+                {
+                    if (args[1] is ExpressionInstance expr)
+                    {
+                        byte[] copied = buf.ToArray();
+                        Dictionary<string, object> lambdaReplacements = new();
+                        context = context with { LambdaReplacements = lambdaReplacements };
+                        for (int i = 0; i < copied.Length; i++)
+                        {
+                            lambdaReplacements["i"] = i;
+                            lambdaReplacements["v"] = copied[i];
+                            copied[i] &= CastUtil.CastByte(expr.Evaluate(context, ReadOnlySpan<byte>.Empty));
+                        }
+                        return new ReadOnlyMemory<byte>(copied);
+                    }
+                    else
+                    {
+                        byte key = CastUtil.CastByte(args[1]);
+                        byte[] copied = buf.ToArray();
+                        for (int i = 0; i < copied.Length; i++)
+                            copied[i] &= key;
+                        return new ReadOnlyMemory<byte>(copied);
+                    }
+                }
+                throw new ArgumentException("Expected buffer at pos 0");
+            default:
+                throw new ArgumentException("Invalid method signature");
+        }
+    }
+
+    private static object Or(StructureEvaluationContext context, params object?[] args)
+    {
+        switch (args.Length)
+        {
+            case 2:
+                // <buf> <lambda|key>
+                if (TryGetReadOnlyMemoryFromPossibleBuffer(args[0], out var buf))
+                {
+                    if (args[1] is ExpressionInstance expr)
+                    {
+                        byte[] copied = buf.ToArray();
+                        Dictionary<string, object> lambdaReplacements = new();
+                        context = context with { LambdaReplacements = lambdaReplacements };
+                        for (int i = 0; i < copied.Length; i++)
+                        {
+                            lambdaReplacements["i"] = i;
+                            lambdaReplacements["v"] = copied[i];
+                            copied[i] |= CastUtil.CastByte(expr.Evaluate(context, ReadOnlySpan<byte>.Empty));
+                        }
+                        return new ReadOnlyMemory<byte>(copied);
+                    }
+                    else
+                    {
+                        byte key = CastUtil.CastByte(args[1]);
+                        byte[] copied = buf.ToArray();
+                        for (int i = 0; i < copied.Length; i++)
+                            copied[i] |= key;
+                        return new ReadOnlyMemory<byte>(copied);
+                    }
+                }
+                throw new ArgumentException("Expected buffer at pos 0");
+            default:
+                throw new ArgumentException("Invalid method signature");
+        }
+    }
+
+    private static object Xor(StructureEvaluationContext context, params object?[] args)
+    {
+        switch (args.Length)
+        {
+            case 2:
+                // <buf> <lambda|key>
+                if (TryGetReadOnlyMemoryFromPossibleBuffer(args[0], out var buf))
+                {
+                    if (args[1] is ExpressionInstance expr)
+                    {
+                        byte[] copied = buf.ToArray();
+                        Dictionary<string, object> lambdaReplacements = new();
+                        context = context with { LambdaReplacements = lambdaReplacements };
+                        for (int i = 0; i < copied.Length; i++)
+                        {
+                            lambdaReplacements["i"] = i;
+                            lambdaReplacements["v"] = copied[i];
+                            copied[i] ^= CastUtil.CastByte(expr.Evaluate(context, ReadOnlySpan<byte>.Empty));
+                        }
+                        return new ReadOnlyMemory<byte>(copied);
+                    }
+                    else
+                    {
+                        byte key = CastUtil.CastByte(args[1]);
+                        byte[] copied = buf.ToArray();
+                        for (int i = 0; i < copied.Length; i++)
+                            copied[i] ^= key;
+                        return new ReadOnlyMemory<byte>(copied);
+                    }
+                }
+                throw new ArgumentException("Expected buffer at pos 0");
+            default:
+                throw new ArgumentException("Invalid method signature");
+        }
     }
 
     /// <summary>

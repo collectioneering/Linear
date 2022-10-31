@@ -89,7 +89,22 @@ These ranges are expressed as `[<sourceOffset>..<endOffsetExclusive>]` and `[<so
 | string16  | UTF-16 string                 |
 | cstring16 | Null-terminated UTF-16 string |
 
-#### Replacements
+#### Standard methods
+
+| Method                                                   | Description             |
+|----------------------------------------------------------|-------------------------|
+| void log(string message)                                 | Prints message          |
+| string format(string format, params object[] formatArgs) | Gets formatted output   |
+| buf and(buf source, lambda l) (1)                        | Applies AND             |
+| buf and(buf source, byte key) (1)                        | Applies AND             |
+| buf or(buf source, lambda l) (1)                         | Applies OR              |
+| buf or(buf source, byte key) (1)                         | Applies OR              |
+| buf xor(buf source, lambda l) (1)                        | Applies XOR             |
+| buf xor(buf source, byte key) (1)                        | Applies XOR             |
+
+(1) Available replacements: `$$i` index, `$$v` value
+
+#### Standard replacements
 * `$length`
   - Length of array element (only available in plain arrays or extended pointer arrays)
 * `$a`
