@@ -75,7 +75,7 @@ public class PointerArrayDeserializer : DeserializerInstance
     public override Type GetTargetType() => _type;
 
     /// <inheritdoc />
-    public override DeserializeResult Deserialize(DeserializerContext context, Stream stream, long offset, long? length = null, int index = 0)
+    public override DeserializeResult Deserialize(DeserializerContext context, Stream stream, long offset, long? length = null, int? index = null)
     {
         var structureContext = new StructureEvaluationContext(context.Structure);
         object src = _mainExpression.Evaluate(structureContext, stream) ?? throw new NullReferenceException();
@@ -86,7 +86,7 @@ public class PointerArrayDeserializer : DeserializerInstance
         for (int i = 0; i < pointerArrayLength; i++)
         {
             long vI = CastLong(baseArray.GetValue(i));
-            long preElemLength = _lenFinder ? CastLong(baseArray.GetValue(i + 1)) - vI : 0;
+            long? preElemLength = _lenFinder ? CastLong(baseArray.GetValue(i + 1)) - vI : null;
             (object value, long? elemLength) = _elementDeserializer.Deserialize(context, stream, offset + vI, preElemLength, i);
             tarArray.SetValue(value, i);
             if (curOffset is { } curOffsetValue)
@@ -106,7 +106,7 @@ public class PointerArrayDeserializer : DeserializerInstance
     }
 
     /// <inheritdoc />
-    public override DeserializeResult Deserialize(DeserializerContext context, ReadOnlyMemory<byte> memory, long offset, long? length = null, int index = 0)
+    public override DeserializeResult Deserialize(DeserializerContext context, ReadOnlyMemory<byte> memory, long offset, long? length = null, int? index = null)
     {
         var structureContext = new StructureEvaluationContext(context.Structure);
         object src = _mainExpression.Evaluate(structureContext, memory) ?? throw new NullReferenceException();
@@ -117,7 +117,7 @@ public class PointerArrayDeserializer : DeserializerInstance
         for (int i = 0; i < pointerArrayLength; i++)
         {
             long vI = CastLong(baseArray.GetValue(i));
-            long preElemLength = _lenFinder ? CastLong(baseArray.GetValue(i + 1)) - vI : 0;
+            long? preElemLength = _lenFinder ? CastLong(baseArray.GetValue(i + 1)) - vI : null;
             (object value, long? elemLength) = _elementDeserializer.Deserialize(context, memory, offset + vI, preElemLength, i);
             tarArray.SetValue(value, i);
             if (curOffset is { } curOffsetValue)
@@ -137,7 +137,7 @@ public class PointerArrayDeserializer : DeserializerInstance
     }
 
     /// <inheritdoc />
-    public override DeserializeResult Deserialize(DeserializerContext context, ReadOnlySpan<byte> span, long offset, long? length = null, int index = 0)
+    public override DeserializeResult Deserialize(DeserializerContext context, ReadOnlySpan<byte> span, long offset, long? length = null, int? index = null)
     {
         var structureContext = new StructureEvaluationContext(context.Structure);
         object src = _mainExpression.Evaluate(structureContext, span) ?? throw new NullReferenceException();
@@ -148,7 +148,7 @@ public class PointerArrayDeserializer : DeserializerInstance
         for (int i = 0; i < pointerArrayLength; i++)
         {
             long vI = CastLong(baseArray.GetValue(i));
-            long preElemLength = _lenFinder ? CastLong(baseArray.GetValue(i + 1)) - vI : 0;
+            long? preElemLength = _lenFinder ? CastLong(baseArray.GetValue(i + 1)) - vI : null;
             (object value, long? elemLength) = _elementDeserializer.Deserialize(context, span, offset + vI, preElemLength, i);
             tarArray.SetValue(value, i);
             if (curOffset is { } curOffsetValue)

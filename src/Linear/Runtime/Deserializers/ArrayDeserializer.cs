@@ -60,7 +60,7 @@ public class ArrayDeserializer : DeserializerInstance
     public override Type GetTargetType() => _type;
 
     /// <inheritdoc />
-    public override DeserializeResult Deserialize(DeserializerContext context, Stream stream, long offset, long? length = null, int index = 0)
+    public override DeserializeResult Deserialize(DeserializerContext context, Stream stream, long offset, long? length = null, int? index = null)
     {
         var structureContext = new StructureEvaluationContext(context.Structure);
         int arrayLength = CastInt(_countExpression.Evaluate(structureContext, ReadOnlySpan<byte>.Empty));
@@ -85,7 +85,7 @@ public class ArrayDeserializer : DeserializerInstance
     }
 
     /// <inheritdoc />
-    public override DeserializeResult Deserialize(DeserializerContext context, ReadOnlyMemory<byte> memory, long offset, long? length = null, int index = 0)
+    public override DeserializeResult Deserialize(DeserializerContext context, ReadOnlyMemory<byte> memory, long offset, long? length = null, int? index = null)
     {
         var structureContext = new StructureEvaluationContext(context.Structure);
         int arrayLength = CastInt(_countExpression.Evaluate(structureContext, ReadOnlySpan<byte>.Empty));
@@ -94,7 +94,7 @@ public class ArrayDeserializer : DeserializerInstance
         var elementContext = context with { Parameters = null };
         for (int i = 0; i < arrayLength; i++)
         {
-            (object value, long? elemLength) = _elementDeserializer.Deserialize(elementContext, memory, curOffset, 0, i);
+            (object value, long? elemLength) = _elementDeserializer.Deserialize(elementContext, memory, curOffset, null, i);
             res.SetValue(value, i);
             if (elemLength is { } elemLengthValue)
             {
@@ -110,7 +110,7 @@ public class ArrayDeserializer : DeserializerInstance
     }
 
     /// <inheritdoc />
-    public override DeserializeResult Deserialize(DeserializerContext context, ReadOnlySpan<byte> span, long offset, long? length = null, int index = 0)
+    public override DeserializeResult Deserialize(DeserializerContext context, ReadOnlySpan<byte> span, long offset, long? length = null, int? index = null)
     {
         var structureContext = new StructureEvaluationContext(context.Structure);
         int arrayLength = CastInt(_countExpression.Evaluate(structureContext, ReadOnlySpan<byte>.Empty));
@@ -119,7 +119,7 @@ public class ArrayDeserializer : DeserializerInstance
         var elementContext = context with { Parameters = null };
         for (int i = 0; i < arrayLength; i++)
         {
-            (object value, long? elemLength) = _elementDeserializer.Deserialize(elementContext, span, curOffset, 0, i);
+            (object value, long? elemLength) = _elementDeserializer.Deserialize(elementContext, span, curOffset, null, i);
             res.SetValue(value, i);
             if (elemLength is { } elemLengthValue)
             {

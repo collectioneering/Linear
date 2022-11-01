@@ -67,7 +67,7 @@ public class StringDeserializer : DeserializerInstance
     public override Type GetTargetType() => typeof(string);
 
     /// <inheritdoc />
-    public override DeserializeResult Deserialize(DeserializerContext context, Stream stream, long offset, long? length = null, int index = 0)
+    public override DeserializeResult Deserialize(DeserializerContext context, Stream stream, long offset, long? length = null, int? index = null)
     {
         offset += context.Structure.AbsoluteOffset;
         stream.Position = offset;
@@ -105,13 +105,13 @@ public class StringDeserializer : DeserializerInstance
     }
 
     /// <inheritdoc />
-    public override DeserializeResult Deserialize(DeserializerContext context, ReadOnlyMemory<byte> memory, long offset, long? length = null, int index = 0)
+    public override DeserializeResult Deserialize(DeserializerContext context, ReadOnlyMemory<byte> memory, long offset, long? length = null, int? index = null)
     {
         return Deserialize(context, memory.Span, offset, length, index);
     }
 
     /// <inheritdoc />
-    public override DeserializeResult Deserialize(DeserializerContext context, ReadOnlySpan<byte> span, long offset, long? length = null, int index = 0)
+    public override DeserializeResult Deserialize(DeserializerContext context, ReadOnlySpan<byte> span, long offset, long? length = null, int? index = null)
     {
         offset += context.Structure.AbsoluteOffset;
         checked

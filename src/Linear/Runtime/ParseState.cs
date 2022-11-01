@@ -8,4 +8,4 @@ namespace Linear.Runtime;
 /// <param name="Parent">Parent object.</param>
 /// <param name="Length">Length of structure.</param>
 /// <param name="Index">Array index.</param>
-public readonly record struct ParseState(string StructureName, long Offset = 0, StructureInstance? Parent = null, long? Length = null, int Index = 0);
+public readonly record struct ParseState(string StructureName, long Offset = 0, StructureInstance? Parent = null, long? Length = null, int? Index = null);

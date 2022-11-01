@@ -63,18 +63,23 @@ public class DeserializeExpression : ExpressionDefinition
             {
                 return Extract(deserializerContext, swo);
             }
-            LongRange range;
+            long offset;
+            long? length;
             if (TryCastLong(source, out long offsetValue))
-                range = new LongRange(Offset: offsetValue, Length: 0);
+            {
+                offset = offsetValue;
+                length = null;
+            }
             else if (source is LongRange r)
             {
-                range = r;
+                offset = r.Offset;
+                length = r.Length;
             }
             else
             {
                 throw new InvalidCastException("Cannot find offset or range type for source delegate");
             }
-            return Deserializer.Deserialize(deserializerContext, stream, range.Offset, range.Length).Value;
+            return Deserializer.Deserialize(deserializerContext, stream, offset, length).Value;
         }
 
         public override object Evaluate(StructureEvaluationContext context, ReadOnlyMemory<byte> memory)
@@ -89,18 +94,23 @@ public class DeserializeExpression : ExpressionDefinition
             {
                 return Extract(deserializerContext, swo);
             }
-            LongRange range;
+            long offset;
+            long? length;
             if (TryCastLong(source, out long offsetValue))
-                range = new LongRange(Offset: offsetValue, Length: 0);
+            {
+                offset = offsetValue;
+                length = null;
+            }
             else if (source is LongRange r)
             {
-                range = r;
+                offset = r.Offset;
+                length = r.Length;
             }
             else
             {
                 throw new InvalidCastException("Cannot find offset or range type for source delegate");
             }
-            return Deserializer.Deserialize(deserializerContext, memory, range.Offset, range.Length).Value;
+            return Deserializer.Deserialize(deserializerContext, memory, offset, length).Value;
         }
 
         public override object Evaluate(StructureEvaluationContext context, ReadOnlySpan<byte> span)
@@ -115,30 +125,38 @@ public class DeserializeExpression : ExpressionDefinition
             {
                 return Extract(deserializerContext, swo);
             }
-            LongRange range;
+            long offset;
+            long? length;
             if (TryCastLong(source, out long offsetValue))
-                range = new LongRange(Offset: offsetValue, Length: 0);
+            {
+                offset = offsetValue;
+                length = null;
+            }
             else if (source is LongRange r)
             {
-                range = r;
+                offset = r.Offset;
+                length = r.Length;
             }
             else
             {
                 throw new InvalidCastException("Cannot find offset or range type for source delegate");
             }
-            return Deserializer.Deserialize(deserializerContext, span, range.Offset, range.Length).Value;
+            return Deserializer.Deserialize(deserializerContext, span, offset, length).Value;
         }
 
         private object Extract(DeserializerContext context, SourceWithOffset swo)
         {
-            LongRange range;
+            long offset;
+            long? length;
             if (TryCastLong(swo.Offset, out long offsetValue))
             {
-                range = new LongRange(Offset: offsetValue, Length: 0);
+                offset = offsetValue;
+                length = null;
             }
             else if (swo.Offset is LongRange r)
             {
-                range = r;
+                offset = r.Offset;
+                length = r.Length;
             }
             else
             {
@@ -146,7 +164,7 @@ public class DeserializeExpression : ExpressionDefinition
             }
             if (LinearUtil.TryGetReadOnlyMemoryFromPossibleBuffer(swo.Source, out var altMemory))
             {
-                return Deserializer.Deserialize(context, altMemory, range.Offset, range.Length).Value;
+                return Deserializer.Deserialize(context, altMemory, offset, length).Value;
             }
             throw new InvalidOperationException($"Could not extract memory buffer for {nameof(SourceWithOffset)}");
         }

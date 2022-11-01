@@ -62,8 +62,9 @@ public class PrimitiveDeserializer : DeserializerInstance
     public override Type GetTargetType() => _type;
 
     /// <inheritdoc />
-    public override DeserializeResult Deserialize(DeserializerContext context, Stream stream, long offset, long? length = null, int index = 0)
+    public override DeserializeResult Deserialize(DeserializerContext context, Stream stream, long offset, long? length = null, int? index = null)
     {
+        ValidateLength(length, _type);
         // Possible addition: property group support little endian (requires boolean expressions)
         offset += context.Structure.AbsoluteOffset;
         return Type.GetTypeCode(_type) switch
@@ -91,14 +92,15 @@ public class PrimitiveDeserializer : DeserializerInstance
     }
 
     /// <inheritdoc />
-    public override DeserializeResult Deserialize(DeserializerContext context, ReadOnlyMemory<byte> memory, long offset, long? length = null, int index = 0)
+    public override DeserializeResult Deserialize(DeserializerContext context, ReadOnlyMemory<byte> memory, long offset, long? length = null, int? index = null)
     {
         return Deserialize(context, memory.Span, offset, length, index);
     }
 
     /// <inheritdoc />
-    public override DeserializeResult Deserialize(DeserializerContext context, ReadOnlySpan<byte> span, long offset, long? length = null, int index = 0)
+    public override DeserializeResult Deserialize(DeserializerContext context, ReadOnlySpan<byte> span, long offset, long? length = null, int? index = null)
     {
+        ValidateLength(length, _type);
         // Possible addition: property group support little endian (requires boolean expressions)
         LinearUtil.TrimStart(ref span, context.Structure, offset);
         return Type.GetTypeCode(_type) switch
@@ -123,5 +125,40 @@ public class PrimitiveDeserializer : DeserializerInstance
             TypeCode.UInt64 => new DeserializeResult(Processor.GetU64(span, _littleEndian), 8),
             _ => throw new ArgumentOutOfRangeException()
         };
+    }
+
+    private static void ValidateLength(long? length, Type type)
+    {
+        int minimum = Type.GetTypeCode(type) switch
+        {
+            TypeCode.Boolean => 1,
+            TypeCode.Byte => 1,
+            TypeCode.Char => 2,
+            TypeCode.DateTime => throw new NotSupportedException(),
+            TypeCode.DBNull => throw new NotSupportedException(),
+            TypeCode.Decimal => throw new NotSupportedException(),
+            TypeCode.Double => 8,
+            TypeCode.Empty => throw new NullReferenceException(),
+            TypeCode.Int16 => 2,
+            TypeCode.Int32 => 4,
+            TypeCode.Int64 => 8,
+            TypeCode.Object => throw new NotSupportedException(), // Not supporting direct
+            TypeCode.SByte => 1,
+            TypeCode.Single => 4,
+            TypeCode.String => throw new NotSupportedException(), // Not supporting direct
+            TypeCode.UInt16 => 2,
+            TypeCode.UInt32 => 4,
+            TypeCode.UInt64 => 8,
+            _ => throw new ArgumentOutOfRangeException()
+        };
+        ValidateLength(length, minimum);
+    }
+
+    private static void ValidateLength(long? length, long minimum)
+    {
+        if (length is { } l && l < minimum)
+        {
+            throw new ArgumentException($"Cannot extract value of length {minimum} from available size {l}");
+        }
     }
 }

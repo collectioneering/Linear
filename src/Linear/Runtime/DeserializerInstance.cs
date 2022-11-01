@@ -23,7 +23,7 @@ public abstract class DeserializerInstance
     /// <param name="length">Length of structure.</param>
     /// <param name="index">Array index.</param>
     /// <returns>Deserialized object.</returns>
-    public abstract DeserializeResult Deserialize(DeserializerContext context, Stream stream, long offset, long? length = null, int index = 0);
+    public abstract DeserializeResult Deserialize(DeserializerContext context, Stream stream, long offset, long? length = null, int? index = null);
 
     /// <summary>
     /// Deserializes object.
@@ -34,7 +34,7 @@ public abstract class DeserializerInstance
     /// <param name="length">Length of structure.</param>
     /// <param name="index">Array index.</param>
     /// <returns>Deserialized object.</returns>
-    public abstract DeserializeResult Deserialize(DeserializerContext context, ReadOnlyMemory<byte> memory, long offset, long? length = null, int index = 0);
+    public abstract DeserializeResult Deserialize(DeserializerContext context, ReadOnlyMemory<byte> memory, long offset, long? length = null, int? index = null);
 
     /// <summary>
     /// Deserializes object.
@@ -45,5 +45,5 @@ public abstract class DeserializerInstance
     /// <param name="length">Length of structure.</param>
     /// <param name="index">Array index.</param>
     /// <returns>Deserialized object.</returns>
-    public abstract DeserializeResult Deserialize(DeserializerContext context, ReadOnlySpan<byte> span, long offset, long? length = null, int index = 0);
+    public abstract DeserializeResult Deserialize(DeserializerContext context, ReadOnlySpan<byte> span, long offset, long? length = null, int? index = null);
 }

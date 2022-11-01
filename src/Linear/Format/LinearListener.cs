@@ -519,7 +519,7 @@ internal class LinearListener : LinearBaseListener
             LinearParser.TermIntContext termIntContext => new ConstantNumberExpression<long>(long.Parse(termIntContext.GetText(), CultureInfo.InvariantCulture)),
             LinearParser.TermRealContext termRealContext => new ConstantNumberExpression<double>(double.Parse(termRealContext.GetText(), CultureInfo.InvariantCulture)),
             LinearParser.TermRepAContext => new StructureEvaluateExpression<long>(i => i.AbsoluteOffset),
-            LinearParser.TermRepIContext => new StructureEvaluateExpression<long>(i => i.Index),
+            LinearParser.TermRepIContext => new StructureEvaluateExpression<long>(i => i.Index ?? throw new InvalidOperationException("No array index available")),
             LinearParser.TermLiteralTrueContext => new ConstantExpression<bool>(true),
             LinearParser.TermLiteralFalseContext => new ConstantExpression<bool>(false),
             LinearParser.TermRepLengthContext => new StructureEvaluateExpression<long>(i => i.Length ?? throw new InvalidOperationException("Length is not defined for this structure")),

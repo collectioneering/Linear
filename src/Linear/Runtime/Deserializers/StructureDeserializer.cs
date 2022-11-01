@@ -51,21 +51,21 @@ public class StructureDeserializer : DeserializerInstance
     public override Type GetTargetType() => typeof(StructureInstance);
 
     /// <inheritdoc />
-    public override DeserializeResult Deserialize(DeserializerContext context, Stream stream, long offset, long? length = null, int index = 0)
+    public override DeserializeResult Deserialize(DeserializerContext context, Stream stream, long offset, long? length = null, int? index = null)
     {
         StructureInstance i = context.Structure.Registry[_name].Parse(context.Structure.Registry, stream, new ParseState(_name, offset, context.Structure, length, index));
         return new DeserializeResult(i, i.Length);
     }
 
     /// <inheritdoc />
-    public override DeserializeResult Deserialize(DeserializerContext context, ReadOnlyMemory<byte> memory, long offset, long? length = null, int index = 0)
+    public override DeserializeResult Deserialize(DeserializerContext context, ReadOnlyMemory<byte> memory, long offset, long? length = null, int? index = null)
     {
         StructureInstance i = context.Structure.Registry[_name].Parse(context.Structure.Registry, memory, new ParseState(_name, offset, context.Structure, length, index));
         return new DeserializeResult(i, i.Length);
     }
 
     /// <inheritdoc />
-    public override DeserializeResult Deserialize(DeserializerContext context, ReadOnlySpan<byte> span, long offset, long? length = null, int index = 0)
+    public override DeserializeResult Deserialize(DeserializerContext context, ReadOnlySpan<byte> span, long offset, long? length = null, int? index = null)
     {
         StructureInstance i = context.Structure.Registry[_name].Parse(context.Structure.Registry, span, new ParseState(_name, offset, context.Structure, length, index));
         return new DeserializeResult(i, i.Length);

@@ -20,7 +20,7 @@ namespace Linear.Runtime
         /// <summary>
         /// Index of structure in array.
         /// </summary>
-        public int Index { get; }
+        public int? Index { get; }
 
         /// <summary>
         /// Registry to use for this instance.
@@ -63,7 +63,7 @@ namespace Linear.Runtime
         /// <param name="absoluteOffset">Absolute offset of structure.</param>
         /// <param name="length">Length of structure.</param>
         /// <param name="i">Structure index.</param>
-        public StructureInstance(IReadOnlyDictionary<string, Structure> registry, StructureInstance? parent, long absoluteOffset, long? length = null, int i = 0)
+        public StructureInstance(IReadOnlyDictionary<string, Structure> registry, StructureInstance? parent, long absoluteOffset, long? length = null, int? i = null)
         {
             Registry = registry;
             Parent = parent;
