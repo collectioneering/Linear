@@ -119,7 +119,7 @@ public class StructureRegistry
     {
         if (TryGetStructure(name, out var structure))
         {
-            long length = 0;
+            long? length = null;
             try
             {
                 if (stream.CanSeek)
