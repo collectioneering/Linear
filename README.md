@@ -12,7 +12,7 @@ a structure file to lay out an input file and dump its outputs.
 Installation: `dotnet tool install -g lyn`
 
 Usage: `lyn export <structureFile> <inputFile> <outputDir>`
-[LinearParser.g4](spec/LinearParser.g4)
+
 For structure file examples, see [the sample folder](sample).
 Also check [the parser grammar file](spec/LinearParser.g4) which has comments for significant elements.
 
