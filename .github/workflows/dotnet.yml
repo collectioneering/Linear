@@ -52,4 +52,4 @@ jobs:
     - uses: actions/upload-artifact@v4
       with:
         name: lyn-net10.0-win-x64
-        path: build/publish/lyn/release_win-x64/lyn
+        path: build/publish/lyn/release_win-x64/lyn.exe
