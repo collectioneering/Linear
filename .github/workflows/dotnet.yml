@@ -1,0 +1,55 @@
+name: .NET
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v6
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v5
+      with:
+        dotnet-version: '10.0.x'
+    - name: Install dependencies
+      run: dotnet restore src
+    - name: Build
+      run: dotnet build src --configuration Release --no-restore
+    - name: Test
+      run: dotnet test src --configuration Release --no-build --verbosity normal
+    - name: Publish net10.0 osx-x64
+      run: dotnet publish src/lyn --configuration Release -f net10.0 -r osx-x64 --no-self-contained /p:PublishSingleFile=true --artifacts-path build/
+    - name: Publish net10.0 osx-arm64
+      run: dotnet publish src/lyn --configuration Release -f net10.0 -r osx-arm64 --no-self-contained /p:PublishSingleFile=true --artifacts-path build/
+    - name: Publish net10.0 linux-x64
+      run: dotnet publish src/lyn --configuration Release -f net10.0 -r linux-x64 --no-self-contained /p:PublishSingleFile=true --artifacts-path build/
+    - name: Publish net10.0 linux-arm64
+      run: dotnet publish src/lyn --configuration Release -f net10.0 -r linux-arm64 --no-self-contained /p:PublishSingleFile=true --artifacts-path build/
+    - name: Publish net10.0 win-x64
+      run: dotnet publish src/lyn --configuration Release -f net10.0 -r win-x64 --no-self-contained /p:PublishSingleFile=true --artifacts-path build/
+    - uses: actions/upload-artifact@v4
+      with:
+        name: lyn-net10.0-osx-x64
+        path: build/publish/lyn/release_osx-x64/lyn
+    - uses: actions/upload-artifact@v4
+      with:
+        name: lyn-net10.0-osx-arm64
+        path: build/publish/lyn/release_osx-arm64/lyn
+    - uses: actions/upload-artifact@v4
+      with:
+        name: lyn-net10.0-linux-x64
+        path: build/publish/lyn/release_linux-x64/lyn
+    - uses: actions/upload-artifact@v4
+      with:
+        name: lyn-net10.0-linux-arm64
+        path: build/publish/lyn/release_linux-arm64/lyn
+    - uses: actions/upload-artifact@v4
+      with:
+        name: lyn-net10.0-win-x64
+        path: build/publish/lyn/release_win-x64/lyn
