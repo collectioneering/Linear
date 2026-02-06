@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Linear.Runtime.Expressions;
 using static Linear.Utility.CastUtil;
 
@@ -101,7 +103,36 @@ public class PointerArrayDeserializer : DeserializerInstance
                 }
             }
         }
+        return new DeserializeResult(tarArray, curOffset.HasValue ? curOffset.Value - offset : null);
+    }
 
+    /// <inheritdoc />
+    public override async ValueTask<DeserializeResult> DeserializeAsync(DeserializerContext context, Stream stream, long offset, long? length = null, int? index = null, CancellationToken cancellationToken = default)
+    {
+        var structureContext = new StructureEvaluationContext(context.Structure);
+        object src = await _mainExpression.EvaluateAsync(structureContext, stream, cancellationToken) ?? throw new NullReferenceException();
+        Array baseArray = (Array)src;
+        int pointerArrayLength = CastInt(await _countExpression.EvaluateAsync(structureContext, ReadOnlyMemory<byte>.Empty, cancellationToken));
+        Array tarArray = Array.CreateInstance(_elementType, pointerArrayLength);
+        long? curOffset = offset;
+        for (int i = 0; i < pointerArrayLength; i++)
+        {
+            long vI = CastLong(baseArray.GetValue(i));
+            long? preElemLength = _lenFinder ? CastLong(baseArray.GetValue(i + 1)) - vI : null;
+            (object value, long? elemLength) = await _elementDeserializer.DeserializeAsync(context, stream, offset + vI, preElemLength, i, cancellationToken);
+            tarArray.SetValue(value, i);
+            if (curOffset is { } curOffsetValue)
+            {
+                if (elemLength is { } elemLengthValue)
+                {
+                    curOffset = curOffsetValue + elemLengthValue;
+                }
+                else
+                {
+                    curOffset = null;
+                }
+            }
+        }
         return new DeserializeResult(tarArray, curOffset.HasValue ? curOffset.Value - offset : null);
     }
 
@@ -132,7 +163,36 @@ public class PointerArrayDeserializer : DeserializerInstance
                 }
             }
         }
+        return new DeserializeResult(tarArray, curOffset.HasValue ? curOffset.Value - offset : null);
+    }
 
+    /// <inheritdoc />
+    public override async ValueTask<DeserializeResult> DeserializeAsync(DeserializerContext context, ReadOnlyMemory<byte> memory, long offset, long? length = null, int? index = null, CancellationToken cancellationToken = default)
+    {
+        var structureContext = new StructureEvaluationContext(context.Structure);
+        object src = await _mainExpression.EvaluateAsync(structureContext, memory, cancellationToken) ?? throw new NullReferenceException();
+        Array baseArray = (Array)src;
+        int pointerArrayLength = CastInt(await _countExpression.EvaluateAsync(structureContext, ReadOnlyMemory<byte>.Empty, cancellationToken));
+        Array tarArray = Array.CreateInstance(_elementType, pointerArrayLength);
+        long? curOffset = offset;
+        for (int i = 0; i < pointerArrayLength; i++)
+        {
+            long vI = CastLong(baseArray.GetValue(i));
+            long? preElemLength = _lenFinder ? CastLong(baseArray.GetValue(i + 1)) - vI : null;
+            (object value, long? elemLength) = await _elementDeserializer.DeserializeAsync(context, memory, offset + vI, preElemLength, i, cancellationToken);
+            tarArray.SetValue(value, i);
+            if (curOffset is { } curOffsetValue)
+            {
+                if (elemLength is { } elemLengthValue)
+                {
+                    curOffset = curOffsetValue + elemLengthValue;
+                }
+                else
+                {
+                    curOffset = null;
+                }
+            }
+        }
         return new DeserializeResult(tarArray, curOffset.HasValue ? curOffset.Value - offset : null);
     }
 
@@ -163,7 +223,6 @@ public class PointerArrayDeserializer : DeserializerInstance
                 }
             }
         }
-
         return new DeserializeResult(tarArray, curOffset.HasValue ? curOffset.Value - offset : null);
     }
 }

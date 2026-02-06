@@ -6,17 +6,17 @@ namespace Linear.Runtime;
 public enum StandardProperty
 {
     /// <summary>
-    /// Array length
+    /// Array length.
     /// </summary>
     ArrayLengthProperty,
 
     /// <summary>
-    /// Pointer length
+    /// Pointer length.
     /// </summary>
     PointerArrayLengthProperty,
 
     /// <summary>
-    /// Pointer offset
+    /// Pointer offset.
     /// </summary>
     PointerOffsetProperty
 }

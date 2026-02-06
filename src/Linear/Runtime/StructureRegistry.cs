@@ -4,6 +4,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Antlr4.Runtime;
 using Linear.Format;
 using Linear.Runtime.Deserializers;
@@ -94,11 +96,11 @@ public class StructureRegistry
     }
 
     /// <summary>
-    /// Get structure by name
+    /// Gets structure by name.
     /// </summary>
-    /// <param name="name">Name</param>
-    /// <returns>Structure</returns>
-    /// <exception cref="KeyNotFoundException">If structure not found</exception>
+    /// <param name="name">Name.</param>
+    /// <returns>Structure.</returns>
+    /// <exception cref="KeyNotFoundException">Thrown if structure not found.</exception>
     public Structure this[string name] => _structures[name];
 
     /// <summary>
@@ -112,28 +114,109 @@ public class StructureRegistry
     /// <summary>
     /// Parses structure from stream.
     /// </summary>
+    /// <param name="structure">Structure layout to use.</param>
+    /// <param name="stream">Stream to read from.</param>
+    /// <returns>Parsed structure.</returns>
+    public StructureInstance Parse(Structure structure, Stream stream)
+    {
+        long? length = null;
+        try
+        {
+            if (stream.CanSeek)
+            {
+                length = stream.Length;
+            }
+        }
+        catch
+        {
+            // ignored
+        }
+        return structure.Parse(Structures, stream, new ParseState(structure.Name ?? "unnamed_structure", Length: length));
+    }
+
+    /// <summary>
+    /// Parses structure from stream.
+    /// </summary>
+    /// <param name="structure">Structure layout to use.</param>
+    /// <param name="stream">Stream to read from.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>Parsed structure.</returns>
+    public ValueTask<StructureInstance> ParseAsync(Structure structure, Stream stream, CancellationToken cancellationToken = default)
+    {
+        long? length = null;
+        try
+        {
+            if (stream.CanSeek)
+            {
+                length = stream.Length;
+            }
+        }
+        catch
+        {
+            // ignored
+        }
+        return structure.ParseAsync(Structures, stream, new ParseState(structure.Name ?? "unnamed_structure", Length: length), cancellationToken);
+    }
+
+    /// <summary>
+    /// Parses structure from buffer.
+    /// </summary>
+    /// <param name="structure">Structure layout to use.</param>
+    /// <param name="memory">Buffer to read from.</param>
+    /// <returns>Parsed structure.</returns>
+    public StructureInstance Parse(Structure structure, ReadOnlyMemory<byte> memory)
+    {
+        return structure.Parse(Structures, memory, new ParseState(structure.Name ?? "unnamed_structure", Length: memory.Length));
+    }
+
+    /// <summary>
+    /// Parses structure from buffer.
+    /// </summary>
+    /// <param name="structure">Structure layout to use.</param>
+    /// <param name="memory">Buffer to read from.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>Parsed structure.</returns>
+    public ValueTask<StructureInstance> ParseAsync(Structure structure, ReadOnlyMemory<byte> memory, CancellationToken cancellationToken = default)
+    {
+        return structure.ParseAsync(Structures, memory, new ParseState(structure.Name ?? "unnamed_structure", Length: memory.Length), cancellationToken);
+    }
+
+    /// <summary>
+    /// Parses structure from buffer.
+    /// </summary>
+    /// <param name="structure">Structure layout to use.</param>
+    /// <param name="span">Buffer to read from.</param>
+    /// <returns>Parsed structure.</returns>
+    public StructureInstance Parse(Structure structure, ReadOnlySpan<byte> span)
+    {
+        return structure.Parse(Structures, span, new ParseState(structure.Name ?? "unnamed_structure", Length: span.Length));
+    }
+
+    /// <summary>
+    /// Parses structure from stream.
+    /// </summary>
     /// <param name="name">Structure name.</param>
     /// <param name="stream">Stream to read from.</param>
     /// <returns>Parsed structure.</returns>
     public StructureInstance Parse(string name, Stream stream)
     {
-        if (TryGetStructure(name, out var structure))
+        if (!TryGetStructure(name, out var structure))
         {
-            long? length = null;
-            try
-            {
-                if (stream.CanSeek)
-                {
-                    length = stream.Length;
-                }
-            }
-            catch
-            {
-                // ignored
-            }
-            return structure.Parse(Structures, stream, new ParseState(name, Length: length));
+            throw new InvalidOperationException($"No structure named {name} was found");
         }
-        throw new InvalidOperationException($"No structure named {name} was found");
+        long? length = null;
+        try
+        {
+            if (stream.CanSeek)
+            {
+                length = stream.Length;
+            }
+        }
+        catch
+        {
+            // ignored
+        }
+        return structure.Parse(Structures, stream, new ParseState(name, Length: length));
     }
 
     /// <summary>
@@ -144,11 +227,11 @@ public class StructureRegistry
     /// <returns>Parsed structure.</returns>
     public StructureInstance Parse(string name, ReadOnlySpan<byte> span)
     {
-        if (TryGetStructure(name, out var structure))
+        if (!TryGetStructure(name, out var structure))
         {
-            return structure.Parse(Structures, span, new ParseState(name, Length: span.Length));
+            throw new InvalidOperationException($"No structure named {name} was found");
         }
-        throw new InvalidOperationException($"No structure named {name} was found");
+        return structure.Parse(Structures, span, new ParseState(name, Length: span.Length));
     }
 
     /// <summary>
@@ -160,11 +243,61 @@ public class StructureRegistry
     /// <returns>Parsed structure.</returns>
     public StructureInstance Parse(string name, Stream stream, ParseState parseState)
     {
-        if (TryGetStructure(name, out var structure))
+        if (!TryGetStructure(name, out var structure))
         {
-            return structure.Parse(Structures, stream, parseState);
+            throw new InvalidOperationException($"No structure named {name} was found");
         }
-        throw new InvalidOperationException($"No structure named {name} was found");
+        return structure.Parse(Structures, stream, parseState);
+    }
+
+    /// <summary>
+    /// Parses structure from stream.
+    /// </summary>
+    /// <param name="name">Structure name.</param>
+    /// <param name="stream">Stream to read from.</param>
+    /// <param name="parseState">Initial parse state.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>Parsed structure.</returns>
+    public ValueTask<StructureInstance> ParseAsync(string name, Stream stream, ParseState parseState, CancellationToken cancellationToken = default)
+    {
+        if (!TryGetStructure(name, out var structure))
+        {
+            throw new InvalidOperationException($"No structure named {name} was found");
+        }
+        return structure.ParseAsync(Structures, stream, parseState, cancellationToken);
+    }
+
+    /// <summary>
+    /// Parses structure from buffer.
+    /// </summary>
+    /// <param name="name">Structure name.</param>
+    /// <param name="memory">Buffer to read from.</param>
+    /// <param name="parseState">Initial parse state.</param>
+    /// <returns>Parsed structure.</returns>
+    public StructureInstance Parse(string name, ReadOnlyMemory<byte> memory, ParseState parseState)
+    {
+        if (!TryGetStructure(name, out var structure))
+        {
+            throw new InvalidOperationException($"No structure named {name} was found");
+        }
+        return structure.Parse(Structures, memory, parseState);
+    }
+
+    /// <summary>
+    /// Parses structure from buffer.
+    /// </summary>
+    /// <param name="name">Structure name.</param>
+    /// <param name="memory">Buffer to read from.</param>
+    /// <param name="parseState">Initial parse state.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>Parsed structure.</returns>
+    public ValueTask<StructureInstance> ParseAsync(string name, ReadOnlyMemory<byte> memory, ParseState parseState, CancellationToken cancellationToken = default)
+    {
+        if (!TryGetStructure(name, out var structure))
+        {
+            throw new InvalidOperationException($"No structure named {name} was found");
+        }
+        return structure.ParseAsync(Structures, memory, parseState, cancellationToken);
     }
 
     /// <summary>
@@ -176,11 +309,11 @@ public class StructureRegistry
     /// <returns>Parsed structure.</returns>
     public StructureInstance Parse(string name, ReadOnlySpan<byte> span, ParseState parseState)
     {
-        if (TryGetStructure(name, out var structure))
+        if (!TryGetStructure(name, out var structure))
         {
-            return structure.Parse(Structures, span, parseState);
+            throw new InvalidOperationException($"No structure named {name} was found");
         }
-        throw new InvalidOperationException($"No structure named {name} was found");
+        return structure.Parse(Structures, span, parseState);
     }
 
     /// <summary>

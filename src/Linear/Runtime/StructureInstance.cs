@@ -1,12 +1,9 @@
-﻿#if NET7_0_OR_GREATER
-using System;
-#endif
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-#if NET7_0_OR_GREATER
+using Linear.Utility;
 using System.Numerics;
-#endif
 
 namespace Linear.Runtime
 {
@@ -46,7 +43,7 @@ namespace Linear.Runtime
         public long? Length { get; set; }
 
         /// <summary>
-        /// Get unique sequential identifier.
+        /// Gets unique sequential identifier.
         /// </summary>
         /// <returns>Unique identifier.</returns>
         public int GetUniqueId() => Parent?.GetUniqueId() ?? _u++;
@@ -77,10 +74,10 @@ namespace Linear.Runtime
         internal void AddOutput(StructureOutput output) => _outputs.Add(output);
 
         /// <summary>
-        /// Get outputs
+        /// Gets outputs.
         /// </summary>
-        /// <returns>Outputs</returns>
-        /// <param name="recurse">Recurse into children</param>
+        /// <returns>Outputs.</returns>
+        /// <param name="recurse">Recurse into children.</param>
         public List<StructureOutput> GetOutputs(bool recurse = true)
         {
             return GetOutputsInternal(recurse).ToList();
@@ -108,29 +105,29 @@ namespace Linear.Runtime
         public bool Contains(string member) => _members.ContainsKey(member);
 
         /// <summary>
-        /// Get named member
+        /// Gets named member.
         /// </summary>
-        /// <param name="member">Member name</param>
-        /// <exception cref="KeyNotFoundException">If key was not found in members</exception>
+        /// <param name="member">Member name.</param>
+        /// <exception cref="KeyNotFoundException">Thrown if key was not found in members.</exception>
         public object this[string member] => _members[member];
 
         /// <summary>
-        /// Get member cast to type
+        /// Gets member cast to type.
         /// </summary>
-        /// <param name="member">Member name</param>
-        /// <typeparam name="T">Target type</typeparam>
-        /// <returns>Value</returns>
-        /// <exception cref="KeyNotFoundException">If key was not found in members</exception>
+        /// <param name="member">Member name.</param>
+        /// <typeparam name="T">Target type.</typeparam>
+        /// <returns>Value.</returns>
+        /// <exception cref="KeyNotFoundException">Thrown if key was not found in members.</exception>
         public T GetValue<T>(string member) => (T)_members[member];
 
         /// <summary>
-        /// Try to get member cast to type
+        /// Attempts to get member cast to type.
         /// </summary>
-        /// <param name="member">Member name</param>
-        /// <param name="result">Value</param>
-        /// <typeparam name="T">Target type</typeparam>
-        /// <returns>True if cast succeeded</returns>
-        /// <exception cref="KeyNotFoundException">If key was not found in members</exception>
+        /// <param name="member">Member name.</param>
+        /// <param name="result">Value.</param>
+        /// <typeparam name="T">Target type.</typeparam>
+        /// <returns>True if cast succeeded.</returns>
+        /// <exception cref="KeyNotFoundException">Thrown if key was not found in members.</exception>
         public bool TryGetValue<T>(string member, [NotNullWhen(true)] out T? result)
         {
             result = default!;
@@ -142,27 +139,26 @@ namespace Linear.Runtime
             return false;
         }
 
-#if NET7_0_OR_GREATER
         /// <summary>
-        /// Get member cast to type
+        /// Gets member cast to type.
         /// </summary>
-        /// <param name="member">Member name</param>
-        /// <typeparam name="T">Target type</typeparam>
-        /// <returns>Value</returns>
-        /// <exception cref="KeyNotFoundException">If key was not found in members</exception>
+        /// <param name="member">Member name.</param>
+        /// <typeparam name="T">Target type.</typeparam>
+        /// <returns>Value.</returns>
+        /// <exception cref="KeyNotFoundException">Thrown if key was not found in members.</exception>
         public T GetNumber<T>(string member) where T : INumber<T>
         {
             return NumberUtil.CastNumber<T>(_members[member]) ?? throw new InvalidCastException();
         }
 
         /// <summary>
-        /// Try to get member cast to type
+        /// Attempts to get member cast to type.
         /// </summary>
-        /// <param name="member">Member name</param>
-        /// <param name="result">Value</param>
-        /// <typeparam name="T">Target type</typeparam>
-        /// <returns>True if cast succeeded</returns>
-        /// <exception cref="KeyNotFoundException">If key was not found in members</exception>
+        /// <param name="member">Member name.</param>
+        /// <param name="result">Value.</param>
+        /// <typeparam name="T">Target type.</typeparam>
+        /// <returns>True if cast succeeded.</returns>
+        /// <exception cref="KeyNotFoundException">Thrown if key was not found in members.</exception>
         public bool TryGetNumber<T>(string member, out T result) where T : INumber<T>
         {
             result = default!;
@@ -180,6 +176,5 @@ namespace Linear.Runtime
             }
             return false;
         }
-#endif
     }
 }

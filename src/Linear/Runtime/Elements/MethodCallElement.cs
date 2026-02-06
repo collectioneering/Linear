@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Linear.Runtime.Elements;
 
@@ -12,9 +14,9 @@ public class MethodCallElement : Element
     private readonly ExpressionDefinition _expression;
 
     /// <summary>
-    /// Create new instance of <see cref="MethodCallElement"/>
+    /// Initializes an instance of <see cref="MethodCallElement"/>.
     /// </summary>
-    /// <param name="expression">Value definition</param>
+    /// <param name="expression">Value definition.</param>
     public MethodCallElement(ExpressionDefinition expression)
     {
         _expression = expression;
@@ -37,9 +39,21 @@ public class MethodCallElement : Element
             return ElementInitializeResult.Default;
         }
 
+        public override async ValueTask<ElementInitializeResult> InitializeAsync(StructureEvaluationContext context, Stream stream, CancellationToken cancellationToken = default)
+        {
+            await Expression.EvaluateAsync(context, stream, cancellationToken);
+            return ElementInitializeResult.Default;
+        }
+
         public override ElementInitializeResult Initialize(StructureEvaluationContext context, ReadOnlyMemory<byte> memory)
         {
             Expression.Evaluate(context, memory);
+            return ElementInitializeResult.Default;
+        }
+
+        public override async ValueTask<ElementInitializeResult> InitializeAsync(StructureEvaluationContext context, ReadOnlyMemory<byte> memory, CancellationToken cancellationToken = default)
+        {
+            await Expression.EvaluateAsync(context, memory, cancellationToken);
             return ElementInitializeResult.Default;
         }
 

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using Linear.Utility;
 
 namespace Linear.Runtime.Elements;
@@ -38,9 +40,21 @@ public class DiscardElement : Element
             return new ElementInitializeResult(discard);
         }
 
+        public override async ValueTask<ElementInitializeResult> InitializeAsync(StructureEvaluationContext context, Stream stream, CancellationToken cancellationToken = default)
+        {
+            bool discard = CastUtil.CastBool(await Expression.EvaluateAsync(context, stream, cancellationToken));
+            return new ElementInitializeResult(discard);
+        }
+
         public override ElementInitializeResult Initialize(StructureEvaluationContext context, ReadOnlyMemory<byte> memory)
         {
             bool discard = CastUtil.CastBool(Expression.Evaluate(context, memory));
+            return new ElementInitializeResult(discard);
+        }
+
+        public override async ValueTask<ElementInitializeResult> InitializeAsync(StructureEvaluationContext context, ReadOnlyMemory<byte> memory, CancellationToken cancellationToken = default)
+        {
+            bool discard = CastUtil.CastBool(await Expression.EvaluateAsync(context, memory, cancellationToken));
             return new ElementInitializeResult(discard);
         }
 

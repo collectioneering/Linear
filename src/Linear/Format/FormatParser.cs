@@ -16,7 +16,7 @@ namespace Linear.Format;
 public static class FormatParser
 {
     /// <summary>
-    /// Load linear format from a <see cref="String"/>.
+    /// Loads linear format from a <see cref="String"/>.
     /// </summary>
     /// <param name="input">Source.</param>
     /// <param name="filenameHint">Filename hint.</param>
@@ -39,7 +39,7 @@ public static class FormatParser
     }
 
     /// <summary>
-    /// Load linear format from a <see cref="TextReader"/>.
+    /// Loads linear format from a <see cref="TextReader"/>.
     /// </summary>
     /// <param name="input">Source.</param>
     /// <param name="filenameHint">Filename hint.</param>
@@ -62,7 +62,7 @@ public static class FormatParser
     }
 
     /// <summary>
-    /// Load lyn-format stream from a parser instance.
+    /// Loads lyn-format stream from a parser instance.
     /// </summary>
     /// <param name="parser">Source parser.</param>
     /// <param name="filenameHint">Filename hint.</param>

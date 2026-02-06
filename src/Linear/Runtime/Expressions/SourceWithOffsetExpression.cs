@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Linear.Runtime.Expressions;
 
@@ -45,10 +47,24 @@ public class SourceWithOffsetExpression : ExpressionDefinition
             return new SourceWithOffset(source, offset);
         }
 
+        public override async ValueTask<object?> EvaluateAsync(StructureEvaluationContext context, Stream stream, CancellationToken cancellationToken = default)
+        {
+            object source = await Source.EvaluateAsync(context, stream, cancellationToken) ?? throw new InvalidOperationException($"{nameof(SourceWithOffset)} source is null");
+            object offset = await Offset.EvaluateAsync(context, stream, cancellationToken) ?? throw new InvalidOperationException($"{nameof(SourceWithOffset)} offset is null");
+            return new SourceWithOffset(source, offset);
+        }
+
         public override object Evaluate(StructureEvaluationContext context, ReadOnlyMemory<byte> memory)
         {
             object source = Source.Evaluate(context, memory) ?? throw new InvalidOperationException($"{nameof(SourceWithOffset)} source is null");
             object offset = Offset.Evaluate(context, memory) ?? throw new InvalidOperationException($"{nameof(SourceWithOffset)} offset is null");
+            return new SourceWithOffset(source, offset);
+        }
+
+        public override async ValueTask<object?> EvaluateAsync(StructureEvaluationContext context, ReadOnlyMemory<byte> memory, CancellationToken cancellationToken = default)
+        {
+            object source = await Source.EvaluateAsync(context, memory, cancellationToken) ?? throw new InvalidOperationException($"{nameof(SourceWithOffset)} source is null");
+            object offset = await Offset.EvaluateAsync(context, memory, cancellationToken) ?? throw new InvalidOperationException($"{nameof(SourceWithOffset)} offset is null");
             return new SourceWithOffset(source, offset);
         }
 

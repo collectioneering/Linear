@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Linear.Runtime.Elements;
 
@@ -17,12 +19,12 @@ public class OutputElement : Element
     private readonly Dictionary<string, ExpressionDefinition>? _exporterParams;
 
     /// <summary>
-    /// Create new instance of <see cref="OutputElement"/>
+    /// Initializes an instance of <see cref="OutputElement"/>.
     /// </summary>
-    /// <param name="formatDefinition">Format value definition</param>
-    /// <param name="rangeDefinition">Range value definition</param>
-    /// <param name="nameDefinition">Name value definition</param>
-    /// <param name="exporterParams">Exporter parameters</param>
+    /// <param name="formatDefinition">Format value definition.</param>
+    /// <param name="rangeDefinition">Range value definition.</param>
+    /// <param name="nameDefinition">Name value definition.</param>
+    /// <param name="exporterParams">Exporter parameters.</param>
     public OutputElement(ExpressionDefinition formatDefinition, ExpressionDefinition rangeDefinition,
         ExpressionDefinition nameDefinition, Dictionary<string, ExpressionDefinition>? exporterParams)
     {
@@ -52,7 +54,10 @@ public class OutputElement : Element
         return new OutputElementInitializer(_formatDefinition.GetInstance(), _rangeDefinition.GetInstance(), _nameDefinition.GetInstance(), exporterParamsCompact);
     }
 
-    private record OutputElementInitializer(ExpressionInstance Format, ExpressionInstance Range, ExpressionInstance Name,
+    private record OutputElementInitializer(
+        ExpressionInstance Format,
+        ExpressionInstance Range,
+        ExpressionInstance Name,
         Dictionary<string, ExpressionInstance>? ExporterParamsCompact) : ElementInitializer
     {
         public override ElementInitializeResult Initialize(StructureEvaluationContext context, Stream stream)
@@ -72,6 +77,23 @@ public class OutputElement : Element
             return ElementInitializeResult.Default;
         }
 
+        public override async ValueTask<ElementInitializeResult> InitializeAsync(StructureEvaluationContext context, Stream stream, CancellationToken cancellationToken = default)
+        {
+            object? format = await Format.EvaluateAsync(context, stream, cancellationToken);
+            object? range = await Range.EvaluateAsync(context, stream, cancellationToken);
+            object? name = await Name.EvaluateAsync(context, stream, cancellationToken);
+            Dictionary<string, object>? exporterParams = ExporterParamsCompact == null ? null : new Dictionary<string, object>();
+            if (ExporterParamsCompact != null)
+            {
+                foreach (var kvp in ExporterParamsCompact)
+                {
+                    exporterParams![kvp.Key] = await kvp.Value.EvaluateAsync(context, stream, cancellationToken) ?? throw new NullReferenceException();
+                }
+            }
+            InitializeInternal(context, format, range, name, exporterParams);
+            return ElementInitializeResult.Default;
+        }
+
         public override ElementInitializeResult Initialize(StructureEvaluationContext context, ReadOnlyMemory<byte> memory)
         {
             object? format = Format.Evaluate(context, memory);
@@ -83,6 +105,23 @@ public class OutputElement : Element
                 foreach (var kvp in ExporterParamsCompact)
                 {
                     exporterParams![kvp.Key] = kvp.Value.Evaluate(context, memory) ?? throw new NullReferenceException();
+                }
+            }
+            InitializeInternal(context, format, range, name, exporterParams);
+            return ElementInitializeResult.Default;
+        }
+
+        public override async ValueTask<ElementInitializeResult> InitializeAsync(StructureEvaluationContext context, ReadOnlyMemory<byte> memory, CancellationToken cancellationToken = default)
+        {
+            object? format = await Format.EvaluateAsync(context, memory, cancellationToken);
+            object? range = await Range.EvaluateAsync(context, memory, cancellationToken);
+            object? name = await Name.EvaluateAsync(context, memory, cancellationToken);
+            Dictionary<string, object>? exporterParams = ExporterParamsCompact == null ? null : new Dictionary<string, object>();
+            if (ExporterParamsCompact != null)
+            {
+                foreach (var kvp in ExporterParamsCompact)
+                {
+                    exporterParams![kvp.Key] = await kvp.Value.EvaluateAsync(context, memory, cancellationToken) ?? throw new NullReferenceException();
                 }
             }
             InitializeInternal(context, format, range, name, exporterParams);

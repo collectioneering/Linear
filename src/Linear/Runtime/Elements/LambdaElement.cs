@@ -13,10 +13,10 @@ public class LambdaElement : Element
     private readonly ExpressionDefinition _expression;
 
     /// <summary>
-    /// Create new instance of <see cref="ValueElement"/>
+    /// Initializes an instance of <see cref="ValueElement"/>.
     /// </summary>
-    /// <param name="name">Name of element</param>
-    /// <param name="expression">Value definition</param>
+    /// <param name="name">Name of element.</param>
+    /// <param name="expression">Value definition.</param>
     public LambdaElement(string name, ExpressionDefinition expression)
     {
         _name = name;

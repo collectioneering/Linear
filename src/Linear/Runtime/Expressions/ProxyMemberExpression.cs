@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Linear.Runtime.Expressions;
 
@@ -13,10 +15,10 @@ public class ProxyMemberExpression : ExpressionDefinition
     private readonly string _name;
 
     /// <summary>
-    /// Create new instance of <see cref="ProxyMemberExpression"/>
+    /// Initializes an instance of <see cref="ProxyMemberExpression"/>.
     /// </summary>
-    /// <param name="name">Member name</param>
-    /// <param name="source">Source expression</param>
+    /// <param name="name">Member name.</param>
+    /// <param name="source">Source expression.</param>
     public ProxyMemberExpression(string name, ExpressionDefinition source)
     {
         _name = name;
@@ -47,9 +49,29 @@ public class ProxyMemberExpression : ExpressionDefinition
             throw new InvalidCastException($"Could not cast object of type {val?.GetType().FullName} to {nameof(StructureInstance)}");
         }
 
+        public override async ValueTask<object?> EvaluateAsync(StructureEvaluationContext context, Stream stream, CancellationToken cancellationToken=default)
+        {
+            object? val = await Delegate.EvaluateAsync(context, stream, cancellationToken);
+            if (val is StructureInstance i2)
+            {
+                return i2[Name];
+            }
+            throw new InvalidCastException($"Could not cast object of type {val?.GetType().FullName} to {nameof(StructureInstance)}");
+        }
+
         public override object Evaluate(StructureEvaluationContext context, ReadOnlyMemory<byte> memory)
         {
             object? val = Delegate.Evaluate(context, memory);
+            if (val is StructureInstance i2)
+            {
+                return i2[Name];
+            }
+            throw new InvalidCastException($"Could not cast object of type {val?.GetType().FullName} to {nameof(StructureInstance)}");
+        }
+
+        public override async ValueTask<object?> EvaluateAsync(StructureEvaluationContext context, ReadOnlyMemory<byte> memory, CancellationToken cancellationToken = default)
+        {
+            object? val = await Delegate.EvaluateAsync(context, memory, cancellationToken);
             if (val is StructureInstance i2)
             {
                 return i2[Name];

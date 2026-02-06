@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generated from /Users/Shared/gabura/git/Linear/scripts/../spec/Linear.g4 by ANTLR 4.11.1
+// Generated from /Users/Shared/gabura/git/Linear/scripts/../spec/LinearParser.g4 by ANTLR 4.11.1
 
 // Unreachable code detected
 #pragma warning disable 0162
@@ -19,939 +19,783 @@
 // Ambiguous reference in cref attribute
 #pragma warning disable 419
 
-
 using Antlr4.Runtime.Misc;
-using IErrorNode = Antlr4.Runtime.Tree.IErrorNode;
-using ITerminalNode = Antlr4.Runtime.Tree.ITerminalNode;
+using IParseTreeListener = Antlr4.Runtime.Tree.IParseTreeListener;
 using IToken = Antlr4.Runtime.IToken;
-using ParserRuleContext = Antlr4.Runtime.ParserRuleContext;
 
 /// <summary>
-/// This class provides an empty implementation of <see cref="ILinearListener"/>,
-/// which can be extended to create a listener which only needs to handle a subset
-/// of the available methods.
+/// This interface defines a complete listener for a parse tree produced by
+/// <see cref="LinearParser"/>.
 /// </summary>
 [System.CodeDom.Compiler.GeneratedCode("ANTLR", "4.11.1")]
-[System.Diagnostics.DebuggerNonUserCode]
 [System.CLSCompliant(false)]
-public partial class LinearBaseListener : ILinearListener {
+public interface ILinearParserListener : IParseTreeListener {
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="LinearParser.compilation_unit"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterCompilation_unit([NotNull] LinearParser.Compilation_unitContext context) { }
+	void EnterCompilation_unit([NotNull] LinearParser.Compilation_unitContext context);
 	/// <summary>
 	/// Exit a parse tree produced by <see cref="LinearParser.compilation_unit"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitCompilation_unit([NotNull] LinearParser.Compilation_unitContext context) { }
+	void ExitCompilation_unit([NotNull] LinearParser.Compilation_unitContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="LinearParser.body_element"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterBody_element([NotNull] LinearParser.Body_elementContext context) { }
+	void EnterBody_element([NotNull] LinearParser.Body_elementContext context);
 	/// <summary>
 	/// Exit a parse tree produced by <see cref="LinearParser.body_element"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitBody_element([NotNull] LinearParser.Body_elementContext context) { }
+	void ExitBody_element([NotNull] LinearParser.Body_elementContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="LinearParser.struct"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterStruct([NotNull] LinearParser.StructContext context) { }
+	void EnterStruct([NotNull] LinearParser.StructContext context);
 	/// <summary>
 	/// Exit a parse tree produced by <see cref="LinearParser.struct"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitStruct([NotNull] LinearParser.StructContext context) { }
+	void ExitStruct([NotNull] LinearParser.StructContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="LinearParser.struct_statement"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterStruct_statement([NotNull] LinearParser.Struct_statementContext context) { }
+	void EnterStruct_statement([NotNull] LinearParser.Struct_statementContext context);
 	/// <summary>
 	/// Exit a parse tree produced by <see cref="LinearParser.struct_statement"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitStruct_statement([NotNull] LinearParser.Struct_statementContext context) { }
+	void ExitStruct_statement([NotNull] LinearParser.Struct_statementContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="LinearParser.struct_statement_define"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterStruct_statement_define([NotNull] LinearParser.Struct_statement_defineContext context) { }
+	void EnterStruct_statement_define([NotNull] LinearParser.Struct_statement_defineContext context);
 	/// <summary>
 	/// Exit a parse tree produced by <see cref="LinearParser.struct_statement_define"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitStruct_statement_define([NotNull] LinearParser.Struct_statement_defineContext context) { }
+	void ExitStruct_statement_define([NotNull] LinearParser.Struct_statement_defineContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="LinearParser.struct_statement_define_lambda"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterStruct_statement_define_lambda([NotNull] LinearParser.Struct_statement_define_lambdaContext context) { }
+	void EnterStruct_statement_define_lambda([NotNull] LinearParser.Struct_statement_define_lambdaContext context);
 	/// <summary>
 	/// Exit a parse tree produced by <see cref="LinearParser.struct_statement_define_lambda"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitStruct_statement_define_lambda([NotNull] LinearParser.Struct_statement_define_lambdaContext context) { }
+	void ExitStruct_statement_define_lambda([NotNull] LinearParser.Struct_statement_define_lambdaContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="LinearParser.struct_statement_discard"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterStruct_statement_discard([NotNull] LinearParser.Struct_statement_discardContext context) { }
+	void EnterStruct_statement_discard([NotNull] LinearParser.Struct_statement_discardContext context);
 	/// <summary>
 	/// Exit a parse tree produced by <see cref="LinearParser.struct_statement_discard"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitStruct_statement_discard([NotNull] LinearParser.Struct_statement_discardContext context) { }
+	void ExitStruct_statement_discard([NotNull] LinearParser.Struct_statement_discardContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="LinearParser.struct_statement_call"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterStruct_statement_call([NotNull] LinearParser.Struct_statement_callContext context) { }
+	void EnterStruct_statement_call([NotNull] LinearParser.Struct_statement_callContext context);
 	/// <summary>
 	/// Exit a parse tree produced by <see cref="LinearParser.struct_statement_call"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitStruct_statement_call([NotNull] LinearParser.Struct_statement_callContext context) { }
+	void ExitStruct_statement_call([NotNull] LinearParser.Struct_statement_callContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="LinearParser.struct_statement_length"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterStruct_statement_length([NotNull] LinearParser.Struct_statement_lengthContext context) { }
+	void EnterStruct_statement_length([NotNull] LinearParser.Struct_statement_lengthContext context);
 	/// <summary>
 	/// Exit a parse tree produced by <see cref="LinearParser.struct_statement_length"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitStruct_statement_length([NotNull] LinearParser.Struct_statement_lengthContext context) { }
+	void ExitStruct_statement_length([NotNull] LinearParser.Struct_statement_lengthContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="LinearParser.struct_statement_define_array"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterStruct_statement_define_array([NotNull] LinearParser.Struct_statement_define_arrayContext context) { }
+	void EnterStruct_statement_define_array([NotNull] LinearParser.Struct_statement_define_arrayContext context);
 	/// <summary>
 	/// Exit a parse tree produced by <see cref="LinearParser.struct_statement_define_array"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitStruct_statement_define_array([NotNull] LinearParser.Struct_statement_define_arrayContext context) { }
+	void ExitStruct_statement_define_array([NotNull] LinearParser.Struct_statement_define_arrayContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="LinearParser.struct_statement_define_array_indirect"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterStruct_statement_define_array_indirect([NotNull] LinearParser.Struct_statement_define_array_indirectContext context) { }
+	void EnterStruct_statement_define_array_indirect([NotNull] LinearParser.Struct_statement_define_array_indirectContext context);
 	/// <summary>
 	/// Exit a parse tree produced by <see cref="LinearParser.struct_statement_define_array_indirect"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitStruct_statement_define_array_indirect([NotNull] LinearParser.Struct_statement_define_array_indirectContext context) { }
+	void ExitStruct_statement_define_array_indirect([NotNull] LinearParser.Struct_statement_define_array_indirectContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="LinearParser.struct_statement_output"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterStruct_statement_output([NotNull] LinearParser.Struct_statement_outputContext context) { }
+	void EnterStruct_statement_output([NotNull] LinearParser.Struct_statement_outputContext context);
 	/// <summary>
 	/// Exit a parse tree produced by <see cref="LinearParser.struct_statement_output"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitStruct_statement_output([NotNull] LinearParser.Struct_statement_outputContext context) { }
+	void ExitStruct_statement_output([NotNull] LinearParser.Struct_statement_outputContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="LinearParser.property_group"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterProperty_group([NotNull] LinearParser.Property_groupContext context) { }
+	void EnterProperty_group([NotNull] LinearParser.Property_groupContext context);
 	/// <summary>
 	/// Exit a parse tree produced by <see cref="LinearParser.property_group"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitProperty_group([NotNull] LinearParser.Property_groupContext context) { }
+	void ExitProperty_group([NotNull] LinearParser.Property_groupContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="LinearParser.property_statement"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterProperty_statement([NotNull] LinearParser.Property_statementContext context) { }
+	void EnterProperty_statement([NotNull] LinearParser.Property_statementContext context);
 	/// <summary>
 	/// Exit a parse tree produced by <see cref="LinearParser.property_statement"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitProperty_statement([NotNull] LinearParser.Property_statementContext context) { }
+	void ExitProperty_statement([NotNull] LinearParser.Property_statementContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="LinearParser.term_replacement_length"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterTerm_replacement_length([NotNull] LinearParser.Term_replacement_lengthContext context) { }
+	void EnterTerm_replacement_length([NotNull] LinearParser.Term_replacement_lengthContext context);
 	/// <summary>
 	/// Exit a parse tree produced by <see cref="LinearParser.term_replacement_length"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitTerm_replacement_length([NotNull] LinearParser.Term_replacement_lengthContext context) { }
+	void ExitTerm_replacement_length([NotNull] LinearParser.Term_replacement_lengthContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="LinearParser.term_replacement_a"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterTerm_replacement_a([NotNull] LinearParser.Term_replacement_aContext context) { }
+	void EnterTerm_replacement_a([NotNull] LinearParser.Term_replacement_aContext context);
 	/// <summary>
 	/// Exit a parse tree produced by <see cref="LinearParser.term_replacement_a"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitTerm_replacement_a([NotNull] LinearParser.Term_replacement_aContext context) { }
+	void ExitTerm_replacement_a([NotNull] LinearParser.Term_replacement_aContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="LinearParser.term_replacement_i"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterTerm_replacement_i([NotNull] LinearParser.Term_replacement_iContext context) { }
+	void EnterTerm_replacement_i([NotNull] LinearParser.Term_replacement_iContext context);
 	/// <summary>
 	/// Exit a parse tree produced by <see cref="LinearParser.term_replacement_i"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitTerm_replacement_i([NotNull] LinearParser.Term_replacement_iContext context) { }
+	void ExitTerm_replacement_i([NotNull] LinearParser.Term_replacement_iContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="LinearParser.term_replacement_p"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterTerm_replacement_p([NotNull] LinearParser.Term_replacement_pContext context) { }
+	void EnterTerm_replacement_p([NotNull] LinearParser.Term_replacement_pContext context);
 	/// <summary>
 	/// Exit a parse tree produced by <see cref="LinearParser.term_replacement_p"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitTerm_replacement_p([NotNull] LinearParser.Term_replacement_pContext context) { }
+	void ExitTerm_replacement_p([NotNull] LinearParser.Term_replacement_pContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="LinearParser.term_replacement_u"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterTerm_replacement_u([NotNull] LinearParser.Term_replacement_uContext context) { }
+	void EnterTerm_replacement_u([NotNull] LinearParser.Term_replacement_uContext context);
 	/// <summary>
 	/// Exit a parse tree produced by <see cref="LinearParser.term_replacement_u"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitTerm_replacement_u([NotNull] LinearParser.Term_replacement_uContext context) { }
+	void ExitTerm_replacement_u([NotNull] LinearParser.Term_replacement_uContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="LinearParser.term_literal_true"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterTerm_literal_true([NotNull] LinearParser.Term_literal_trueContext context) { }
+	void EnterTerm_literal_true([NotNull] LinearParser.Term_literal_trueContext context);
 	/// <summary>
 	/// Exit a parse tree produced by <see cref="LinearParser.term_literal_true"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitTerm_literal_true([NotNull] LinearParser.Term_literal_trueContext context) { }
+	void ExitTerm_literal_true([NotNull] LinearParser.Term_literal_trueContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="LinearParser.term_literal_false"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterTerm_literal_false([NotNull] LinearParser.Term_literal_falseContext context) { }
+	void EnterTerm_literal_false([NotNull] LinearParser.Term_literal_falseContext context);
 	/// <summary>
 	/// Exit a parse tree produced by <see cref="LinearParser.term_literal_false"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitTerm_literal_false([NotNull] LinearParser.Term_literal_falseContext context) { }
+	void ExitTerm_literal_false([NotNull] LinearParser.Term_literal_falseContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>ExprMethodCall</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterExprMethodCall([NotNull] LinearParser.ExprMethodCallContext context) { }
+	void EnterExprMethodCall([NotNull] LinearParser.ExprMethodCallContext context);
 	/// <summary>
 	/// Exit a parse tree produced by the <c>ExprMethodCall</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitExprMethodCall([NotNull] LinearParser.ExprMethodCallContext context) { }
+	void ExitExprMethodCall([NotNull] LinearParser.ExprMethodCallContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>ExprOpAmp</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterExprOpAmp([NotNull] LinearParser.ExprOpAmpContext context) { }
+	void EnterExprOpAmp([NotNull] LinearParser.ExprOpAmpContext context);
 	/// <summary>
 	/// Exit a parse tree produced by the <c>ExprOpAmp</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitExprOpAmp([NotNull] LinearParser.ExprOpAmpContext context) { }
+	void ExitExprOpAmp([NotNull] LinearParser.ExprOpAmpContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>ExprOpBitwiseOr</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterExprOpBitwiseOr([NotNull] LinearParser.ExprOpBitwiseOrContext context) { }
+	void EnterExprOpBitwiseOr([NotNull] LinearParser.ExprOpBitwiseOrContext context);
 	/// <summary>
 	/// Exit a parse tree produced by the <c>ExprOpBitwiseOr</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitExprOpBitwiseOr([NotNull] LinearParser.ExprOpBitwiseOrContext context) { }
+	void ExitExprOpBitwiseOr([NotNull] LinearParser.ExprOpBitwiseOrContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>ExprLambdaReplacement</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterExprLambdaReplacement([NotNull] LinearParser.ExprLambdaReplacementContext context) { }
+	void EnterExprLambdaReplacement([NotNull] LinearParser.ExprLambdaReplacementContext context);
 	/// <summary>
 	/// Exit a parse tree produced by the <c>ExprLambdaReplacement</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitExprLambdaReplacement([NotNull] LinearParser.ExprLambdaReplacementContext context) { }
+	void ExitExprLambdaReplacement([NotNull] LinearParser.ExprLambdaReplacementContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>ExprUnboundDeserialize</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterExprUnboundDeserialize([NotNull] LinearParser.ExprUnboundDeserializeContext context) { }
+	void EnterExprUnboundDeserialize([NotNull] LinearParser.ExprUnboundDeserializeContext context);
 	/// <summary>
 	/// Exit a parse tree produced by the <c>ExprUnboundDeserialize</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitExprUnboundDeserialize([NotNull] LinearParser.ExprUnboundDeserializeContext context) { }
+	void ExitExprUnboundDeserialize([NotNull] LinearParser.ExprUnboundDeserializeContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>ExprUnOp</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterExprUnOp([NotNull] LinearParser.ExprUnOpContext context) { }
+	void EnterExprUnOp([NotNull] LinearParser.ExprUnOpContext context);
 	/// <summary>
 	/// Exit a parse tree produced by the <c>ExprUnOp</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitExprUnOp([NotNull] LinearParser.ExprUnOpContext context) { }
+	void ExitExprUnOp([NotNull] LinearParser.ExprUnOpContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>ExprOpEq</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterExprOpEq([NotNull] LinearParser.ExprOpEqContext context) { }
+	void EnterExprOpEq([NotNull] LinearParser.ExprOpEqContext context);
 	/// <summary>
 	/// Exit a parse tree produced by the <c>ExprOpEq</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitExprOpEq([NotNull] LinearParser.ExprOpEqContext context) { }
+	void ExitExprOpEq([NotNull] LinearParser.ExprOpEqContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>ExprTerm</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterExprTerm([NotNull] LinearParser.ExprTermContext context) { }
+	void EnterExprTerm([NotNull] LinearParser.ExprTermContext context);
 	/// <summary>
 	/// Exit a parse tree produced by the <c>ExprTerm</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitExprTerm([NotNull] LinearParser.ExprTermContext context) { }
+	void ExitExprTerm([NotNull] LinearParser.ExprTermContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>ExprRangeLength</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterExprRangeLength([NotNull] LinearParser.ExprRangeLengthContext context) { }
+	void EnterExprRangeLength([NotNull] LinearParser.ExprRangeLengthContext context);
 	/// <summary>
 	/// Exit a parse tree produced by the <c>ExprRangeLength</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitExprRangeLength([NotNull] LinearParser.ExprRangeLengthContext context) { }
+	void ExitExprRangeLength([NotNull] LinearParser.ExprRangeLengthContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>ExprWrapped</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterExprWrapped([NotNull] LinearParser.ExprWrappedContext context) { }
+	void EnterExprWrapped([NotNull] LinearParser.ExprWrappedContext context);
 	/// <summary>
 	/// Exit a parse tree produced by the <c>ExprWrapped</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitExprWrapped([NotNull] LinearParser.ExprWrappedContext context) { }
+	void ExitExprWrapped([NotNull] LinearParser.ExprWrappedContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>ExprOpMulDiv</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterExprOpMulDiv([NotNull] LinearParser.ExprOpMulDivContext context) { }
+	void EnterExprOpMulDiv([NotNull] LinearParser.ExprOpMulDivContext context);
 	/// <summary>
 	/// Exit a parse tree produced by the <c>ExprOpMulDiv</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitExprOpMulDiv([NotNull] LinearParser.ExprOpMulDivContext context) { }
+	void ExitExprOpMulDiv([NotNull] LinearParser.ExprOpMulDivContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>ExprOpRel</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterExprOpRel([NotNull] LinearParser.ExprOpRelContext context) { }
+	void EnterExprOpRel([NotNull] LinearParser.ExprOpRelContext context);
 	/// <summary>
 	/// Exit a parse tree produced by the <c>ExprOpRel</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitExprOpRel([NotNull] LinearParser.ExprOpRelContext context) { }
+	void ExitExprOpRel([NotNull] LinearParser.ExprOpRelContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>ExprRangeEnd</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterExprRangeEnd([NotNull] LinearParser.ExprRangeEndContext context) { }
+	void EnterExprRangeEnd([NotNull] LinearParser.ExprRangeEndContext context);
 	/// <summary>
 	/// Exit a parse tree produced by the <c>ExprRangeEnd</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitExprRangeEnd([NotNull] LinearParser.ExprRangeEndContext context) { }
+	void ExitExprRangeEnd([NotNull] LinearParser.ExprRangeEndContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>ExprSourceWithOffset</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterExprSourceWithOffset([NotNull] LinearParser.ExprSourceWithOffsetContext context) { }
+	void EnterExprSourceWithOffset([NotNull] LinearParser.ExprSourceWithOffsetContext context);
 	/// <summary>
 	/// Exit a parse tree produced by the <c>ExprSourceWithOffset</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitExprSourceWithOffset([NotNull] LinearParser.ExprSourceWithOffsetContext context) { }
+	void ExitExprSourceWithOffset([NotNull] LinearParser.ExprSourceWithOffsetContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>ExprOpCondOr</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterExprOpCondOr([NotNull] LinearParser.ExprOpCondOrContext context) { }
+	void EnterExprOpCondOr([NotNull] LinearParser.ExprOpCondOrContext context);
 	/// <summary>
 	/// Exit a parse tree produced by the <c>ExprOpCondOr</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitExprOpCondOr([NotNull] LinearParser.ExprOpCondOrContext context) { }
+	void ExitExprOpCondOr([NotNull] LinearParser.ExprOpCondOrContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>ExprArrayAccess</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterExprArrayAccess([NotNull] LinearParser.ExprArrayAccessContext context) { }
+	void EnterExprArrayAccess([NotNull] LinearParser.ExprArrayAccessContext context);
 	/// <summary>
 	/// Exit a parse tree produced by the <c>ExprArrayAccess</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitExprArrayAccess([NotNull] LinearParser.ExprArrayAccessContext context) { }
+	void ExitExprArrayAccess([NotNull] LinearParser.ExprArrayAccessContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>ExprOpAddSub</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterExprOpAddSub([NotNull] LinearParser.ExprOpAddSubContext context) { }
+	void EnterExprOpAddSub([NotNull] LinearParser.ExprOpAddSubContext context);
 	/// <summary>
 	/// Exit a parse tree produced by the <c>ExprOpAddSub</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitExprOpAddSub([NotNull] LinearParser.ExprOpAddSubContext context) { }
+	void ExitExprOpAddSub([NotNull] LinearParser.ExprOpAddSubContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>ExprDeserialize</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterExprDeserialize([NotNull] LinearParser.ExprDeserializeContext context) { }
+	void EnterExprDeserialize([NotNull] LinearParser.ExprDeserializeContext context);
 	/// <summary>
 	/// Exit a parse tree produced by the <c>ExprDeserialize</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitExprDeserialize([NotNull] LinearParser.ExprDeserializeContext context) { }
+	void ExitExprDeserialize([NotNull] LinearParser.ExprDeserializeContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>ExprOpShift</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterExprOpShift([NotNull] LinearParser.ExprOpShiftContext context) { }
+	void EnterExprOpShift([NotNull] LinearParser.ExprOpShiftContext context);
 	/// <summary>
 	/// Exit a parse tree produced by the <c>ExprOpShift</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitExprOpShift([NotNull] LinearParser.ExprOpShiftContext context) { }
+	void ExitExprOpShift([NotNull] LinearParser.ExprOpShiftContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>ExprOpTernary</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterExprOpTernary([NotNull] LinearParser.ExprOpTernaryContext context) { }
+	void EnterExprOpTernary([NotNull] LinearParser.ExprOpTernaryContext context);
 	/// <summary>
 	/// Exit a parse tree produced by the <c>ExprOpTernary</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitExprOpTernary([NotNull] LinearParser.ExprOpTernaryContext context) { }
+	void ExitExprOpTernary([NotNull] LinearParser.ExprOpTernaryContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>ExprOpCaret</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterExprOpCaret([NotNull] LinearParser.ExprOpCaretContext context) { }
+	void EnterExprOpCaret([NotNull] LinearParser.ExprOpCaretContext context);
 	/// <summary>
 	/// Exit a parse tree produced by the <c>ExprOpCaret</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitExprOpCaret([NotNull] LinearParser.ExprOpCaretContext context) { }
+	void ExitExprOpCaret([NotNull] LinearParser.ExprOpCaretContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>ExprOpCondAnd</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterExprOpCondAnd([NotNull] LinearParser.ExprOpCondAndContext context) { }
+	void EnterExprOpCondAnd([NotNull] LinearParser.ExprOpCondAndContext context);
 	/// <summary>
 	/// Exit a parse tree produced by the <c>ExprOpCondAnd</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitExprOpCondAnd([NotNull] LinearParser.ExprOpCondAndContext context) { }
+	void ExitExprOpCondAnd([NotNull] LinearParser.ExprOpCondAndContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>ExprMember</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterExprMember([NotNull] LinearParser.ExprMemberContext context) { }
+	void EnterExprMember([NotNull] LinearParser.ExprMemberContext context);
 	/// <summary>
 	/// Exit a parse tree produced by the <c>ExprMember</c>
 	/// labeled alternative in <see cref="LinearParser.expr"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitExprMember([NotNull] LinearParser.ExprMemberContext context) { }
+	void ExitExprMember([NotNull] LinearParser.ExprMemberContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="LinearParser.un_op"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterUn_op([NotNull] LinearParser.Un_opContext context) { }
+	void EnterUn_op([NotNull] LinearParser.Un_opContext context);
 	/// <summary>
 	/// Exit a parse tree produced by <see cref="LinearParser.un_op"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitUn_op([NotNull] LinearParser.Un_opContext context) { }
+	void ExitUn_op([NotNull] LinearParser.Un_opContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="LinearParser.op_mul_div"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterOp_mul_div([NotNull] LinearParser.Op_mul_divContext context) { }
+	void EnterOp_mul_div([NotNull] LinearParser.Op_mul_divContext context);
 	/// <summary>
 	/// Exit a parse tree produced by <see cref="LinearParser.op_mul_div"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitOp_mul_div([NotNull] LinearParser.Op_mul_divContext context) { }
+	void ExitOp_mul_div([NotNull] LinearParser.Op_mul_divContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="LinearParser.op_add_sub"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterOp_add_sub([NotNull] LinearParser.Op_add_subContext context) { }
+	void EnterOp_add_sub([NotNull] LinearParser.Op_add_subContext context);
 	/// <summary>
 	/// Exit a parse tree produced by <see cref="LinearParser.op_add_sub"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitOp_add_sub([NotNull] LinearParser.Op_add_subContext context) { }
+	void ExitOp_add_sub([NotNull] LinearParser.Op_add_subContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="LinearParser.op_shift"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterOp_shift([NotNull] LinearParser.Op_shiftContext context) { }
+	void EnterOp_shift([NotNull] LinearParser.Op_shiftContext context);
 	/// <summary>
 	/// Exit a parse tree produced by <see cref="LinearParser.op_shift"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitOp_shift([NotNull] LinearParser.Op_shiftContext context) { }
+	void ExitOp_shift([NotNull] LinearParser.Op_shiftContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="LinearParser.op_rel"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterOp_rel([NotNull] LinearParser.Op_relContext context) { }
+	void EnterOp_rel([NotNull] LinearParser.Op_relContext context);
 	/// <summary>
 	/// Exit a parse tree produced by <see cref="LinearParser.op_rel"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitOp_rel([NotNull] LinearParser.Op_relContext context) { }
+	void ExitOp_rel([NotNull] LinearParser.Op_relContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="LinearParser.op_eq"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterOp_eq([NotNull] LinearParser.Op_eqContext context) { }
+	void EnterOp_eq([NotNull] LinearParser.Op_eqContext context);
 	/// <summary>
 	/// Exit a parse tree produced by <see cref="LinearParser.op_eq"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitOp_eq([NotNull] LinearParser.Op_eqContext context) { }
+	void ExitOp_eq([NotNull] LinearParser.Op_eqContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="LinearParser.op_cond_and"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterOp_cond_and([NotNull] LinearParser.Op_cond_andContext context) { }
+	void EnterOp_cond_and([NotNull] LinearParser.Op_cond_andContext context);
 	/// <summary>
 	/// Exit a parse tree produced by <see cref="LinearParser.op_cond_and"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitOp_cond_and([NotNull] LinearParser.Op_cond_andContext context) { }
+	void ExitOp_cond_and([NotNull] LinearParser.Op_cond_andContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="LinearParser.op_cond_or"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterOp_cond_or([NotNull] LinearParser.Op_cond_orContext context) { }
+	void EnterOp_cond_or([NotNull] LinearParser.Op_cond_orContext context);
 	/// <summary>
 	/// Exit a parse tree produced by <see cref="LinearParser.op_cond_or"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitOp_cond_or([NotNull] LinearParser.Op_cond_orContext context) { }
+	void ExitOp_cond_or([NotNull] LinearParser.Op_cond_orContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="LinearParser.bool_op"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterBool_op([NotNull] LinearParser.Bool_opContext context) { }
+	void EnterBool_op([NotNull] LinearParser.Bool_opContext context);
 	/// <summary>
 	/// Exit a parse tree produced by <see cref="LinearParser.bool_op"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitBool_op([NotNull] LinearParser.Bool_opContext context) { }
+	void ExitBool_op([NotNull] LinearParser.Bool_opContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>StructSizeInt</c>
 	/// labeled alternative in <see cref="LinearParser.struct_size"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterStructSizeInt([NotNull] LinearParser.StructSizeIntContext context) { }
+	void EnterStructSizeInt([NotNull] LinearParser.StructSizeIntContext context);
 	/// <summary>
 	/// Exit a parse tree produced by the <c>StructSizeInt</c>
 	/// labeled alternative in <see cref="LinearParser.struct_size"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitStructSizeInt([NotNull] LinearParser.StructSizeIntContext context) { }
+	void ExitStructSizeInt([NotNull] LinearParser.StructSizeIntContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>StrictSizeHex</c>
 	/// labeled alternative in <see cref="LinearParser.struct_size"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterStrictSizeHex([NotNull] LinearParser.StrictSizeHexContext context) { }
+	void EnterStrictSizeHex([NotNull] LinearParser.StrictSizeHexContext context);
 	/// <summary>
 	/// Exit a parse tree produced by the <c>StrictSizeHex</c>
 	/// labeled alternative in <see cref="LinearParser.struct_size"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitStrictSizeHex([NotNull] LinearParser.StrictSizeHexContext context) { }
+	void ExitStrictSizeHex([NotNull] LinearParser.StrictSizeHexContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>TermRepLength</c>
 	/// labeled alternative in <see cref="LinearParser.term"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterTermRepLength([NotNull] LinearParser.TermRepLengthContext context) { }
+	void EnterTermRepLength([NotNull] LinearParser.TermRepLengthContext context);
 	/// <summary>
 	/// Exit a parse tree produced by the <c>TermRepLength</c>
 	/// labeled alternative in <see cref="LinearParser.term"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitTermRepLength([NotNull] LinearParser.TermRepLengthContext context) { }
+	void ExitTermRepLength([NotNull] LinearParser.TermRepLengthContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>TermRepA</c>
 	/// labeled alternative in <see cref="LinearParser.term"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterTermRepA([NotNull] LinearParser.TermRepAContext context) { }
+	void EnterTermRepA([NotNull] LinearParser.TermRepAContext context);
 	/// <summary>
 	/// Exit a parse tree produced by the <c>TermRepA</c>
 	/// labeled alternative in <see cref="LinearParser.term"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitTermRepA([NotNull] LinearParser.TermRepAContext context) { }
+	void ExitTermRepA([NotNull] LinearParser.TermRepAContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>TermRepI</c>
 	/// labeled alternative in <see cref="LinearParser.term"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterTermRepI([NotNull] LinearParser.TermRepIContext context) { }
+	void EnterTermRepI([NotNull] LinearParser.TermRepIContext context);
 	/// <summary>
 	/// Exit a parse tree produced by the <c>TermRepI</c>
 	/// labeled alternative in <see cref="LinearParser.term"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitTermRepI([NotNull] LinearParser.TermRepIContext context) { }
+	void ExitTermRepI([NotNull] LinearParser.TermRepIContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>TermRepP</c>
 	/// labeled alternative in <see cref="LinearParser.term"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterTermRepP([NotNull] LinearParser.TermRepPContext context) { }
+	void EnterTermRepP([NotNull] LinearParser.TermRepPContext context);
 	/// <summary>
 	/// Exit a parse tree produced by the <c>TermRepP</c>
 	/// labeled alternative in <see cref="LinearParser.term"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitTermRepP([NotNull] LinearParser.TermRepPContext context) { }
+	void ExitTermRepP([NotNull] LinearParser.TermRepPContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>TermRepU</c>
 	/// labeled alternative in <see cref="LinearParser.term"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterTermRepU([NotNull] LinearParser.TermRepUContext context) { }
+	void EnterTermRepU([NotNull] LinearParser.TermRepUContext context);
 	/// <summary>
 	/// Exit a parse tree produced by the <c>TermRepU</c>
 	/// labeled alternative in <see cref="LinearParser.term"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitTermRepU([NotNull] LinearParser.TermRepUContext context) { }
+	void ExitTermRepU([NotNull] LinearParser.TermRepUContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>TermLiteralTrue</c>
 	/// labeled alternative in <see cref="LinearParser.term"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterTermLiteralTrue([NotNull] LinearParser.TermLiteralTrueContext context) { }
+	void EnterTermLiteralTrue([NotNull] LinearParser.TermLiteralTrueContext context);
 	/// <summary>
 	/// Exit a parse tree produced by the <c>TermLiteralTrue</c>
 	/// labeled alternative in <see cref="LinearParser.term"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitTermLiteralTrue([NotNull] LinearParser.TermLiteralTrueContext context) { }
+	void ExitTermLiteralTrue([NotNull] LinearParser.TermLiteralTrueContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>TermLiteralFalse</c>
 	/// labeled alternative in <see cref="LinearParser.term"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterTermLiteralFalse([NotNull] LinearParser.TermLiteralFalseContext context) { }
+	void EnterTermLiteralFalse([NotNull] LinearParser.TermLiteralFalseContext context);
 	/// <summary>
 	/// Exit a parse tree produced by the <c>TermLiteralFalse</c>
 	/// labeled alternative in <see cref="LinearParser.term"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitTermLiteralFalse([NotNull] LinearParser.TermLiteralFalseContext context) { }
+	void ExitTermLiteralFalse([NotNull] LinearParser.TermLiteralFalseContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>TermIdentifier</c>
 	/// labeled alternative in <see cref="LinearParser.term"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterTermIdentifier([NotNull] LinearParser.TermIdentifierContext context) { }
+	void EnterTermIdentifier([NotNull] LinearParser.TermIdentifierContext context);
 	/// <summary>
 	/// Exit a parse tree produced by the <c>TermIdentifier</c>
 	/// labeled alternative in <see cref="LinearParser.term"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitTermIdentifier([NotNull] LinearParser.TermIdentifierContext context) { }
+	void ExitTermIdentifier([NotNull] LinearParser.TermIdentifierContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>TermInt</c>
 	/// labeled alternative in <see cref="LinearParser.term"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterTermInt([NotNull] LinearParser.TermIntContext context) { }
+	void EnterTermInt([NotNull] LinearParser.TermIntContext context);
 	/// <summary>
 	/// Exit a parse tree produced by the <c>TermInt</c>
 	/// labeled alternative in <see cref="LinearParser.term"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitTermInt([NotNull] LinearParser.TermIntContext context) { }
+	void ExitTermInt([NotNull] LinearParser.TermIntContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>TermHex</c>
 	/// labeled alternative in <see cref="LinearParser.term"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterTermHex([NotNull] LinearParser.TermHexContext context) { }
+	void EnterTermHex([NotNull] LinearParser.TermHexContext context);
 	/// <summary>
 	/// Exit a parse tree produced by the <c>TermHex</c>
 	/// labeled alternative in <see cref="LinearParser.term"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitTermHex([NotNull] LinearParser.TermHexContext context) { }
+	void ExitTermHex([NotNull] LinearParser.TermHexContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>TermReal</c>
 	/// labeled alternative in <see cref="LinearParser.term"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterTermReal([NotNull] LinearParser.TermRealContext context) { }
+	void EnterTermReal([NotNull] LinearParser.TermRealContext context);
 	/// <summary>
 	/// Exit a parse tree produced by the <c>TermReal</c>
 	/// labeled alternative in <see cref="LinearParser.term"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitTermReal([NotNull] LinearParser.TermRealContext context) { }
+	void ExitTermReal([NotNull] LinearParser.TermRealContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>TermChar</c>
 	/// labeled alternative in <see cref="LinearParser.term"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterTermChar([NotNull] LinearParser.TermCharContext context) { }
+	void EnterTermChar([NotNull] LinearParser.TermCharContext context);
 	/// <summary>
 	/// Exit a parse tree produced by the <c>TermChar</c>
 	/// labeled alternative in <see cref="LinearParser.term"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitTermChar([NotNull] LinearParser.TermCharContext context) { }
+	void ExitTermChar([NotNull] LinearParser.TermCharContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>TermString</c>
 	/// labeled alternative in <see cref="LinearParser.term"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterTermString([NotNull] LinearParser.TermStringContext context) { }
+	void EnterTermString([NotNull] LinearParser.TermStringContext context);
 	/// <summary>
 	/// Exit a parse tree produced by the <c>TermString</c>
 	/// labeled alternative in <see cref="LinearParser.term"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitTermString([NotNull] LinearParser.TermStringContext context) { }
+	void ExitTermString([NotNull] LinearParser.TermStringContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>TermStringVerb</c>
 	/// labeled alternative in <see cref="LinearParser.term"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterTermStringVerb([NotNull] LinearParser.TermStringVerbContext context) { }
+	void EnterTermStringVerb([NotNull] LinearParser.TermStringVerbContext context);
 	/// <summary>
 	/// Exit a parse tree produced by the <c>TermStringVerb</c>
 	/// labeled alternative in <see cref="LinearParser.term"/>.
-	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitTermStringVerb([NotNull] LinearParser.TermStringVerbContext context) { }
-
-	/// <inheritdoc/>
-	/// <remarks>The default implementation does nothing.</remarks>
-	public virtual void EnterEveryRule([NotNull] ParserRuleContext context) { }
-	/// <inheritdoc/>
-	/// <remarks>The default implementation does nothing.</remarks>
-	public virtual void ExitEveryRule([NotNull] ParserRuleContext context) { }
-	/// <inheritdoc/>
-	/// <remarks>The default implementation does nothing.</remarks>
-	public virtual void VisitTerminal([NotNull] ITerminalNode node) { }
-	/// <inheritdoc/>
-	/// <remarks>The default implementation does nothing.</remarks>
-	public virtual void VisitErrorNode([NotNull] IErrorNode node) { }
+	void ExitTermStringVerb([NotNull] LinearParser.TermStringVerbContext context);
 }

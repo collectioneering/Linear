@@ -22,9 +22,9 @@ public class ConstantExpression<T> : ConstantExpression
     private readonly T _value;
 
     /// <summary>
-    /// Create new instance of <see cref="ConstantExpression{T}"/>
+    /// Initializes an instance of <see cref="ConstantExpression{T}"/>.
     /// </summary>
-    /// <param name="value">Value</param>
+    /// <param name="value">Value.</param>
     public ConstantExpression(T value)
     {
         _value = value;
@@ -57,24 +57,17 @@ public abstract class ConstantNumberExpression : ExpressionDefinition
 {
     internal abstract record ConstantExpressionInstance : ExpressionInstance
     {
-#if NET7_0_OR_GREATER
         /// <summary>
         /// Casts this numeric expression to the target numeric type.
         /// </summary>
-        /// <typeparam name="TResult">Target numeric type</typeparam>
+        /// <typeparam name="TResult">Target numeric type.</typeparam>
         /// <returns>Casted value.</returns>
         public abstract TResult Cast<TResult>() where TResult : System.Numerics.INumber<TResult>;
-#endif
     }
 }
 
 /// <inheritdoc />
-public class ConstantNumberExpression<T> : ConstantNumberExpression
-#if NET7_0_OR_GREATER
-    where T : System.Numerics.INumber<T>
-#else
-    where T : unmanaged
-#endif
+public class ConstantNumberExpression<T> : ConstantNumberExpression where T : System.Numerics.INumber<T>
 {
     private readonly T _value;
 
@@ -92,18 +85,16 @@ public class ConstantNumberExpression<T> : ConstantNumberExpression
 
     internal record ConstantExpressionTInstance(T Value) : ConstantExpressionInstance
     {
-#if NET7_0_OR_GREATER
         /// <summary>
         /// Casts this numeric expression to the target numeric type.
         /// </summary>
-        /// <typeparam name="TResult">Target numeric type</typeparam>
+        /// <typeparam name="TResult">Target numeric type.</typeparam>
         /// <returns>Casted value.</returns>
         public override TResult Cast<TResult>()
         {
             // TODO
             throw new NotImplementedException();
         }
-#endif
 
         public override object Evaluate(StructureEvaluationContext context, Stream stream)
         {

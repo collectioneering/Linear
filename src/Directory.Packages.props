@@ -1,0 +1,17 @@
+<Project>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- Package dependenices -->
+    <PackageVersion Include="Antlr4.Runtime.Standard" Version="4.13.1" />
+    <PackageVersion Include="Fp" Version="0.29.0" />
+    <PackageVersion Include="System.CommandLine" Version="2.0.2" />
+    <!-- Test dependenices -->
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
+    <PackageVersion Include="NUnit" Version="4.4.0" />
+    <PackageVersion Include="NUnit3TestAdapter" Version="6.0.0" Condition="$(TargetFramework) == 'net8.0'" />
+    <PackageVersion Include="NUnit3TestAdapter" Version="6.1.0" Condition="$(TargetFramework) == 'net10.0'" />
+    <PackageVersion Include="coverlet.collector" Version="6.0.4" />
+  </ItemGroup>
+</Project>

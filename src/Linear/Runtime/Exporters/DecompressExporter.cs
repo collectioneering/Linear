@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Threading;
+using System.Threading.Tasks;
 using Fp;
 using Linear.Utility;
 
@@ -20,18 +22,18 @@ public class DecompressExporter : IExporter
     }
 
     /// <summary>
-    /// Supported decompressors
+    /// Supported decompressors.
     /// </summary>
     public static readonly Dictionary<string, DecompressionProxyDelegate>
         SupportedDecompressors;
 
     /// <summary>
-    /// Name of data exporter
+    /// Name of data exporter.
     /// </summary>
     public const string ExporterName = "compressed";
 
     /// <summary>
-    /// Format key
+    /// Format key.
     /// </summary>
     public const string Key_Format = "format";
 
@@ -44,13 +46,42 @@ public class DecompressExporter : IExporter
     {
         stream.Position = instance.AbsoluteOffset + range.Offset;
         using SStream sStream = new(stream, range.Length);
-        if (parameters == null) throw new Exception("Parameters cannot be null");
+        if (parameters == null)
+        {
+            throw new Exception("Parameters cannot be null");
+        }
         if (!parameters.TryGetValue(Key_Format, out object? format) || !(format is string formatString))
+        {
             throw new Exception($"Required key {ExporterName} missing");
+        }
         if (!SupportedDecompressors.TryGetValue(formatString, out DecompressionProxyDelegate? fn))
+        {
             throw new Exception($"Unknown format {format}");
+        }
         Stream proxyStream = fn(sStream, parameters);
         proxyStream.CopyTo(outputStream);
+    }
+
+    /// <inheritdoc />
+    public async Task ExportAsync(Stream stream, StructureInstance instance, LongRange range,
+        IReadOnlyDictionary<string, object>? parameters, Stream outputStream, CancellationToken cancellationToken = default)
+    {
+        stream.Position = instance.AbsoluteOffset + range.Offset;
+        using SStream sStream = new(stream, range.Length);
+        if (parameters == null)
+        {
+            throw new Exception("Parameters cannot be null");
+        }
+        if (!parameters.TryGetValue(Key_Format, out object? format) || !(format is string formatString))
+        {
+            throw new Exception($"Required key {ExporterName} missing");
+        }
+        if (!SupportedDecompressors.TryGetValue(formatString, out DecompressionProxyDelegate? fn))
+        {
+            throw new Exception($"Unknown format {format}");
+        }
+        Stream proxyStream = fn(sStream, parameters);
+        await proxyStream.CopyToAsync(outputStream, cancellationToken);
     }
 
     /// <inheritdoc />
@@ -58,13 +89,41 @@ public class DecompressExporter : IExporter
         IReadOnlyDictionary<string, object>? parameters, Stream outputStream)
     {
         LinearUtil.TrimRange(ref memory, instance, range);
-        if (parameters == null) throw new Exception("Parameters cannot be null");
+        if (parameters == null)
+        {
+            throw new Exception("Parameters cannot be null");
+        }
         if (!parameters.TryGetValue(Key_Format, out object? format) || !(format is string formatString))
+        {
             throw new Exception($"Required key {ExporterName} missing");
+        }
         if (!SupportedDecompressors.TryGetValue(formatString, out DecompressionProxyDelegate? fn))
+        {
             throw new Exception($"Unknown format {format}");
+        }
         Stream proxyStream = fn(new MStream(memory), parameters);
         proxyStream.CopyTo(outputStream);
+    }
+
+    /// <inheritdoc />
+    public async Task ExportAsync(ReadOnlyMemory<byte> memory, StructureInstance instance, LongRange range,
+        IReadOnlyDictionary<string, object>? parameters, Stream outputStream, CancellationToken cancellationToken = default)
+    {
+        LinearUtil.TrimRange(ref memory, instance, range);
+        if (parameters == null)
+        {
+            throw new Exception("Parameters cannot be null");
+        }
+        if (!parameters.TryGetValue(Key_Format, out object? format) || !(format is string formatString))
+        {
+            throw new Exception($"Required key {ExporterName} missing");
+        }
+        if (!SupportedDecompressors.TryGetValue(formatString, out DecompressionProxyDelegate? fn))
+        {
+            throw new Exception($"Unknown format {format}");
+        }
+        Stream proxyStream = fn(new MStream(memory), parameters);
+        await proxyStream.CopyToAsync(outputStream, cancellationToken);
     }
 
     /// <inheritdoc />
@@ -74,11 +133,18 @@ public class DecompressExporter : IExporter
         LinearUtil.TrimRange(ref span, instance, range);
         fixed (byte* p = span)
         {
-            if (parameters == null) throw new Exception("Parameters cannot be null");
+            if (parameters == null)
+            {
+                throw new Exception("Parameters cannot be null");
+            }
             if (!parameters.TryGetValue(Key_Format, out object? format) || !(format is string formatString))
+            {
                 throw new Exception($"Required key {ExporterName} missing");
+            }
             if (!SupportedDecompressors.TryGetValue(formatString, out DecompressionProxyDelegate? fn))
+            {
                 throw new Exception($"Unknown format {format}");
+            }
             Stream proxyStream = fn(new PStream(new IntPtr(p), span.Length), parameters);
             proxyStream.CopyTo(outputStream);
         }

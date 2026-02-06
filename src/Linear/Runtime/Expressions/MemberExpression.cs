@@ -13,9 +13,9 @@ public class MemberExpression : ExpressionDefinition
     private readonly string _name;
 
     /// <summary>
-    /// Create new instance of <see cref="MemberExpression"/>
+    /// Initializes an instance of <see cref="MemberExpression"/>.
     /// </summary>
-    /// <param name="name">Member name</param>
+    /// <param name="name">Member name.</param>
     public MemberExpression(string name)
     {
         _name = name;

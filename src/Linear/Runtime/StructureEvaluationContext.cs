@@ -1,7 +1,6 @@
 using System.Collections.Generic;
-using Linear.Runtime;
 
-namespace Linear;
+namespace Linear.Runtime;
 
 /// <summary>
 /// Structure evaluation context.

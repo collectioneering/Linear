@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using static Linear.Utility.CastUtil;
 
 namespace Linear.Runtime.Expressions;
@@ -16,11 +18,11 @@ public class RangeExpression : ExpressionDefinition
     private readonly ExpressionDefinition? _lengthExpression;
 
     /// <summary>
-    /// Create new instance of <see cref="RangeExpression"/>
+    /// Initializes an instance of <see cref="RangeExpression"/>.
     /// </summary>
-    /// <param name="startExpression">Start offset expression</param>
-    /// <param name="endExpression">End offset expression</param>
-    /// <param name="lengthExpression">Length expression</param>
+    /// <param name="startExpression">Start offset expression.</param>
+    /// <param name="endExpression">End offset expression.</param>
+    /// <param name="lengthExpression">Length expression.</param>
     public RangeExpression(ExpressionDefinition startExpression, ExpressionDefinition? endExpression,
         ExpressionDefinition? lengthExpression)
     {
@@ -64,10 +66,24 @@ public class RangeExpression : ExpressionDefinition
             return new LongRange(start, end - start);
         }
 
+        public override async ValueTask<object?> EvaluateAsync(StructureEvaluationContext context, Stream stream, CancellationToken cancellationToken = default)
+        {
+            long start = CastLong(await Start.EvaluateAsync(context, stream, cancellationToken));
+            long end = CastLong(await End.EvaluateAsync(context, stream, cancellationToken));
+            return new LongRange(start, end - start);
+        }
+
         public override object Evaluate(StructureEvaluationContext context, ReadOnlyMemory<byte> memory)
         {
             long start = CastLong(Start.Evaluate(context, memory));
             long end = CastLong(End.Evaluate(context, memory));
+            return new LongRange(start, end - start);
+        }
+
+        public override async ValueTask<object?> EvaluateAsync(StructureEvaluationContext context, ReadOnlyMemory<byte> memory, CancellationToken cancellationToken = default)
+        {
+            long start = CastLong(await Start.EvaluateAsync(context, memory, cancellationToken));
+            long end = CastLong(await End.EvaluateAsync(context, memory, cancellationToken));
             return new LongRange(start, end - start);
         }
 

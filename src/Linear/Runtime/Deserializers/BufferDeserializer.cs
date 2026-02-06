@@ -2,7 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Fp;
+using System.Threading;
+using System.Threading.Tasks;
 using Linear.Utility;
 
 namespace Linear.Runtime.Deserializers;
@@ -36,7 +37,17 @@ public class BufferDeserializer : DeserializerInstance
         if (length == null) throw new ArgumentException("Length required for buffer deserializer");
         LinearUtil.TrimRange(stream, context.Structure, new LongRange(offset, length.Value));
         byte[] result = new byte[length.Value];
-        Processor.Read(stream, result, false);
+        stream.ReadExactly(result);
+        return new DeserializeResult(new ReadOnlyMemory<byte>(result), length.Value);
+    }
+
+    /// <inheritdoc />
+    public override async ValueTask<DeserializeResult> DeserializeAsync(DeserializerContext context, Stream stream, long offset, long? length = null, int? index = null, CancellationToken cancellationToken = default)
+    {
+        if (length == null) throw new ArgumentException("Length required for buffer deserializer");
+        LinearUtil.TrimRange(stream, context.Structure, new LongRange(offset, length.Value));
+        byte[] result = new byte[length.Value];
+        await stream.ReadExactlyAsync(result, cancellationToken);
         return new DeserializeResult(new ReadOnlyMemory<byte>(result), length.Value);
     }
 

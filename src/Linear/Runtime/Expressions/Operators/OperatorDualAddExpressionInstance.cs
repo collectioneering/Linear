@@ -1,33 +1,11 @@
 using System;
-using System.IO;
 using Linear.Utility;
 
 namespace Linear.Runtime.Expressions.Operators;
 
-internal record OperatorDualAddExpressionInstance(ExpressionInstance Left, ExpressionInstance Right) : ExpressionInstance
+internal record OperatorDualAddExpressionInstance(ExpressionInstance Left, ExpressionInstance Right) : OperatorDualExpressionInstance(Left, Right)
 {
-    public override object Evaluate(StructureEvaluationContext context, Stream stream)
-    {
-        object? left = Left.Evaluate(context, stream);
-        object? right = Right.Evaluate(context, stream);
-        return EvaluateInternal(left, right);
-    }
-
-    public override object Evaluate(StructureEvaluationContext context, ReadOnlyMemory<byte> memory)
-    {
-        object? left = Left.Evaluate(context, memory);
-        object? right = Right.Evaluate(context, memory);
-        return EvaluateInternal(left, right);
-    }
-
-    public override object Evaluate(StructureEvaluationContext context, ReadOnlySpan<byte> span)
-    {
-        object? left = Left.Evaluate(context, span);
-        object? right = Right.Evaluate(context, span);
-        return EvaluateInternal(left, right);
-    }
-
-    private static object EvaluateInternal(object? left, object? right)
+    protected override object Evaluate(object? left, object? right)
     {
         if (left is string strLeft) return strLeft + right;
         if (right is string strRight) return left + strRight;

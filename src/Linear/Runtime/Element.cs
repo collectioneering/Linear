@@ -8,16 +8,16 @@ namespace Linear.Runtime;
 public abstract class Element
 {
     /// <summary>
-    /// Determine dependencies on other members in structure
+    /// Determines dependencies on other members in structure.
     /// </summary>
-    /// <param name="definition">Structure to use</param>
-    /// <returns>Dependencies</returns>
-    /// <remarks>Does not resolve references to parent</remarks>
+    /// <param name="definition">Structure to use.</param>
+    /// <returns>Dependencies.</returns>
+    /// <remarks>Does not resolve references to parent.</remarks>
     public abstract IEnumerable<Element> GetDependencies(StructureDefinition definition);
 
     /// <summary>
-    /// Get initializer
+    /// Gets initializer.
     /// </summary>
-    /// <returns>Initializer</returns>
+    /// <returns>Initializer.</returns>
     public abstract ElementInitializer GetInitializer();
 }

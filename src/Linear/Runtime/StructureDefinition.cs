@@ -11,25 +11,25 @@ namespace Linear.Runtime;
 public class StructureDefinition
 {
     /// <summary>
-    /// Name of structure
+    /// Name of structure.
     /// </summary>
     public string Name { get; }
 
     /// <summary>
-    /// Default length of structure
+    /// Default length of structure.
     /// </summary>
     public int? DefaultLength { get; }
 
     /// <summary>
-    /// Members not sorted for dependency
+    /// Members not sorted for dependency.
     /// </summary>
     public List<StructureDefinitionMember> Members { get; }
 
     /// <summary>
-    /// Create new instance of <see cref="StructureDefinition"/>
+    /// Initializes an instance of <see cref="StructureDefinition"/>.
     /// </summary>
-    /// <param name="name">Name of structure</param>
-    /// <param name="defaultLength">Default length of structure</param>
+    /// <param name="name">Name of structure.</param>
+    /// <param name="defaultLength">Default length of structure.</param>
     public StructureDefinition(string name, int? defaultLength)
     {
         Name = name;
@@ -38,9 +38,9 @@ public class StructureDefinition
     }
 
     /// <summary>
-    /// Build structure layout
+    /// Builds structure layout.
     /// </summary>
-    /// <returns>Structure</returns>
+    /// <returns>Structure.</returns>
     public Structure Build()
     {
         List<StructureMember> members = new();
@@ -75,7 +75,7 @@ public class StructureDefinition
             if (removed == 0) throw new Exception("Failed to reduce dependencies");
         }
 
-        return new Structure(DefaultLength, members);
+        return new Structure(Name, DefaultLength, members);
     }
 }
 

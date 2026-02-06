@@ -1,34 +1,15 @@
 using System;
-using System.IO;
 using Linear.Utility;
 
 namespace Linear.Runtime.Expressions.Operators;
 
-internal record OperatorDualAndExpressionInstance(ExpressionInstance Left, ExpressionInstance Right) : ExpressionInstance
+internal record OperatorDualAndExpressionInstance(ExpressionInstance Left, ExpressionInstance Right) : OperatorDualExpressionInstance(Left, Right)
 {
-    public override object Evaluate(StructureEvaluationContext context, Stream stream)
+    protected override object Evaluate(object? left, object? right)
     {
-        object left = Left.Evaluate(context, stream) ?? throw new NullReferenceException("LHS null");
-        object right = Right.Evaluate(context, stream) ?? throw new NullReferenceException("RHS null");
-        return EvaluateInternal(left, right);
-    }
+        if (left == null) throw new NullReferenceException("LHS null");
+        if (right == null) throw new NullReferenceException("RHS null");
 
-    public override object Evaluate(StructureEvaluationContext context, ReadOnlyMemory<byte> memory)
-    {
-        object left = Left.Evaluate(context, memory) ?? throw new NullReferenceException("LHS null");
-        object right = Right.Evaluate(context, memory) ?? throw new NullReferenceException("RHS null");
-        return EvaluateInternal(left, right);
-    }
-
-    public override object Evaluate(StructureEvaluationContext context, ReadOnlySpan<byte> span)
-    {
-        object left = Left.Evaluate(context, span) ?? throw new NullReferenceException("LHS null");
-        object right = Right.Evaluate(context, span) ?? throw new NullReferenceException("RHS null");
-        return EvaluateInternal(left, right);
-    }
-
-    private static object EvaluateInternal(object left, object right)
-    {
         if (left is long longLeft) return longLeft & CastUtil.CastLong(right);
         if (right is long longRight) return CastUtil.CastLong(left) & longRight;
 

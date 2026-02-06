@@ -1,147 +1,50 @@
-grammar Linear;
+lexer grammar LinearLexer;
 
-compilation_unit: WS? (body_element WS?)* EOF;
+LAMBDA: 'lambda';
+EXEC_VALUE: '$value';
+EXEC_DISCARD: '$discard';
+EXEC_CALL: '$call';
+EXEC_SETLENGTH: '$setlength';
+EXEC_OUTPUT: '$output';
+EXEC_LENGTH: '$length';
+EXEC_ABSOLUTE_INDEX: '$a';
+EXEC_INDEX: '$i';
+EXEC_PARENT: '$p' | '$parent';
+EXEC_UNIQUE: '$u' | '$unique';
+EXEC_REPLACE: '$$';
 
-body_element: struct | COMMENT | COMENT_BLOCK;
+WhiteSpaces
+ : [ \t\r\n]+ -> skip
+ ;
 
-// structureName optionalDefaultLength {}
-struct:
-	IDENTIFIER WS? struct_size? WS? OPEN WS? (
-		struct_statement WS?
-	)* CLOSE;
+DocComment
+ : '///' ~[\r\n$]*
+ ;
+Comment
+ : '//' ~[\r\n$]* -> skip
+ ;
+BlockComment
+ : '/*' .*? '*/' -> skip
+ ;
 
-struct_statement:
-	struct_statement_define
-	| struct_statement_define_lambda
-	| struct_statement_discard
-	| struct_statement_call
-	| struct_statement_length
-//	| struct_statement_define_value
-	| struct_statement_define_array
-	| struct_statement_define_array_indirect
-	| struct_statement_output
-	| COMMENT
-	| COMENT_BLOCK;
+LINK_ARRAY: '->';
+RANGE: '..';
+COLON: ':';
 
-// varType memberName locationExpr {};
-struct_statement_define:
-	IDENTIFIER WS IDENTIFIER WS expr WS? ENDL;
-	//IDENTIFIER WS IDENTIFIER WS expr WS? property_group? ENDL;
+TRUE: 'true';
+FALSE: 'false';
 
-struct_statement_define_lambda:
-	'lambda' WS IDENTIFIER WS expr WS? ENDL;
-
-// value memberName valueExpr;
-//struct_statement_define_value:
-	//	'value' WS IDENTIFIER WS IDENTIFIER WS expr WS? ENDL;
-//	'$value' WS IDENTIFIER WS expr WS? ENDL;
-
-// call evalExpr;
-struct_statement_discard: '$discard' WS expr WS? ENDL;
-
-// call methodExpr;
-struct_statement_call: '$call' WS expr WS? ENDL;
-
-// length lengthExpr;
-struct_statement_length: '$setlength' WS expr WS? ENDL;
-
-// elementType[lengthExpr] memberName locationExpr {};
-struct_statement_define_array:
-	IDENTIFIER OPENSQ WS? expr WS? CLOSESQ WS? IDENTIFIER WS? expr WS? property_group? ENDL;
-
-// elementType[lengthExpr] -> targetType[] memberName pointerArrayLocationExpr, relativeOffsetExpr {};
-struct_statement_define_array_indirect:
-	IDENTIFIER OPENSQ WS? expr WS? CLOSESQ WS? '->' PLUS? WS? IDENTIFIER OPENSQ CLOSESQ WS?
-		IDENTIFIER WS expr WS? ',' WS? expr WS? property_group? ENDL;
-
-// output formatName rangeExpr nameExpr {};
-struct_statement_output:
-	'$output' WS IDENTIFIER WS expr WS expr WS? property_group? ENDL;
-// maybe "outputvar" for expression-based format selection?
-
-// // Comments
-COMMENT: '//' ~( '\r' | '\n')*;
-COMENT_BLOCK: '/*' .*? '*/';
-
-// { name=valueExpr; name2=valueExpr2; }
-property_group: OPEN (WS? property_statement)* WS? CLOSE WS?;
-property_statement: IDENTIFIER WS? '=' WS? expr WS? ';';
-
-term_replacement_length: '$length';
-term_replacement_a: '$a';
-term_replacement_i: '$i';
-term_replacement_p: '$p' | '$parent';
-term_replacement_u: '$u' | '$unique';
-term_literal_true: 'true';
-term_literal_false: 'false';
-expr:
-	IDENTIFIER WS? '(' WS? expr? WS? (',' WS? expr WS?)* ')'		# ExprMethodCall
-	| '$$' IDENTIFIER												# ExprLambdaReplacement
-	| term															# ExprTerm
-	| '`' expr WS? property_group?									# ExprUnboundDeserialize
-	| IDENTIFIER '`' expr WS? property_group?						# ExprDeserialize
-	| OPENSQ WS? expr WS? '..' WS? expr WS? CLOSESQ					# ExprRangeEnd
-	| OPENSQ WS? expr WS? ',' WS? expr WS? CLOSESQ					# ExprRangeLength
-	| expr '.' IDENTIFIER											# ExprMember
-	| expr '!' expr													# ExprSourceWithOffset
-	| expr '[' WS? expr WS? ']'										# ExprArrayAccess
-	| '(' WS? expr WS? ')'											# ExprWrapped
-	| un_op WS? expr												# ExprUnOp
-	| expr WS? op_mul_div WS? expr									# ExprOpMulDiv
-	| expr WS? op_add_sub WS? expr									# ExprOpAddSub
-	| expr WS? op_shift WS? expr									# ExprOpShift
-	| expr WS? op_rel WS? expr										# ExprOpRel
-	| expr WS? op_eq WS? expr										# ExprOpEq
-	| expr WS? AMP WS? expr											# ExprOpAmp
-	| expr WS? CARET WS? expr										# ExprOpCaret
-	| expr WS? BITWISE_OR WS? expr									# ExprOpBitwiseOr
-	| expr WS? op_cond_and WS? expr									# ExprOpCondAnd
-	| expr WS? op_cond_or WS? expr									# ExprOpCondOr
-	| expr WS? '?' WS? expr WS? ':' WS? expr						# ExprOpTernary
-;
-//	| expr WS? bool_op WS? expr # ExprBoolOp
+OPENPA: '(';
+CLOSEPA: ')';
 
 OPEN: '{';
 CLOSE: '}';
 OPENSQ: '[';
 CLOSESQ: ']';
 ENDL: ';';
-
-un_op: PLUS | MINUS | BANG | TILDE;
-op_mul_div: STAR | DIV | PERCENT;
-op_add_sub: PLUS | MINUS;
-op_shift: RSHIFT | URSHIFT | LSHIFT;
-op_rel: LT | GT | OP_LE | OP_GE;
-op_eq: OP_EQ | OP_NE;
-op_cond_and: OP_AND;
-op_cond_or: OP_OR;
-bool_op:
-	LT
-	| GT
-	| OP_AND
-	| OP_OR
-	| OP_EQ
-	| OP_NE
-	| OP_LE
-	| OP_GE;
-struct_size:
-	INTEGER_LITERAL			# StructSizeInt
-	| HEX_INTEGER_LITERAL	# StrictSizeHex;
-term:
-	term_replacement_length	# TermRepLength
-	| term_replacement_a	# TermRepA
-	| term_replacement_i	# TermRepI
-	| term_replacement_p	# TermRepP
-	| term_replacement_u	# TermRepU
-	| term_literal_true		# TermLiteralTrue
-	| term_literal_false	# TermLiteralFalse
-	| IDENTIFIER			# TermIdentifier
-	| INTEGER_LITERAL		# TermInt
-	| HEX_INTEGER_LITERAL	# TermHex
-	| REAL_LITERAL			# TermReal
-	| CHARACTER_LITERAL		# TermChar
-	| REGULAR_STRING		# TermString
-	| VERBATIM_STRING		# TermStringVerb;
+COMMA: ',';
+DESERIALIZE: '`';
+DOT: '.';
 
 IDENTIFIER: '@'? IdentifierOrKeyword;
 WS: (Whitespace | NewLine)+;

@@ -145,9 +145,9 @@ public static class LinearUtil
     }
 
     /// <summary>
-    /// Create default method dictionary with standard exporters
+    /// Creates default method dictionary with standard exporters.
     /// </summary>
-    /// <returns>Default registry</returns>
+    /// <returns>Default registry.</returns>
     public static Dictionary<string, MethodCallDelegate> CreateDefaultMethodDictionary()
     {
         return new Dictionary<string, MethodCallDelegate>(s_defaultMethods);
@@ -181,9 +181,9 @@ public static class LinearUtil
     };
 
     /// <summary>
-    /// Create default deserializer registry with standard deserializers
+    /// Creates default deserializer registry with standard deserializers.
     /// </summary>
-    /// <returns>Default registry</returns>
+    /// <returns>Default registry.</returns>
     public static Dictionary<string, DeserializerDefinition> CreateDefaultDeserializerRegistry()
     {
         return new Dictionary<string, DeserializerDefinition>(s_defaultDeserializers);
@@ -192,9 +192,9 @@ public static class LinearUtil
     private static readonly Dictionary<string, IExporter> s_defaultExporters = new() { { DataExporter.ExporterName, new DataExporter() }, { DecompressExporter.ExporterName, new DecompressExporter() } };
 
     /// <summary>
-    /// Create default exporter dictionary with standard exporters
+    /// Creates default exporter dictionary with standard exporters.
     /// </summary>
-    /// <returns>Default registry</returns>
+    /// <returns>Default registry.</returns>
     public static Dictionary<string, IExporter> CreateDefaultExporterDictionary()
     {
         return new Dictionary<string, IExporter>(s_defaultExporters);

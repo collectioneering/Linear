@@ -165,14 +165,11 @@ public class StringDeserializer : DeserializerInstance
                 {
                     break;
                 }
-
                 TempMs.WriteByte((byte)v);
                 c++;
             }
-
             TempMs.TryGetBuffer(out ArraySegment<byte> buffer);
             string str = ReadUtf8String(buffer);
-
             return new TextResult(str, c);
         }
         finally
@@ -187,13 +184,11 @@ public class StringDeserializer : DeserializerInstance
     private static string ReadUtf8String(ReadOnlySpan<byte> segment, int maxLength = int.MaxValue)
     {
         int lim = Math.Min(segment.Length, maxLength);
-
         int end = segment[lim..].IndexOf((byte)0);
         if (end == -1)
         {
             end = lim;
         }
-
         return DecodeSegment(segment[..end], Encoding.UTF8);
     }
 
@@ -207,17 +202,15 @@ public class StringDeserializer : DeserializerInstance
             Span<byte> temp = stackalloc byte[2];
             while (c < maxLength * 2)
             {
-                int cc = Processor.Read(stream, temp);
+                int cc = stream.Read(temp);
                 c += cc;
                 if (cc != 2 || temp[0] == 0 && temp[1] == 0)
                 {
                     break;
                 }
-
                 TempMs.Write(temp);
             }
             // WARNING: maxLength here is treated as # code units
-
             TempMs.TryGetBuffer(out ArraySegment<byte> buffer);
             return new TextResult(ReadUtf16String(buffer), c);
         }
@@ -250,12 +243,10 @@ public class StringDeserializer : DeserializerInstance
                     break;
                 }
         }
-
         if (endBytes == -1)
         {
             endBytes = limBytes;
         }
-
         bool big;
         bool bom;
         if (segment.Length >= 2)
@@ -269,7 +260,6 @@ public class StringDeserializer : DeserializerInstance
             big = false;
             bom = false;
         }
-
         if (!bom && limBytes >= 2)
         {
             const int numBytes = 16 * sizeof(char);
@@ -281,13 +271,10 @@ public class StringDeserializer : DeserializerInstance
                 {
                     countAscii++;
                 }
-
                 countTotal++;
             }
-
             big = (float)countAscii / countTotal >= threshold;
         }
-
         return DecodeSegment(segment[..endBytes], GetUtf16Encoding(big, bom));
     }
 
@@ -300,22 +287,22 @@ public class StringDeserializer : DeserializerInstance
 public enum StringDeserializerMode
 {
     /// <summary>
-    /// Fixed-length UTF-8
+    /// Fixed-length UTF-8.
     /// </summary>
     Utf8Fixed,
 
     /// <summary>
-    /// Null-terminated UTF-8
+    /// Null-terminated UTF-8.
     /// </summary>
     Utf8Null,
 
     /// <summary>
-    /// Fixed-length UTF-16
+    /// Fixed-length UTF-16.
     /// </summary>
     Utf16Fixed,
 
     /// <summary>
-    /// Null-terminated UTF-16
+    /// Null-terminated UTF-16.
     /// </summary>
     Utf16Null
 }

@@ -1,20 +1,25 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <PackageVersion>0.4.0</PackageVersion>
+    <PackageVersion>0.5.0</PackageVersion>
     <AssemblyVersion>1.0.0</AssemblyVersion>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Antlr4.Runtime.Standard" />
+    <PackageReference Include="Fp" />
+  </ItemGroup>
+
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.1;net7.0</TargetFrameworks>
-    <LangVersion>11</LangVersion>
+    <TargetFrameworks>net10.0;net8.0</TargetFrameworks>
+    <LangVersion>preview</LangVersion>
     <NoWarn>3021;1584;1658</NoWarn>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <PropertyGroup>
-    <Authors>Lucina</Authors>
+    <Authors>riina,Lucina</Authors>
     <Description>Linear file structure ingest library</Description>
     <Copyright>Copyright ©2020 Lucina</Copyright>
     <PackageProjectUrl>https://github.com/collectioneering/Linear</PackageProjectUrl>
@@ -25,15 +30,19 @@
 
   <PropertyGroup>
     <PackOnBuild>true</PackOnBuild>
+    <PathMap>$(MSBuildProjectDirectory)=.</PathMap>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+
   <ItemGroup>
-    <PackageReference Include="Antlr4.Runtime.Standard" Version="4.11.1" />
-    <PackageReference Include="Fp" Version="0.27.1" />
+    <None Include="../../README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
 </Project>

@@ -13,9 +13,9 @@ using Linear.Runtime.Expressions;
 namespace Linear.Format;
 
 /// <summary>
-/// ANTLR listener implementation
+/// ANTLR listener implementation.
 /// </summary>
-internal class LinearListener : LinearBaseListener
+internal class LinearListener : LinearParserBaseListener
 {
     internal bool Fail { get; private set; }
 
@@ -28,7 +28,7 @@ internal class LinearListener : LinearBaseListener
     private StructureDefinition? _currentDefinition;
 
     /// <summary>
-    /// Create new instance of <see cref="LinearListener"/>
+    /// Initializes an instance of <see cref="LinearListener"/>.
     /// </summary>
     public LinearListener(IReadOnlyDictionary<string, DeserializerDefinition> deserializers, IReadOnlyDictionary<string, MethodCallDelegate> methods, string? filenameHint = null)
     {

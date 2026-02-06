@@ -8,16 +8,16 @@ namespace Linear.Runtime;
 public abstract class ExpressionDefinition
 {
     /// <summary>
-    /// Determine dependencies on other members in structure
+    /// Determines dependencies on other members in structure.
     /// </summary>
-    /// <param name="definition">Structure to use</param>
-    /// <returns>Dependencies</returns>
-    /// <remarks>Does not resolve references to parent</remarks>
+    /// <param name="definition">Structure to use.</param>
+    /// <returns>Dependencies.</returns>
+    /// <remarks>Does not resolve references to parent.</remarks>
     public abstract IEnumerable<Element> GetDependencies(StructureDefinition definition);
 
     /// <summary>
-    /// Get instance
+    /// Gets instance.
     /// </summary>
-    /// <returns>Instance</returns>
+    /// <returns>Instance.</returns>
     public abstract ExpressionInstance GetInstance();
 }

@@ -1,19 +1,53 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <EnableLinearLambda>true</EnableLinearLambda>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net7.0</TargetFramework>
-    <DefineConstants Condition="'$(EnableLinearLambda)'=='true'">EnableLinearLambda</DefineConstants>
-    <Copyright>Copyright ©2020 Lucina</Copyright>
-    <LangVersion>8.0</LangVersion>
-    <Nullable>enable</Nullable>
+    <PackageVersion>0.5.0</PackageVersion>
+    <AssemblyVersion>1.0.0</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Linear\Linear.csproj"/>
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="3.6.0"
-                      Condition="'$(EnableLinearLambda)'=='true'"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.CommandLine"/>
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>preview</LangVersion>
+    <ImplicitUsings>true</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackOnBuild>true</PackOnBuild>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>lyn</ToolCommandName>
+    <PathMap>$(MSBuildProjectDirectory)=.</PathMap>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Authors>riina,Lucina</Authors>
+    <Description>Linear file structure utility program</Description>
+    <Copyright>Copyright ©2020 Lucina</Copyright>
+    <PackageProjectUrl>https://github.com/collectioneering/Linear</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/collectioneering/Linear</RepositoryUrl>
+    <Company>Lucina</Company>
+    <Owners>Lucina</Owners>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="../../README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
 </Project>

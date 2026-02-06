@@ -45,8 +45,7 @@ internal static class CastUtil
             long b => (sbyte)b,
             float b => (sbyte)b,
             double b => (sbyte)b,
-            _ => throw new InvalidCastException(
-                $"Could not cast from type {number?.GetType().FullName} to {typeof(long)}")
+            _ => throw new InvalidCastException($"Could not cast from type {number?.GetType().FullName} to {typeof(long)}")
         };
     }
 
@@ -64,8 +63,7 @@ internal static class CastUtil
             long b => (ushort)b,
             float b => (ushort)b,
             double b => (ushort)b,
-            _ => throw new InvalidCastException(
-                $"Could not cast from type {number?.GetType().FullName} to {typeof(long)}")
+            _ => throw new InvalidCastException($"Could not cast from type {number?.GetType().FullName} to {typeof(long)}")
         };
     }
 
@@ -83,8 +81,7 @@ internal static class CastUtil
             long b => (short)b,
             float b => (short)b,
             double b => (short)b,
-            _ => throw new InvalidCastException(
-                $"Could not cast from type {number?.GetType().FullName} to {typeof(long)}")
+            _ => throw new InvalidCastException($"Could not cast from type {number?.GetType().FullName} to {typeof(long)}")
         };
     }
 
@@ -102,8 +99,7 @@ internal static class CastUtil
             long b => (uint)b,
             float b => (uint)b,
             double b => (uint)b,
-            _ => throw new InvalidCastException(
-                $"Could not cast from type {number?.GetType().FullName} to {typeof(long)}")
+            _ => throw new InvalidCastException($"Could not cast from type {number?.GetType().FullName} to {typeof(long)}")
         };
     }
 
@@ -121,8 +117,7 @@ internal static class CastUtil
             long b => (int)b,
             float b => (int)b,
             double b => (int)b,
-            _ => throw new InvalidCastException(
-                $"Could not cast from type {number?.GetType().FullName} to {typeof(long)}")
+            _ => throw new InvalidCastException($"Could not cast from type {number?.GetType().FullName} to {typeof(long)}")
         };
     }
 
@@ -140,8 +135,7 @@ internal static class CastUtil
             long b => (ulong)b,
             float b => (ulong)b,
             double b => (ulong)b,
-            _ => throw new InvalidCastException(
-                $"Could not cast from type {number?.GetType().FullName} to {typeof(long)}")
+            _ => throw new InvalidCastException($"Could not cast from type {number?.GetType().FullName} to {typeof(long)}")
         };
     }
 
@@ -159,8 +153,7 @@ internal static class CastUtil
             long b => b,
             float b => (long)b,
             double b => (long)b,
-            _ => throw new InvalidCastException(
-                $"Could not cast from type {number?.GetType().FullName} to {typeof(long)}")
+            _ => throw new InvalidCastException($"Could not cast from type {number?.GetType().FullName} to {typeof(long)}")
         };
     }
 
@@ -178,8 +171,7 @@ internal static class CastUtil
             long b => b,
             float b => b,
             double b => (float)b,
-            _ => throw new InvalidCastException(
-                $"Could not cast from type {number?.GetType().FullName} to {typeof(long)}")
+            _ => throw new InvalidCastException($"Could not cast from type {number?.GetType().FullName} to {typeof(long)}")
         };
     }
 
@@ -197,8 +189,7 @@ internal static class CastUtil
             long b => b,
             float b => b,
             double b => b,
-            _ => throw new InvalidCastException(
-                $"Could not cast from type {number?.GetType().FullName} to {typeof(long)}")
+            _ => throw new InvalidCastException($"Could not cast from type {number?.GetType().FullName} to {typeof(long)}")
         };
     }
 

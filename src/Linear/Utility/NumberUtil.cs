@@ -1,7 +1,6 @@
-#if NET7_0_OR_GREATER
 using System.Numerics;
 
-namespace Linear;
+namespace Linear.Utility;
 
 internal static class NumberUtil
 {
@@ -59,4 +58,3 @@ internal static class NumberUtil
         };
     }
 }
-#endif

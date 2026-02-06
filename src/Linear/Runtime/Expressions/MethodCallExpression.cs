@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Linear.Runtime.Expressions;
 
@@ -14,10 +16,10 @@ public class MethodCallExpression : ExpressionDefinition
     private readonly List<ExpressionDefinition> _args;
 
     /// <summary>
-    /// Create new instance of <see cref="MethodCallExpression"/>
+    /// Initializes an instance of <see cref="MethodCallExpression"/>.
     /// </summary>
-    /// <param name="callDelegate">Delegate</param>
-    /// <param name="args">Arguments</param>
+    /// <param name="callDelegate">Delegate.</param>
+    /// <param name="args">Arguments.</param>
     public MethodCallExpression(MethodCallDelegate callDelegate, List<ExpressionDefinition> args)
     {
         _delegate = callDelegate;
@@ -48,12 +50,32 @@ public class MethodCallExpression : ExpressionDefinition
             return Delegate(context, args.ToArray());
         }
 
+        public override async ValueTask<object?> EvaluateAsync(StructureEvaluationContext context, Stream stream, CancellationToken cancellationToken = default)
+        {
+            List<object?> args = new();
+            foreach (var arg in ArgsCompact)
+            {
+                args.Add(await arg.EvaluateAsync(context, stream, cancellationToken));
+            }
+            return Delegate(context, args.ToArray());
+        }
+
         public override object? Evaluate(StructureEvaluationContext context, ReadOnlyMemory<byte> memory)
         {
             List<object?> args = new();
             foreach (var arg in ArgsCompact)
             {
                 args.Add(arg.Evaluate(context, memory));
+            }
+            return Delegate(context, args.ToArray());
+        }
+
+        public override async ValueTask<object?> EvaluateAsync(StructureEvaluationContext context, ReadOnlyMemory<byte> memory, CancellationToken cancellationToken = default)
+        {
+            List<object?> args = new();
+            foreach (var arg in ArgsCompact)
+            {
+                args.Add(await arg.EvaluateAsync(context, memory, cancellationToken));
             }
             return Delegate(context, args.ToArray());
         }

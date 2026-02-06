@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Linear.Runtime.Expressions;
 using static Linear.Utility.CastUtil;
 
@@ -80,7 +82,30 @@ public class ArrayDeserializer : DeserializerInstance
                 throw new InvalidOperationException("Unknown length for deserialized element");
             }
         }
+        return new DeserializeResult(res, curOffset - offset);
+    }
 
+    /// <inheritdoc />
+    public override async ValueTask<DeserializeResult> DeserializeAsync(DeserializerContext context, Stream stream, long offset, long? length = null, int? index = null, CancellationToken cancellationToken = default)
+    {
+        var structureContext = new StructureEvaluationContext(context.Structure);
+        int arrayLength = CastInt(await _countExpression.EvaluateAsync(structureContext, ReadOnlyMemory<byte>.Empty, cancellationToken));
+        Array res = Array.CreateInstance(_elementType, arrayLength);
+        long curOffset = offset;
+        var elementContext = context with { Parameters = null };
+        for (int i = 0; i < arrayLength; i++)
+        {
+            (object value, long? elemLength) = await _elementDeserializer.DeserializeAsync(elementContext, stream, curOffset, 0, i, cancellationToken);
+            res.SetValue(value, i);
+            if (elemLength is { } elemLengthValue)
+            {
+                curOffset += elemLengthValue;
+            }
+            else
+            {
+                throw new InvalidOperationException("Unknown length for deserialized element");
+            }
+        }
         return new DeserializeResult(res, curOffset - offset);
     }
 
@@ -105,7 +130,30 @@ public class ArrayDeserializer : DeserializerInstance
                 throw new InvalidOperationException("Unknown length for deserialized element");
             }
         }
+        return new DeserializeResult(res, curOffset - offset);
+    }
 
+    /// <inheritdoc />
+    public override async ValueTask<DeserializeResult> DeserializeAsync(DeserializerContext context, ReadOnlyMemory<byte> memory, long offset, long? length = null, int? index = null, CancellationToken cancellationToken = default)
+    {
+        var structureContext = new StructureEvaluationContext(context.Structure);
+        int arrayLength = CastInt(await _countExpression.EvaluateAsync(structureContext, ReadOnlyMemory<byte>.Empty, cancellationToken));
+        Array res = Array.CreateInstance(_elementType, arrayLength);
+        long curOffset = offset;
+        var elementContext = context with { Parameters = null };
+        for (int i = 0; i < arrayLength; i++)
+        {
+            (object value, long? elemLength) = await _elementDeserializer.DeserializeAsync(elementContext, memory, curOffset, null, i, cancellationToken);
+            res.SetValue(value, i);
+            if (elemLength is { } elemLengthValue)
+            {
+                curOffset += elemLengthValue;
+            }
+            else
+            {
+                throw new InvalidOperationException("Unknown length for deserialized element");
+            }
+        }
         return new DeserializeResult(res, curOffset - offset);
     }
 
@@ -130,7 +178,6 @@ public class ArrayDeserializer : DeserializerInstance
                 throw new InvalidOperationException("Unknown length for deserialized element");
             }
         }
-
         return new DeserializeResult(res, curOffset - offset);
     }
 }

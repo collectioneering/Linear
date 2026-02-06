@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Linear.Utility;
 using static Linear.Utility.CastUtil;
 
@@ -82,6 +84,37 @@ public class DeserializeExpression : ExpressionDefinition
             return Deserializer.Deserialize(deserializerContext, stream, offset, length).Value;
         }
 
+        public override async ValueTask<object?> EvaluateAsync(StructureEvaluationContext context, Stream stream, CancellationToken cancellationToken = default)
+        {
+            Dictionary<string, object>? deserializerParamsGen = DeserializerParamsCompact.Count != 0 ? new Dictionary<string, object>() : null;
+            if (deserializerParamsGen != null)
+                foreach (var kvp in DeserializerParamsCompact)
+                    deserializerParamsGen[kvp.Key] = await kvp.Value.EvaluateAsync(context, stream, cancellationToken) ?? throw new NullReferenceException();
+            var deserializerContext = new DeserializerContext(context.Structure, deserializerParamsGen);
+            object? source = await Source.EvaluateAsync(context, stream, cancellationToken);
+            if (source is SourceWithOffset swo)
+            {
+                return Extract(deserializerContext, swo);
+            }
+            long offset;
+            long? length;
+            if (TryCastLong(source, out long offsetValue))
+            {
+                offset = offsetValue;
+                length = null;
+            }
+            else if (source is LongRange r)
+            {
+                offset = r.Offset;
+                length = r.Length;
+            }
+            else
+            {
+                throw new InvalidCastException("Cannot find offset or range type for source delegate");
+            }
+            return (await Deserializer.DeserializeAsync(deserializerContext, stream, offset, length, cancellationToken: cancellationToken)).Value;
+        }
+
         public override object Evaluate(StructureEvaluationContext context, ReadOnlyMemory<byte> memory)
         {
             Dictionary<string, object>? deserializerParamsGen = DeserializerParamsCompact.Count != 0 ? new Dictionary<string, object>() : null;
@@ -111,6 +144,37 @@ public class DeserializeExpression : ExpressionDefinition
                 throw new InvalidCastException("Cannot find offset or range type for source delegate");
             }
             return Deserializer.Deserialize(deserializerContext, memory, offset, length).Value;
+        }
+
+        public override async ValueTask<object?> EvaluateAsync(StructureEvaluationContext context, ReadOnlyMemory<byte> memory, CancellationToken cancellationToken = default)
+        {
+            Dictionary<string, object>? deserializerParamsGen = DeserializerParamsCompact.Count != 0 ? new Dictionary<string, object>() : null;
+            if (deserializerParamsGen != null)
+                foreach (var kvp in DeserializerParamsCompact)
+                    deserializerParamsGen[kvp.Key] = await kvp.Value.EvaluateAsync(context, memory, cancellationToken) ?? throw new NullReferenceException();
+            var deserializerContext = new DeserializerContext(context.Structure, deserializerParamsGen);
+            object? source = await Source.EvaluateAsync(context, memory, cancellationToken);
+            if (source is SourceWithOffset swo)
+            {
+                return Extract(deserializerContext, swo);
+            }
+            long offset;
+            long? length;
+            if (TryCastLong(source, out long offsetValue))
+            {
+                offset = offsetValue;
+                length = null;
+            }
+            else if (source is LongRange r)
+            {
+                offset = r.Offset;
+                length = r.Length;
+            }
+            else
+            {
+                throw new InvalidCastException("Cannot find offset or range type for source delegate");
+            }
+            return (await Deserializer.DeserializeAsync(deserializerContext, memory, offset, length, cancellationToken: cancellationToken)).Value;
         }
 
         public override object Evaluate(StructureEvaluationContext context, ReadOnlySpan<byte> span)

@@ -11,22 +11,21 @@ namespace Linear.Runtime.Expressions;
 public class StructureEvaluateExpression<T> : ExpressionDefinition
 {
     /// <summary>
-    /// Delegate type for evaluation expression
+    /// Delegate type for evaluation expression.
     /// </summary>
-    /// <param name="instance">Structure instance</param>
+    /// <param name="instance">Structure instance.</param>
     public delegate T StructureEvaluateDelegate(StructureInstance instance);
 
     private readonly StructureEvaluateDelegate _delegate;
 
     /// <summary>
-    /// Create new instance of <see cref="StructureEvaluateExpression{T}"/>
+    /// Initializes an instance of <see cref="StructureEvaluateExpression{T}"/>.
     /// </summary>
-    /// <param name="evaluateDelegate">Delegate</param>
+    /// <param name="evaluateDelegate">Delegate.</param>
     public StructureEvaluateExpression(StructureEvaluateDelegate evaluateDelegate)
     {
         _delegate = evaluateDelegate;
     }
-
 
     /// <inheritdoc />
     public override IEnumerable<Element> GetDependencies(StructureDefinition definition) =>

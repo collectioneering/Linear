@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Linear.Runtime.Elements;
 
@@ -13,10 +15,10 @@ public class ValueElement : Element
     private readonly ExpressionDefinition _expression;
 
     /// <summary>
-    /// Create new instance of <see cref="ValueElement"/>
+    /// Initializes an instance of <see cref="ValueElement"/>.
     /// </summary>
-    /// <param name="name">Name of element</param>
-    /// <param name="expression">Value definition</param>
+    /// <param name="name">Name of element.</param>
+    /// <param name="expression">Value definition.</param>
     public ValueElement(string name, ExpressionDefinition expression)
     {
         _name = name;
@@ -41,9 +43,23 @@ public class ValueElement : Element
             return ElementInitializeResult.Default;
         }
 
+        public override async ValueTask<ElementInitializeResult> InitializeAsync(StructureEvaluationContext context, Stream stream, CancellationToken cancellationToken = default)
+        {
+            object expression = await Expression.EvaluateAsync(context, stream, cancellationToken) ?? throw new NullReferenceException();
+            context.Structure.SetMember(Name, expression);
+            return ElementInitializeResult.Default;
+        }
+
         public override ElementInitializeResult Initialize(StructureEvaluationContext context, ReadOnlyMemory<byte> memory)
         {
             object expression = Expression.Evaluate(context, memory) ?? throw new NullReferenceException();
+            context.Structure.SetMember(Name, expression);
+            return ElementInitializeResult.Default;
+        }
+
+        public override async ValueTask<ElementInitializeResult> InitializeAsync(StructureEvaluationContext context, ReadOnlyMemory<byte> memory, CancellationToken cancellationToken = default)
+        {
+            object expression = await Expression.EvaluateAsync(context, memory, cancellationToken) ?? throw new NullReferenceException();
             context.Structure.SetMember(Name, expression);
             return ElementInitializeResult.Default;
         }

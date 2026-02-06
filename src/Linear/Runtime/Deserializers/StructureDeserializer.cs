@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Linear.Runtime.Deserializers;
 
@@ -58,9 +60,23 @@ public class StructureDeserializer : DeserializerInstance
     }
 
     /// <inheritdoc />
+    public override async ValueTask<DeserializeResult> DeserializeAsync(DeserializerContext context, Stream stream, long offset, long? length = null, int? index = null, CancellationToken cancellationToken = default)
+    {
+        StructureInstance i = await context.Structure.Registry[_name].ParseAsync(context.Structure.Registry, stream, new ParseState(_name, offset, context.Structure, length, index), cancellationToken);
+        return new DeserializeResult(i, i.Length);
+    }
+
+    /// <inheritdoc />
     public override DeserializeResult Deserialize(DeserializerContext context, ReadOnlyMemory<byte> memory, long offset, long? length = null, int? index = null)
     {
         StructureInstance i = context.Structure.Registry[_name].Parse(context.Structure.Registry, memory, new ParseState(_name, offset, context.Structure, length, index));
+        return new DeserializeResult(i, i.Length);
+    }
+
+    /// <inheritdoc />
+    public override async ValueTask<DeserializeResult> DeserializeAsync(DeserializerContext context, ReadOnlyMemory<byte> memory, long offset, long? length = null, int? index = null, CancellationToken cancellationToken = default)
+    {
+        StructureInstance i = await context.Structure.Registry[_name].ParseAsync(context.Structure.Registry, memory, new ParseState(_name, offset, context.Structure, length, index), cancellationToken);
         return new DeserializeResult(i, i.Length);
     }
 

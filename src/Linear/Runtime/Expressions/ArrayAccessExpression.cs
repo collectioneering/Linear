@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Linear.Utility;
 
 namespace Linear.Runtime.Expressions;
@@ -15,10 +17,10 @@ public class ArrayAccessExpression : ExpressionDefinition
     private readonly ExpressionDefinition _index;
 
     /// <summary>
-    /// Create new instance of <see cref="ProxyMemberExpression"/>
+    /// Initializes an instance of <see cref="ProxyMemberExpression"/>.
     /// </summary>
-    /// <param name="source">Source expression</param>
-    /// <param name="index">Index expression</param>
+    /// <param name="source">Source expression.</param>
+    /// <param name="index">Index expression.</param>
     public ArrayAccessExpression(ExpressionDefinition source, ExpressionDefinition index)
     {
         _source = source;
@@ -36,35 +38,37 @@ public class ArrayAccessExpression : ExpressionDefinition
     {
         public override object? Evaluate(StructureEvaluationContext context, Stream stream)
         {
-            object? source = Source.Evaluate(context, stream);
-            object index = Index.Evaluate(context, stream) ?? throw new NullReferenceException();
-            if (source is Array sourceValue)
-            {
-                return sourceValue.GetValue(CastUtil.CastInt(index));
-            }
-            throw new InvalidCastException($"Could not cast object of type {source?.GetType().FullName} to {nameof(Array)}");
+            return Evaluate(Source.Evaluate(context, stream), Index.Evaluate(context, stream));
+        }
+
+        public override async ValueTask<object?> EvaluateAsync(StructureEvaluationContext context, Stream stream, CancellationToken cancellationToken = default)
+        {
+            return Evaluate(await Source.EvaluateAsync(context, stream, cancellationToken), await Index.EvaluateAsync(context, stream, cancellationToken));
         }
 
         public override object? Evaluate(StructureEvaluationContext context, ReadOnlyMemory<byte> memory)
         {
-            object? source = Source.Evaluate(context, memory);
-            object index = Index.Evaluate(context, memory) ?? throw new NullReferenceException();
-            if (source is Array sourceValue)
-            {
-                return sourceValue.GetValue(CastUtil.CastInt(index));
-            }
-            throw new InvalidCastException($"Could not cast object of type {source?.GetType().FullName} to {nameof(Array)}");
+            return Evaluate(Source.Evaluate(context, memory), Index.Evaluate(context, memory));
+        }
+
+        public override async ValueTask<object?> EvaluateAsync(StructureEvaluationContext context, ReadOnlyMemory<byte> memory, CancellationToken cancellationToken = default)
+        {
+            return Evaluate(await Source.EvaluateAsync(context, memory, cancellationToken), await Index.EvaluateAsync(context, memory, cancellationToken));
         }
 
         public override object? Evaluate(StructureEvaluationContext context, ReadOnlySpan<byte> span)
         {
-            object? source = Source.Evaluate(context, span);
-            object index = Index.Evaluate(context, span) ?? throw new NullReferenceException();
-            if (source is Array sourceValue)
+            return Evaluate(Source.Evaluate(context, span), Index.Evaluate(context, span));
+        }
+
+        private static object? Evaluate(object? left, object? right)
+        {
+            ArgumentNullException.ThrowIfNull(right);
+            if (left is Array sourceValue)
             {
-                return sourceValue.GetValue(CastUtil.CastInt(index));
+                return sourceValue.GetValue(CastUtil.CastInt(right));
             }
-            throw new InvalidCastException($"Could not cast object of type {source?.GetType().FullName} to {nameof(Array)}");
+            throw new InvalidCastException($"Could not cast object of type {left?.GetType().FullName} to {nameof(Array)}");
         }
     }
 }

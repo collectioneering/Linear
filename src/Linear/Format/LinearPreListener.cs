@@ -6,7 +6,7 @@ namespace Linear.Format;
 /// <summary>
 /// ANTLR listener implementation
 /// </summary>
-internal class LinearPreListener : LinearBaseListener
+internal class LinearPreListener : LinearParserBaseListener
 {
     private readonly List<string> _structureNames;
     internal bool Fail { get; private set; }
@@ -17,9 +17,9 @@ internal class LinearPreListener : LinearBaseListener
     }
 
     /// <summary>
-    /// Get parsed structures
+    /// Gets parsed structures.
     /// </summary>
-    /// <returns>Structures</returns>
+    /// <returns>Structures.</returns>
     public IReadOnlyList<string> GetStructureNames() => _structureNames;
 
     public override void ExitStruct(LinearParser.StructContext context)

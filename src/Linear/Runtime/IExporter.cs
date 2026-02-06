@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Linear.Runtime;
 
@@ -10,9 +12,9 @@ namespace Linear.Runtime;
 public interface IExporter
 {
     /// <summary>
-    /// Get name of exporter
+    /// Gets name of exporter.
     /// </summary>
-    /// <returns>Exporter name</returns>
+    /// <returns>Exporter name.</returns>
     string GetName();
 
     /// <summary>
@@ -28,12 +30,34 @@ public interface IExporter
     /// <summary>
     /// Exports data.
     /// </summary>
+    /// <param name="stream">Base stream.</param>
+    /// <param name="instance">Instance to extract from.</param>
+    /// <param name="range">Target range.</param>
+    /// <param name="parameters">Exporter parameters.</param>
+    /// <param name="outputStream">Output stream.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    Task ExportAsync(Stream stream, StructureInstance instance, LongRange range, IReadOnlyDictionary<string, object>? parameters, Stream outputStream, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Exports data.
+    /// </summary>
     /// <param name="memory">Base buffer.</param>
     /// <param name="instance">Instance to extract from.</param>
     /// <param name="range">Target range.</param>
     /// <param name="parameters">Exporter parameters.</param>
     /// <param name="outputStream">Output stream.</param>
     void Export(ReadOnlyMemory<byte> memory, StructureInstance instance, LongRange range, IReadOnlyDictionary<string, object>? parameters, Stream outputStream);
+
+    /// <summary>
+    /// Exports data.
+    /// </summary>
+    /// <param name="memory">Base buffer.</param>
+    /// <param name="instance">Instance to extract from.</param>
+    /// <param name="range">Target range.</param>
+    /// <param name="parameters">Exporter parameters.</param>
+    /// <param name="outputStream">Output stream.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    Task ExportAsync(ReadOnlyMemory<byte> memory, StructureInstance instance, LongRange range, IReadOnlyDictionary<string, object>? parameters, Stream outputStream, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Exports data.
